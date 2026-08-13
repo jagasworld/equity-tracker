@@ -273,6 +273,7 @@ tbody tr:hover{background:var(--surface-2);}
         <div class="f"><label>Trade date</label><input id="hfDate" type="date"></div>
         <div class="f"><label>Shares</label><input id="hfQty" type="number" step="any"></div>
         <div class="f"><label>Invested price</label><input id="hfInvestedPrice" type="number" step="any"></div>
+        <div class="f"><label>Expenses</label><input id="hfExpenses" type="number" step="any" placeholder="optional"></div>
         <div class="f"><button class="btn-small" id="hfAdd">+ Add to ledger</button></div>
       </div>
       <div class="status-text" id="hfStatus"></div>
@@ -280,7 +281,7 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
 
     <div class="tabpanel" data-panel="paste">
-      <p class="card-hint">Select your holdings in Excel — including the header row — copy, and paste below. Include whichever of these columns you have (any order): <code>Symbol</code>, <code>Exchange</code>, <code>Stock name</code>, <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Current price</code>, <code>Today's change</code>. Symbol, Shares and Invested price are required for a row to be added.</p>
+      <p class="card-hint">Select your holdings in Excel — including the header row — copy, and paste below. Include whichever of these columns you have (any order): <code>Symbol</code>, <code>Exchange</code>, <code>Stock name</code>, <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Expenses</code>, <code>Current price</code>, <code>Today's change</code>. Symbol, Shares and Invested price are required for a row to be added.</p>
       <textarea class="pastearea" id="hpArea" placeholder="Paste your holdings table here, header row included..."></textarea>
       <button class="btn-small" id="hpParseBtn" style="margin-top:10px;">+ Add pasted rows to ledger</button>
       <div class="status-text" id="hpStatus"></div>
@@ -296,7 +297,7 @@ tbody tr:hover{background:var(--surface-2);}
           <tr>
             <th class="left">Symbol</th><th class="left">Exchange</th><th class="left">Stock name</th>
             <th class="left">Broker</th><th class="left">Recommended by</th><th class="left">Trade date</th>
-            <th>Shares</th><th>Invested price</th><th>Invested</th>
+            <th>Shares</th><th>Invested price</th><th>Expenses</th><th>Invested</th>
             <th>Current price</th><th>Current value</th>
             <th>Price change</th><th>% change</th><th>Today's change</th><th>Profit</th><th></th>
           </tr>
@@ -421,6 +422,17 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
   </div>
 
+  <div class="card" id="recoStockCard" style="display:none;">
+    <div class="card-head"><div class="card-icon">◆</div><b>XIRR by stock, by recommendation</b></div>
+    <p class="card-hint">Every currently-held stock's own XIRR, grouped under whoever recommended it. Uses only current holdings (not sold-out positions) — see the realized report above for those.</p>
+    <div class="tscroll">
+      <table class="resultstable" style="min-width:640px;">
+        <thead><tr><th class="left">Recommended by</th><th class="left">Stock</th><th>Shares</th><th>Invested</th><th>Current val</th><th>P&amp;L</th><th>XIRR</th></tr></thead>
+        <tbody id="recoStockBody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="foot">Absolute return uses invested and current value exactly as entered. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. This page can't call market-data providers directly — that's blocked by their own cross-origin policy — so the Google Sheets refresh loads your sheet the way public embeds do, which needs the sheet link-shared as viewable. The realized profit report tracks whatever buy/sell entries you log manually, matched FIFO per instrument, independent of the holdings table.</div>
 
 </div>
@@ -431,8 +443,8 @@ tbody tr:hover{background:var(--surface-2);}
 
   const BROKER_CODES = ['Z','AO','C'];
   const BROKER_COLORS = {Z:'#5B5BF6', AO:'#0E9F6E', C:'#C77D11'};
-  const RECO_OPTIONS = ['Stockifi','D','RD','Anand','J','Vibhor','Choice','Others'];
-  const RECO_COLORS = ['#A855F7','#EC4899','#0EA5C4','#65A30D','#F59E0B','#EF4444','#14B8A6','#6366F1'];
+  const RECO_OPTIONS = ['Stockifi','D','RD','Anand','J','Vibhor','Choice','Others','Multibagger'];
+  const RECO_COLORS = ['#A855F7','#EC4899','#0EA5C4','#65A30D','#F59E0B','#EF4444','#14B8A6','#6366F1','#D946EF'];
   function brokerColor(code){ return BROKER_COLORS[code] || '#888'; }
   function recoColor(name){ const i = RECO_OPTIONS.indexOf(name); return i>=0 ? RECO_COLORS[i % RECO_COLORS.length] : '#888'; }
 
@@ -542,13 +554,14 @@ tbody tr:hover{background:var(--surface-2);}
   // (state.holdRows is already initialized above — and may already be populated
   // by loadFromLocalStorage(). Do NOT reset it here.)
 
-  function computeInvested(row){ return (row.qty!=null && row.investedPrice!=null) ? row.qty*row.investedPrice : null; }
+  function computeInvested(row){ return (row.qty!=null && row.investedPrice!=null) ? (row.qty*row.investedPrice + (row.expenses||0)) : null; }
   function computeCurVal(row){ return (row.qty!=null && row.currentPrice!=null) ? row.qty*row.currentPrice : null; }
 
   $('hfAdd').addEventListener('click', ()=>{
     const symbol = $('hfSymbol').value.trim();
     const qty = $('hfQty').value === '' ? null : parseFloat($('hfQty').value);
     const investedPrice = $('hfInvestedPrice').value === '' ? null : parseFloat($('hfInvestedPrice').value);
+    const expenses = $('hfExpenses').value === '' ? null : parseFloat($('hfExpenses').value);
     if(!symbol || qty==null || isNaN(qty) || qty<=0 || investedPrice==null || isNaN(investedPrice) || investedPrice<=0){
       $('hfStatus').textContent = 'Symbol, shares and invested price are required.';
       return;
@@ -557,12 +570,12 @@ tbody tr:hover{background:var(--surface-2);}
       id:'h'+(state.holdIdSeq++),
       symbol, exchange:$('hfExchange').value.trim(), stockName:$('hfStockName').value.trim(),
       broker:$('hfBroker').value, recommendedBy:$('hfReco').value, tradeDate:$('hfDate').value,
-      qty, investedPrice,
+      qty, investedPrice, expenses: (expenses!=null && !isNaN(expenses)) ? expenses : null,
       currentPrice: null,
       todaysChange: null
     });
     $('hfSymbol').value=''; $('hfExchange').value=''; $('hfStockName').value='';
-    $('hfQty').value=''; $('hfInvestedPrice').value='';
+    $('hfQty').value=''; $('hfInvestedPrice').value=''; $('hfExpenses').value='';
     $('hfStatus').textContent = `Added ${symbol} to the ledger below — set current price in the ledger or fetch it from Google Sheets.`;
     $('hfSymbol').focus();
     renderHoldTable();
@@ -585,6 +598,7 @@ tbody tr:hover{background:var(--surface-2);}
         <td class="left date-cell"><input class="hIn" data-f="tradeDate" type="date" value="${r.tradeDate||''}"></td>
         <td><input class="hIn" data-f="qty" type="number" step="any" value="${r.qty!=null?r.qty:''}"></td>
         <td><input class="hIn" data-f="investedPrice" type="number" step="any" value="${r.investedPrice!=null?r.investedPrice:''}"></td>
+        <td><input class="hIn" data-f="expenses" type="number" step="any" value="${r.expenses!=null?r.expenses:''}" placeholder="0" title="Brokerage, STT, fees etc. — added to cost basis"></td>
         <td class="readonly-cell investedCell">${invested!=null?fmtINR(invested):'—'}</td>
         <td><input class="hIn" data-f="currentPrice" type="number" step="any" value="${r.currentPrice!=null?r.currentPrice:''}"></td>
         <td class="readonly-cell curValCell">${curVal!=null?fmtINR(curVal):'—'}</td>
@@ -684,6 +698,7 @@ tbody tr:hover{background:var(--surface-2);}
       tradeDate: findExact(['tradedate','date','buydate']) || findContains(['date'], []),
       qty: findExact(['shares','qty','quantity']) || findContains(['share','qty','quantity'], []),
       investedPrice: findExact(['investedprice','avgprice','avgcost','buyprice','purchaseprice']) || findContains(['invest','avg','buy','purchase','cost'], ['current']),
+      expenses: findExact(['expenses','expense','charges','brokerage','fees','fee']) || findContains(['expense','charge','brokerage','fee','stt'], []),
       currentPrice: findExact(['currentprice','ltp','marketprice','price']) || findContains(['current','ltp','price','market'], ['invest','avg','buy','purchase','cost','change']),
       todaysChange: findExact(['todayschange','dayschange','change']) || findContains(['change'], ['%','percent'])
     };
@@ -715,6 +730,7 @@ tbody tr:hover{background:var(--surface-2);}
       if(!symbol || isNaN(qty) || qty<=0 || isNaN(investedPrice) || investedPrice<=0){ skipped++; return; }
       const currentPriceVal = cm.currentPrice ? num(r[cm.currentPrice]) : NaN;
       const todaysChangeVal = cm.todaysChange ? num(r[cm.todaysChange]) : NaN;
+      const expensesVal = cm.expenses ? num(r[cm.expenses]) : NaN;
       const rawBroker = cm.broker ? String(r[cm.broker]||'').trim().toUpperCase() : '';
       const rawReco = cm.recommendedBy ? String(r[cm.recommendedBy]||'').trim() : '';
       state.holdRows.push({
@@ -725,7 +741,7 @@ tbody tr:hover{background:var(--surface-2);}
         broker: BROKER_CODES.includes(rawBroker) ? rawBroker : 'Z',
         recommendedBy: RECO_OPTIONS.includes(rawReco) ? rawReco : '',
         tradeDate: cm.tradeDate ? parseDateCellLoose(r[cm.tradeDate]) : '',
-        qty, investedPrice,
+        qty, investedPrice, expenses: isNaN(expensesVal) ? null : expensesVal,
         currentPrice: isNaN(currentPriceVal) ? null : currentPriceVal,
         todaysChange: isNaN(todaysChangeVal) ? null : todaysChangeVal
       });
@@ -1304,6 +1320,72 @@ tbody tr:hover{background:var(--surface-2);}
         renderRecoSummary();
       });
     });
+    renderRecoStockTable();
+  }
+
+  function computeRecoStockXirr(){
+    const valDate = new Date(($('valDate').value || new Date().toISOString().slice(0,10)) + 'T00:00:00');
+    const groups = {};
+    state.holdRows.forEach(r=>{
+      const symbol = String(r.symbol||'').trim();
+      if(!symbol) return;
+      const qty = r.qty;
+      if(qty==null || isNaN(qty) || qty<=0) return;
+      const reco = r.recommendedBy || 'Unspecified';
+      if(state.hiddenRecos.has(reco)) return;
+      const gKey = reco + '|||' + symKey(symbol);
+      if(!groups[gKey]) groups[gKey] = {reco, symbol, qty:0, invested:0, curVal:0, curValForXirr:0, cfs:[]};
+      const g = groups[gKey];
+      g.symbol = symbol;
+      const investedAmt = computeInvested(r);
+      const curValAmt = computeCurVal(r);
+      g.qty += qty;
+      g.invested += (investedAmt||0);
+      g.curVal += (curValAmt||0);
+      if(r.tradeDate && investedAmt!=null && investedAmt>0){
+        g.cfs.push({date: new Date(r.tradeDate+'T00:00:00'), amount: -investedAmt});
+        g.curValForXirr += (curValAmt||0);
+      }
+    });
+    const rows = Object.values(groups).map(g=>{
+      const ixirr = (g.cfs.length>0 && g.curValForXirr>0) ? xirr(g.cfs.concat([{date:valDate, amount:g.curValForXirr}])) : null;
+      return {reco:g.reco, symbol:g.symbol, qty:g.qty, invested:g.invested, curVal:g.curVal, pnl:g.curVal-g.invested, xirrVal:ixirr};
+    });
+    rows.sort((a,b)=>{
+      if(a.reco !== b.reco){
+        if(a.reco==='Unspecified') return 1;
+        if(b.reco==='Unspecified') return -1;
+        return a.reco.localeCompare(b.reco);
+      }
+      return a.symbol.localeCompare(b.symbol);
+    });
+    return rows;
+  }
+
+  function renderRecoStockTable(){
+    const rows = computeRecoStockXirr();
+    const card = $('recoStockCard');
+    if(rows.length===0){ card.style.display='none'; return; }
+    card.style.display = 'block';
+    let lastReco = null;
+    $('recoStockBody').innerHTML = rows.map(r=>{
+      const showReco = r.reco !== lastReco;
+      lastReco = r.reco;
+      const recoCell = showReco
+        ? `<span class="pill"><span class="sw" style="background:${recoColor(r.reco)}"></span>${escapeAttr(r.reco)}</span>`
+        : '';
+      const xirrStr = r.xirrVal!=null ? fmtPct(r.xirrVal*100) : '<span class="muted">n/a</span>';
+      const xirrClass = r.xirrVal!=null ? (r.xirrVal>=0?'gain':'loss') : '';
+      return `<tr>
+        <td class="left">${recoCell}</td>
+        <td class="left">${escapeAttr(r.symbol)}</td>
+        <td>${fmtQty(r.qty)}</td>
+        <td>${fmtINR(r.invested)}</td>
+        <td>${fmtINR(r.curVal)}</td>
+        <td class="${r.pnl>=0?'gain':'loss'}">${fmtINR(r.pnl)}</td>
+        <td class="${xirrClass}">${xirrStr}</td>
+      </tr>`;
+    }).join('');
   }
 
   // ================= BACKUP / RESTORE =================
