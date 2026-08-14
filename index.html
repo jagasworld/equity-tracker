@@ -550,6 +550,42 @@ tbody tr:hover{background:var(--surface-2);}
   const fmtPct = (n)=> (n===null||n===undefined||isNaN(n)) ? '—' : (n>=0?'+':'') + n.toFixed(2) + '%';
   const fmtQty = (n)=> (n===null||n===undefined||isNaN(n)) ? '—' : n.toLocaleString('en-IN');
 
+  // ================= XIRR =================
+  // Defined early (before the initial renderHoldTable() call below) because a
+  // returning user's autoloaded holdings can trigger renderRecoSummary(), which
+  // calls xirr() as part of that very first render — these must already exist
+  // by then, not just be hoisted function declarations relying on a later `const`.
+  const DAY = 86400000;
+  function xnpv(rate, cfs, d0){ return cfs.reduce((acc,cf)=> acc + cf.amount / Math.pow(1+rate, (cf.date-d0)/(365*DAY)), 0); }
+  function xnpvDeriv(rate, cfs, d0){ return cfs.reduce((acc,cf)=>{ const t=(cf.date-d0)/(365*DAY); return acc - t*cf.amount/Math.pow(1+rate, t+1); },0); }
+  function xirr(cashflows){
+    if(cashflows.length < 2) return null;
+    const cfs = cashflows.slice().sort((a,b)=>a.date-b.date);
+    if(!cfs.some(c=>c.amount>0) || !cfs.some(c=>c.amount<0)) return null;
+    const d0 = cfs[0].date;
+    let rate = 0.15, converged = false;
+    for(let i=0;i<200;i++){
+      const f = xnpv(rate, cfs, d0), df = xnpvDeriv(rate, cfs, d0);
+      if(Math.abs(df) < 1e-9) break;
+      let next = rate - f/df;
+      if(next < -0.999999) next = -0.5*(1+rate) - 0.5;
+      if(!isFinite(next)) break;
+      if(Math.abs(next-rate) < 1e-8){ rate = next; converged = true; break; }
+      rate = next;
+    }
+    if(!converged || !isFinite(rate) || rate < -0.999){
+      let lo=-0.9999, hi=10, flo=xnpv(lo,cfs,d0), fhi=xnpv(hi,cfs,d0);
+      if(flo*fhi > 0) return isFinite(rate) ? rate : null;
+      for(let i=0;i<300;i++){
+        const mid=(lo+hi)/2, fm=xnpv(mid,cfs,d0);
+        if(Math.abs(fm) < 1e-6){ rate = mid; break; }
+        if(flo*fm < 0){ hi=mid; fhi=fm; } else { lo=mid; flo=fm; }
+        rate = mid;
+      }
+    }
+    return rate;
+  }
+
   // ================= HOLDINGS: add-form + editable ledger =================
   // (state.holdRows is already initialized above — and may already be populated
   // by loadFromLocalStorage(). Do NOT reset it here.)
@@ -751,38 +787,6 @@ tbody tr:hover{background:var(--surface-2);}
     $('hpStatus').textContent = `Added ${added} row(s) to the ledger` + (skipped>0 ? `, skipped ${skipped} row(s) missing symbol, shares, or invested price.` : '.');
     if(added>0) $('hpArea').value = '';
   });
-
-  // ================= XIRR =================
-  const DAY = 86400000;
-  function xnpv(rate, cfs, d0){ return cfs.reduce((acc,cf)=> acc + cf.amount / Math.pow(1+rate, (cf.date-d0)/(365*DAY)), 0); }
-  function xnpvDeriv(rate, cfs, d0){ return cfs.reduce((acc,cf)=>{ const t=(cf.date-d0)/(365*DAY); return acc - t*cf.amount/Math.pow(1+rate, t+1); },0); }
-  function xirr(cashflows){
-    if(cashflows.length < 2) return null;
-    const cfs = cashflows.slice().sort((a,b)=>a.date-b.date);
-    if(!cfs.some(c=>c.amount>0) || !cfs.some(c=>c.amount<0)) return null;
-    const d0 = cfs[0].date;
-    let rate = 0.15, converged = false;
-    for(let i=0;i<200;i++){
-      const f = xnpv(rate, cfs, d0), df = xnpvDeriv(rate, cfs, d0);
-      if(Math.abs(df) < 1e-9) break;
-      let next = rate - f/df;
-      if(next < -0.999999) next = -0.5*(1+rate) - 0.5;
-      if(!isFinite(next)) break;
-      if(Math.abs(next-rate) < 1e-8){ rate = next; converged = true; break; }
-      rate = next;
-    }
-    if(!converged || !isFinite(rate) || rate < -0.999){
-      let lo=-0.9999, hi=10, flo=xnpv(lo,cfs,d0), fhi=xnpv(hi,cfs,d0);
-      if(flo*fhi > 0) return isFinite(rate) ? rate : null;
-      for(let i=0;i<300;i++){
-        const mid=(lo+hi)/2, fm=xnpv(mid,cfs,d0);
-        if(Math.abs(fm) < 1e-6){ rate = mid; break; }
-        if(flo*fm < 0){ hi=mid; fhi=fm; } else { lo=mid; flo=fm; }
-        rate = mid;
-      }
-    }
-    return rate;
-  }
 
   // ================= CALCULATE =================
   $('calcBtn').addEventListener('click', runCalculation);
