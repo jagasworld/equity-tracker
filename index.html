@@ -817,7 +817,8 @@ tbody tr:hover{background:var(--surface-2);}
       if(currentSymbol) outLines.push([currentSymbol, ...cells].join('\t'));
       else outLines.push(line);
     }
-    return (sawBlock && combinedHeaderEmitted) ? outLines.join('\n') : text;
+    const wasBlock = sawBlock && combinedHeaderEmitted;
+    return { text: wasBlock ? outLines.join('\n') : text, wasBlock };
   }
 
   function mapTransactionColumns(headers){
@@ -847,18 +848,23 @@ tbody tr:hover{background:var(--surface-2);}
   $('hpParseBtn').addEventListener('click', ()=>{
     const rawText = $('hpArea').value;
     if(!rawText.trim()){ $('hpStatus').textContent = 'Paste some rows first.'; return; }
-    const text = expandSymbolBlocks(rawText);
-    const aoa = parsePastedTable(text);
+    const expansion = expandSymbolBlocks(rawText);
+    const aoa = parsePastedTable(expansion.text);
     const parsed = parseHoldingsPaste(aoa);
     if(!parsed){ $('hpStatus').textContent = 'Could not find recognizable columns — make sure there\'s a header row with names like Symbol, Shares, Invested price (or Date/Type/Quantity/Price under each stock).'; return; }
 
     const hasType = parsed.headers.some(h=> normHeader(h).includes('type'));
+    // A per-stock trade-history paste (symbol on its own line, then a Date/Qty/Price
+    // table) always means "Price" is the buy/invested price — even without a Type
+    // column, since every row in that shape is a transaction, not a current quote.
+    const useTransactionMapping = expansion.wasBlock || hasType;
     let added = 0, skipped = 0, skippedSells = 0;
 
-    if(hasType){
-      // Trade-history shape: Symbol, Date, Type, Quantity, Price. Only "buy" rows
-      // become holdings lots — "sell" rows belong in the Transactions section
-      // instead, since they represent shares no longer held.
+    if(useTransactionMapping){
+      // Trade-history shape: Symbol, Date, [Type], Quantity, Price. Only "buy" rows
+      // become holdings lots (or all rows, if there's no Type column to say
+      // otherwise) — "sell" rows belong in the Transactions section instead,
+      // since they represent shares no longer held.
       const cm = mapTransactionColumns(parsed.headers);
       parsed.rows.forEach(r=>{
         const symbol = cm.symbol ? String(r[cm.symbol]||'').trim() : '';
