@@ -413,42 +413,45 @@ tbody tr:hover{background:var(--surface-2);}
   </div>
 
   <div class="card" id="realizedCard" style="display:none;">
-    <div class="card-head"><div class="card-icon">◆</div><b>Realized profit report</b></div>
-    <p class="card-hint">Each sell matched FIFO against the earliest unsold buys of that instrument.</p>
+    <div class="card-head"><div class="card-icon">◆</div><b>Realized profit &amp; P&amp;L by recommendation</b></div>
+    <p class="card-hint">Every sell is matched FIFO against the earliest unsold buys of that instrument. Switch between the recommender summary and the individual sales behind it.</p>
     <div class="stats-row show stats-row-3col">
       <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
       <div class="stat"><div class="k">Winning sells</div><div class="v gain" id="realWins">—</div></div>
       <div class="stat"><div class="k">Losing sells</div><div class="v loss" id="realLosses">—</div></div>
     </div>
-    <div class="tscroll">
-      <table class="txn-table">
-        <thead><tr><th class="left">Instrument</th><th class="left">Sell date</th><th>Qty sold</th><th>Sell price</th><th>Avg. buy price</th><th>Realized P&amp;L</th><th>Return %</th></tr></thead>
-        <tbody id="realizedBody"></tbody>
-      </table>
+    <div class="tabs">
+      <button class="tabbtn active" data-tab="byReco">By recommendation</button>
+      <button class="tabbtn" data-tab="byTxn">By transaction</button>
     </div>
-  </div>
-
-  <div class="card" id="recoSummaryCard" style="display:none;">
-    <div class="card-head"><div class="card-icon">Σ</div><b>P&amp;L by recommendation</b></div>
-    <p class="card-hint">Realized comes from the transactions log above; unrealized comes from current holdings. Updates live as you edit either.</p>
-    <div class="tscroll">
-      <table class="compact-table">
-        <thead><tr><th class="left">Recommended by</th><th>Realized P&amp;L</th><th>Unrealized P&amp;L</th><th>Total</th><th>XIRR</th><th></th></tr></thead>
-        <tbody id="recoSummaryBody"></tbody>
-      </table>
+    <div class="tabpanel active" data-panel="byReco">
+      <div class="tscroll">
+        <table class="compact-table">
+          <thead><tr><th class="left">Recommended by</th><th>Realized P&amp;L</th><th>Unrealized P&amp;L</th><th>Total</th><th>XIRR</th><th></th></tr></thead>
+          <tbody id="recoSummaryBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tabpanel" data-panel="byTxn">
+      <div class="tscroll">
+        <table class="txn-table">
+          <thead><tr><th class="left">Instrument</th><th class="left">Sell date</th><th>Qty sold</th><th>Sell price</th><th>Avg. buy price</th><th>Realized P&amp;L</th><th>Return %</th></tr></thead>
+          <tbody id="realizedBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <div class="card" id="recoStockCard" style="display:none;">
     <div class="card-head"><div class="card-icon">◆</div><b>XIRR by stock, by recommendation</b></div>
-    <p class="card-hint">Every currently-held stock's own XIRR, grouped under whoever recommended it, plus a blended total. Uses only current holdings (not sold-out positions) — see the realized report above for those.</p>
+    <p class="card-hint">Every stock recommended by each person, grouped together — current holdings and booked (realized) profit/loss both included, plus a blended total per recommender. A stock shows here even after it's fully sold, tagged "sold out", so the booked result isn't lost.</p>
     <div class="inline-row" style="margin-bottom:10px;">
       <label class="broker-label" style="margin:0; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Show:</label>
       <select class="sel" id="recoStockFilter"><option value="__all__">All recommenders</option></select>
     </div>
     <div class="tscroll">
-      <table class="resultstable" style="min-width:640px;">
-        <thead><tr><th class="left">Recommended by</th><th class="left">Stock</th><th>Shares</th><th>Invested</th><th>Current val</th><th>P&amp;L</th><th>XIRR</th></tr></thead>
+      <table class="resultstable" style="min-width:820px;">
+        <thead><tr><th class="left">Recommended by</th><th class="left">Stock</th><th>Shares</th><th>Invested</th><th>Current val</th><th>Unrealized P&amp;L</th><th>Realized P&amp;L</th><th>Total P&amp;L</th><th>XIRR</th></tr></thead>
         <tbody id="recoStockBody"></tbody>
       </table>
     </div>
@@ -698,7 +701,7 @@ tbody tr:hover{background:var(--surface-2);}
       });
     });
     updateSellSelectedButton();
-    renderRecoSummary();
+    renderRealizedReport();
     scheduleAutosave();
   }
 
@@ -726,7 +729,7 @@ tbody tr:hover{background:var(--surface-2);}
     const profitCell = tr.querySelector('.profitCell');
     profitCell.textContent = profit!=null ? fmtINR(profit) : '—';
     profitCell.className = 'readonly-cell profitCell ' + (profit!=null?(profit>=0?'gain':'loss'):'');
-    renderRecoSummary();
+    renderRealizedReport();
     scheduleAutosave();
   }
 
@@ -1332,8 +1335,9 @@ tbody tr:hover{background:var(--surface-2);}
 
   function renderRealizedReport(){
     const report = computeRealizedReport();
+    const recoRows = computeRecoSummary();
     const card = $('realizedCard');
-    if(report.length===0){ card.style.display='none'; renderRecoSummary(); return; }
+    if(report.length===0 && recoRows.length===0){ card.style.display='none'; return; }
     card.style.display = 'block';
     const total = report.reduce((s,r)=>s+r.realized,0);
     const wins = report.filter(r=>r.realized>0).length;
@@ -1342,7 +1346,7 @@ tbody tr:hover{background:var(--surface-2);}
     $('realTotal').className = 'v ' + (total>=0?'gain':'loss');
     $('realWins').textContent = wins;
     $('realLosses').textContent = losses;
-    $('realizedBody').innerHTML = report.map(r=>{
+    $('realizedBody').innerHTML = report.length ? report.map(r=>{
       const unmatchedFlag = r.unmatchedQty>1e-9 ? `<span class="flag bad">${fmtQty(r.unmatchedQty)} unmatched</span>` : '';
       return `<tr>
         <td class="left">${escapeAttr(r.instrument)}${unmatchedFlag}</td>
@@ -1353,7 +1357,7 @@ tbody tr:hover{background:var(--surface-2);}
         <td class="${r.realized>=0?'gain':'loss'}">${fmtINR(r.realized)}</td>
         <td class="${r.returnPct!=null?(r.returnPct>=0?'gain':'loss'):''}">${r.returnPct!=null?fmtPct(r.returnPct):'—'}</td>
       </tr>`;
-    }).join('');
+    }).join('') : `<tr><td colspan="7" class="muted" style="text-align:center;">No sells recorded yet.</td></tr>`;
     renderRecoSummary();
   }
 
@@ -1409,9 +1413,7 @@ tbody tr:hover{background:var(--surface-2);}
 
   function renderRecoSummary(){
     const rows = computeRecoSummary();
-    const card = $('recoSummaryCard');
-    if(rows.length===0){ card.style.display='none'; return; }
-    card.style.display = 'block';
+    if(rows.length===0){ $('recoSummaryBody').innerHTML = `<tr><td colspan="6" class="muted" style="text-align:center;">No holdings or transactions tagged with a recommendation yet.</td></tr>`; renderRecoStockTable(); return; }
     const valDate = new Date(($('valDate').value || new Date().toISOString().slice(0,10)) + 'T00:00:00');
     let totalReal=0, totalUnreal=0;
     let html = rows.map(row=>{
@@ -1457,7 +1459,10 @@ tbody tr:hover{background:var(--surface-2);}
 
   function computeRecoStockXirr(){
     const valDate = new Date(($('valDate').value || new Date().toISOString().slice(0,10)) + 'T00:00:00');
+
+    // Unrealized side: current holdings, grouped by (recommender, stock).
     const groups = {};
+    function keyOf(reco, symbol){ return reco + '|||' + symKey(symbol); }
     state.holdRows.forEach(r=>{
       const symbol = String(r.symbol||'').trim();
       if(!symbol) return;
@@ -1465,25 +1470,54 @@ tbody tr:hover{background:var(--surface-2);}
       if(qty==null || isNaN(qty) || qty<=0) return;
       const reco = r.recommendedBy || 'Unspecified';
       if(state.hiddenRecos.has(reco)) return;
-      const gKey = reco + '|||' + symKey(symbol);
-      if(!groups[gKey]) groups[gKey] = {reco, symbol, qty:0, invested:0, curVal:0, curValForXirr:0, dividend:0, cfs:[]};
+      const gKey = keyOf(reco, symbol);
+      if(!groups[gKey]) groups[gKey] = {reco, symbol, qty:0, invested:0, curVal:0, dividend:0};
       const g = groups[gKey];
       g.symbol = symbol;
-      const investedAmt = computeInvested(r);
-      const curValAmt = computeCurVal(r);
       g.qty += qty;
-      g.invested += (investedAmt||0);
-      g.curVal += (curValAmt||0);
+      g.invested += (computeInvested(r)||0);
+      g.curVal += (computeCurVal(r)||0);
       g.dividend += (r.dividend||0);
-      if(r.tradeDate && investedAmt!=null && investedAmt>0){
-        g.cfs.push({date: new Date(r.tradeDate+'T00:00:00'), amount: -investedAmt});
-        g.curValForXirr += (curValAmt||0);
-      }
     });
-    const rows = Object.values(groups).map(g=>{
-      const ixirr = (g.cfs.length>0 && g.curValForXirr>0) ? xirr(g.cfs.concat([{date:valDate, amount:g.curValForXirr}])) : null;
-      return {reco:g.reco, symbol:g.symbol, qty:g.qty, invested:g.invested, curVal:g.curVal, pnl:g.curVal-g.invested+g.dividend, xirrVal:ixirr, cfs:g.cfs, curValForXirr:g.curValForXirr};
+
+    // Realized side: booked profit/loss from the transactions log, same grouping.
+    const realizedByKey = {};
+    computeRealizedReport().forEach(r=>{
+      const reco = r.recommendedBy || 'Unspecified';
+      if(state.hiddenRecos.has(reco)) return;
+      const gKey = keyOf(reco, r.instrument);
+      if(!realizedByKey[gKey]) realizedByKey[gKey] = {reco, symbol: r.instrument, realized: 0};
+      realizedByKey[gKey].realized += r.realized;
     });
+
+    // Union of every (recommender, stock) that appears on either side — a fully
+    // sold-out stock still shows up here with its booked result, even though it
+    // no longer has a holdings row.
+    const allKeys = new Set([...Object.keys(groups), ...Object.keys(realizedByKey)]);
+    const rows = Array.from(allKeys).map(gKey=>{
+      const g = groups[gKey];
+      const r = realizedByKey[gKey];
+      const reco = (g||r).reco;
+      const symbol = (g||r).symbol;
+      const qty = g ? g.qty : 0;
+      const invested = g ? g.invested : 0;
+      const curVal = g ? g.curVal : 0;
+      const dividend = g ? g.dividend : 0;
+      const unrealizedPnl = curVal - invested + dividend;
+      const realizedPnl = r ? r.realized : 0;
+      const totalPnl = unrealizedPnl + realizedPnl;
+      // Blended XIRR: pools this stock's dated holding cash flow (if still held)
+      // with every buy/sell transaction logged for it under this recommender —
+      // so a fully closed position gets its own realized-only XIRR, a still-held
+      // one gets its unrealized XIRR, and a partially-sold one gets both blended.
+      const xirrVal = computeXirrForCashflows(
+        hr => (hr.recommendedBy||'Unspecified')===reco && symKey(hr.symbol)===symKey(symbol),
+        t => (t.recommendedBy||'Unspecified')===reco && symKey(t.instrument)===symKey(symbol),
+        valDate
+      );
+      return {reco, symbol, qty, invested, curVal, unrealizedPnl, realizedPnl, totalPnl, xirrVal};
+    });
+
     rows.sort((a,b)=>{
       if(a.reco !== b.reco){
         if(a.reco==='Unspecified') return 1;
@@ -1521,15 +1555,18 @@ tbody tr:hover{background:var(--surface-2);}
       const recoCell = showReco
         ? `<span class="pill"><span class="sw" style="background:${recoColor(r.reco)}"></span>${escapeAttr(r.reco)}</span>`
         : '';
+      const soldOutFlag = r.qty<=0 ? `<span class="flag">sold out</span>` : '';
       const xirrStr = r.xirrVal!=null ? fmtPct(r.xirrVal*100) : '<span class="muted">n/a</span>';
       const xirrClass = r.xirrVal!=null ? (r.xirrVal>=0?'gain':'loss') : '';
       return `<tr>
         <td class="left">${recoCell}</td>
-        <td class="left">${escapeAttr(r.symbol)}</td>
+        <td class="left">${escapeAttr(r.symbol)}${soldOutFlag}</td>
         <td>${fmtQty(r.qty)}</td>
         <td>${fmtINR(r.invested)}</td>
         <td>${fmtINR(r.curVal)}</td>
-        <td class="${r.pnl>=0?'gain':'loss'}">${fmtINR(r.pnl)}</td>
+        <td class="${r.unrealizedPnl>=0?'gain':'loss'}">${fmtINR(r.unrealizedPnl)}</td>
+        <td class="${r.realizedPnl>=0?'gain':'loss'}">${fmtINR(r.realizedPnl)}</td>
+        <td class="${r.totalPnl>=0?'gain':'loss'}">${fmtINR(r.totalPnl)}</td>
         <td class="${xirrClass}">${xirrStr}</td>
       </tr>`;
     }).join('');
@@ -1540,17 +1577,24 @@ tbody tr:hover{background:var(--surface-2);}
     // shouldn't count equally).
     const totalInvested = rows.reduce((s,r)=>s+r.invested,0);
     const totalCurVal = rows.reduce((s,r)=>s+r.curVal,0);
-    const totalPnl = rows.reduce((s,r)=>s+r.pnl,0);
-    const cfsAll = []; let matchedCurVal = 0;
-    rows.forEach(r=>{ if(r.xirrVal!==null){ cfsAll.push(...r.cfs); matchedCurVal += r.curValForXirr; } });
+    const totalUnrealized = rows.reduce((s,r)=>s+r.unrealizedPnl,0);
+    const totalRealized = rows.reduce((s,r)=>s+r.realizedPnl,0);
+    const totalPnl = totalUnrealized + totalRealized;
     const valDate = new Date(($('valDate').value || new Date().toISOString().slice(0,10)) + 'T00:00:00');
-    const blendedXirr = (cfsAll.length>0 && matchedCurVal>0) ? xirr(cfsAll.concat([{date:valDate, amount:matchedCurVal}])) : null;
+    const recosShown = new Set(rows.map(r=>r.reco));
+    const blendedXirr = computeXirrForCashflows(
+      hr => recosShown.has(hr.recommendedBy||'Unspecified'),
+      t => recosShown.has(t.recommendedBy||'Unspecified'),
+      valDate
+    );
     const blendedStr = blendedXirr!=null ? fmtPct(blendedXirr*100) : '<span class="muted">n/a</span>';
     const blendedClass = blendedXirr!=null ? (blendedXirr>=0?'gain':'loss') : '';
     html += `<tr style="font-weight:700;">
       <td class="left" colspan="2">Blended total${rows.length!==allRows.length ? ' (filtered)' : ''}</td>
       <td>${fmtINR(totalInvested)}</td>
       <td>${fmtINR(totalCurVal)}</td>
+      <td class="${totalUnrealized>=0?'gain':'loss'}">${fmtINR(totalUnrealized)}</td>
+      <td class="${totalRealized>=0?'gain':'loss'}">${fmtINR(totalRealized)}</td>
       <td class="${totalPnl>=0?'gain':'loss'}">${fmtINR(totalPnl)}</td>
       <td class="${blendedClass}">${blendedStr}</td>
     </tr>`;
