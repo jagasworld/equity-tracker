@@ -147,10 +147,10 @@ tbody tr:hover{background:var(--surface-2);}
 
 .tablewrap{display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);}
 .tablewrap.show{display:block;}
-.resultstable{min-width:1000px;}
+.resultstable{min-width:1120px;}
 
 .quickadd-grid{display:grid; grid-template-columns:1.3fr 0.8fr 0.8fr 1fr 0.8fr 1fr auto; gap:8px; align-items:end;}
-.quickadd-grid.quickadd-grid-tx{grid-template-columns:1.2fr 0.7fr 0.9fr 0.7fr 1fr 0.7fr 0.9fr auto;}
+.quickadd-grid.quickadd-grid-tx{grid-template-columns:1.1fr 0.7fr 0.7fr 0.9fr 0.7fr 1fr 0.7fr 0.9fr auto;}
 .quickadd-grid .f label{display:block; font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); margin-bottom:5px; font-weight:600;}
 .quickadd-grid input{width:100%; font-family:inherit; font-size:12.5px; padding:8px 9px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); color:var(--text);}
 .quickadd-grid select{width:100%;}
@@ -246,24 +246,6 @@ tbody tr:hover{background:var(--surface-2);}
     <p>Type in each position directly — no file uploads. Tag broker and recommendation, log the trade date for XIRR, and refresh current price from a Google Sheet whenever you want.</p>
   </div>
 
-  <div class="card backup-bar">
-    <div class="backup-left">
-      <div class="card-icon">⇅</div>
-      <div>
-        <b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Backup &amp; restore</b>
-        <div class="card-hint" style="margin:2px 0 0;">Autosave is tied to this exact file on your computer — a newly downloaded copy (even with the same name) starts empty. Whenever you get an updated version of this app, download a backup here first, then use Restore on the new version to carry your data across.</div>
-      </div>
-    </div>
-    <div class="inline-row" style="flex:none;">
-      <button class="btn-small" id="backupBtn">⬇ Download backup</button>
-      <button class="btn-small ghost" id="restoreBtn">⬆ Restore from file</button>
-      <button class="btn-small danger" id="wipeBtn">🗑 Wipe all data</button>
-      <input type="file" id="restoreFile" accept=".json" style="display:none;">
-    </div>
-  </div>
-  <div class="status-text" id="backupStatus" style="margin:-8px 0 2px;"></div>
-  <div class="status-text" id="autosaveStatus" style="margin:0 0 16px; color:var(--text-faint);"></div>
-
   <div class="section-title-row"><h2><span class="num">01</span>Add a holding</h2></div>
   <div class="card">
     <div class="tabs">
@@ -274,6 +256,7 @@ tbody tr:hover{background:var(--surface-2);}
     <div class="tabpanel active" data-panel="single">
       <p class="card-hint">Fill this in and click Add — it lands in the ledger below immediately. The form clears so you can keep entering the next one. Invested and current value are calculated automatically from shares × price.</p>
       <div class="holdform-grid">
+        <div class="f"><label>Portfolio</label><select id="hfPortfolio" class="sel"></select></div>
         <div class="f"><label>Symbol</label><input id="hfSymbol" placeholder="e.g. INFY"></div>
         <div class="f"><label>Broker</label><select id="hfBroker" class="sel"></select></div>
         <div class="f"><label>Recommended by</label><select id="hfReco" class="sel"></select></div>
@@ -289,7 +272,7 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
 
     <div class="tabpanel" data-panel="paste">
-      <p class="card-hint">Two formats work here. A flat table — one row per lot with a <code>Symbol</code> column, plus whichever of <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Expenses</code>, <code>Dividend</code>, <code>Current price</code> you have. Or a per-stock trade history — the stock symbol on its own line, followed by a <code>Date / Type / Quantity / Price</code> table, repeated for as many stocks as you like in one paste; only "buy" rows become holdings (log "sell" rows in the Transactions section instead).</p>
+      <p class="card-hint">Two formats work here. A flat table — one row per lot with a <code>Symbol</code> column, plus whichever of <code>Portfolio</code>, <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Expenses</code>, <code>Dividend</code>, <code>Current price</code> you have (unlabeled rows land in the first portfolio). Or a per-stock trade history — the stock symbol on its own line, followed by a <code>Date / Type / Quantity / Price</code> table, repeated for as many stocks as you like in one paste; only "buy" rows become holdings (log "sell" rows in the Transactions section instead).</p>
       <textarea class="pastearea" id="hpArea" placeholder="Paste your holdings table here, header row included..."></textarea>
       <button class="btn-small" id="hpParseBtn" style="margin-top:10px;">+ Add pasted rows to ledger</button>
       <div class="status-text" id="hpStatus"></div>
@@ -312,6 +295,7 @@ tbody tr:hover{background:var(--surface-2);}
           <thead>
             <tr>
               <th style="width:30px;"></th>
+              <th class="left">Portfolio</th>
               <th class="left">Symbol</th>
               <th class="left">Broker</th><th class="left">Recommended by</th><th class="left">Trade date</th>
               <th>Shares</th><th>Invested price</th><th>Expenses</th><th>Invested</th>
@@ -344,6 +328,41 @@ tbody tr:hover{background:var(--surface-2);}
       </div>
     </div>
   </div>
+
+  <div class="card backup-bar">
+    <div class="backup-left">
+      <div class="card-icon">⇅</div>
+      <div>
+        <b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Backup &amp; restore</b>
+        <div class="card-hint" style="margin:2px 0 0;">Autosave is tied to this exact file on your computer — a newly downloaded copy (even with the same name) starts empty. Whenever you get an updated version of this app, download a backup here first, then use Restore on the new version to carry your data across.</div>
+      </div>
+    </div>
+    <div class="inline-row" style="flex:none;">
+      <button class="btn-small" id="backupBtn">⬇ Download backup</button>
+      <button class="btn-small ghost" id="restoreBtn">⬆ Restore from file</button>
+      <button class="btn-small danger" id="wipeBtn">🗑 Wipe all data</button>
+      <input type="file" id="restoreFile" accept=".json" style="display:none;">
+    </div>
+  </div>
+  <div class="status-text" id="backupStatus" style="margin:-8px 0 2px;"></div>
+  <div class="status-text" id="autosaveStatus" style="margin:0 0 16px; color:var(--text-faint);"></div>
+
+  <div class="card backup-bar" id="portfolioBar">
+    <div class="backup-left">
+      <div class="card-icon">◧</div>
+      <div>
+        <b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Portfolios</b>
+        <div class="card-hint" style="margin:2px 0 8px;">Keep everyone's holdings in one place, tagged by whose portfolio they belong to. Pick a portfolio when adding a holding, and use the filter below the results table to view one person's numbers — or leave it on "All" for the combined total.</div>
+        <div class="inline-row" id="portfolioChips" style="margin-bottom:0;"></div>
+      </div>
+    </div>
+    <div class="inline-row" style="flex:none;">
+      <input class="text-input" id="newPortfolioInput" placeholder="e.g. Spouse" style="width:150px;">
+      <button class="btn-small" id="addPortfolioBtn">+ Add portfolio</button>
+    </div>
+  </div>
+  <div class="status-text" id="portfolioStatus" style="margin:-8px 0 16px;"></div>
+
 
   <div class="section-title-row"><h2><span class="num">03</span>Refresh current price from Google Sheets</h2></div>
   <div class="card">
@@ -378,13 +397,14 @@ tbody tr:hover{background:var(--surface-2);}
     <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
   </div>
 
+  <div class="filterbar" id="filterBarPortfolio"></div>
   <div class="filterbar" id="filterBarBroker"></div>
   <div class="filterbar" id="filterBarReco"></div>
 
   <div class="tablewrap" id="tableWrap">
     <div class="tscroll">
     <table class="resultstable">
-      <thead><tr><th class="left">Instrument</th><th class="left">Broker</th><th class="left">Recommended by</th><th>First trade</th><th>Shares</th><th>Price</th><th>Invested</th><th>Current val</th><th>P&amp;L</th><th>Abs. return</th><th>XIRR</th></tr></thead>
+      <thead><tr><th class="left">Portfolio</th><th class="left">Instrument</th><th class="left">Broker</th><th class="left">Recommended by</th><th>First trade</th><th>Shares</th><th>Price</th><th>Invested</th><th>Current val</th><th>P&amp;L</th><th>Abs. return</th><th>XIRR</th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     </div>
@@ -395,6 +415,7 @@ tbody tr:hover{background:var(--surface-2);}
     <p class="card-hint">Log a buy or sell by hand — sells are matched FIFO against earlier buys of the same instrument to work out realized profit. This is independent of the holdings table above.</p>
     <div class="quickadd-grid quickadd-grid-tx">
       <div class="f"><label>Instrument</label><input id="txInstrument" placeholder="e.g. INFY" list="txInstrumentList"><datalist id="txInstrumentList"></datalist></div>
+      <div class="f"><label>Portfolio</label><select id="txPortfolio" class="sel"></select></div>
       <div class="f"><label>Broker</label><select id="txBroker" class="sel"></select></div>
       <div class="f"><label>Recommended by</label><select id="txReco" class="sel"></select></div>
       <div class="f"><label>Type</label><select id="txType" class="sel"><option value="buy">Buy</option><option value="sell">Sell</option></select></div>
@@ -412,9 +433,11 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
   </div>
 
+  <div class="filterbar" id="recoPortfolioBar"></div>
+
   <div class="card" id="realizedCard" style="display:none;">
     <div class="card-head"><div class="card-icon">◆</div><b>Realized profit &amp; P&amp;L by recommendation</b></div>
-    <p class="card-hint">Every sell is matched FIFO against the earliest unsold buys of that instrument. Switch between the recommender summary and the individual sales behind it.</p>
+    <p class="card-hint">Every sell is matched FIFO against the earliest unsold buys of that instrument, within whichever portfolio it belongs to. Switch between the recommender summary and the individual sales behind it.</p>
     <div class="stats-row show stats-row-3col">
       <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
       <div class="stat"><div class="k">Winning sells</div><div class="v gain" id="realWins">—</div></div>
@@ -469,13 +492,23 @@ tbody tr:hover{background:var(--surface-2);}
   const BROKER_COLORS = {Z:'#5B5BF6', AO:'#0E9F6E', C:'#C77D11'};
   const RECO_OPTIONS = ['Stockifi','D','RD','Anand','J','Vibhor','Choice','Others','Multibagger'];
   const RECO_COLORS = ['#A855F7','#EC4899','#0EA5C4','#65A30D','#F59E0B','#EF4444','#14B8A6','#6366F1','#D946EF'];
+  const PORTFOLIO_COLOR_PALETTE = ['#5B5BF6','#0E9F6E','#C77D11','#EC4899','#0EA5C4','#65A30D','#A855F7','#EF4444'];
   function brokerColor(code){ return BROKER_COLORS[code] || '#888'; }
   function recoColor(name){ const i = RECO_OPTIONS.indexOf(name); return i>=0 ? RECO_COLORS[i % RECO_COLORS.length] : '#888'; }
+  function portfolioColor(name){
+    let h = 0;
+    const s = String(name||'');
+    for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) >>> 0;
+    return PORTFOLIO_COLOR_PALETTE[h % PORTFOLIO_COLOR_PALETTE.length];
+  }
 
   const state = {
-    holdRows: [],       // [{id, symbol, exchange, stockName, broker, recommendedBy, tradeDate, qty, investedPrice, invested, currentPrice, curVal, todaysChange}]
+    holdRows: [],       // [{id, portfolio, symbol, broker, recommendedBy, tradeDate, qty, investedPrice, invested, currentPrice, curVal, dividend, expenses}]
     holdIdSeq: 1,
     lastResults: null,
+    portfolios: ['My Portfolio'],
+    activePortfolios: null,
+    recoPortfolioFilter: null,
     activeBrokers: null,
     activeRecos: null,
     manualTxns: [],
@@ -495,6 +528,7 @@ tbody tr:hover{background:var(--surface-2);}
     try{
       const payload = {
         app: 'holdings-xirr-autosave', version: 1, savedAt: new Date().toISOString(),
+        portfolios: state.portfolios,
         holdRows: state.holdRows,
         manualTxns: state.manualTxns.map(t=>({...t, date: t.date.toISOString()}))
       };
@@ -519,11 +553,12 @@ tbody tr:hover{background:var(--surface-2);}
       if(!raw) return false;
       const data = JSON.parse(raw);
       if(!data || !Array.isArray(data.holdRows)) return false;
-      state.holdRows = data.holdRows.map(r=>({...r}));
+      if(Array.isArray(data.portfolios) && data.portfolios.length) state.portfolios = data.portfolios;
+      state.holdRows = data.holdRows.map(r=>({...r, portfolio: (r.portfolio && state.portfolios.includes(r.portfolio)) ? r.portfolio : state.portfolios[0]}));
       let maxH = 0;
       state.holdRows.forEach(r=>{ const m = /^h(\d+)$/.exec(r.id); if(m) maxH = Math.max(maxH, +m[1]); });
       state.holdIdSeq = Math.max(state.holdIdSeq, maxH+1);
-      state.manualTxns = (data.manualTxns||[]).map(t=>({...t, date: new Date(t.date)}));
+      state.manualTxns = (data.manualTxns||[]).map(t=>({...t, portfolio: (t.portfolio && state.portfolios.includes(t.portfolio)) ? t.portfolio : state.portfolios[0], date: new Date(t.date)}));
       let maxT = 0;
       state.manualTxns.forEach(t=>{ const m = /^t(\d+)$/.exec(t.id); if(m) maxT = Math.max(maxT, +m[1]); });
       state.txnIdSeq = Math.max(state.txnIdSeq, maxT+1);
@@ -549,6 +584,67 @@ tbody tr:hover{background:var(--surface-2);}
   fillSelect($('hfBroker'), BROKER_CODES, false);
   fillSelect($('hfReco'), RECO_OPTIONS, true);
   $('hfDate').value = new Date().toISOString().slice(0,10);
+
+  // ---------- portfolios (Me / family member / ... ; filter to one, or leave on
+  // "All" for the combined total — same pattern as the broker/recommendation filters) ----------
+  function refreshPortfolioSelects(){
+    fillSelect($('hfPortfolio'), state.portfolios, false);
+    fillSelect($('txPortfolio'), state.portfolios, false);
+    renderPortfolioChips();
+    renderRecoPortfolioBar();
+  }
+  function renderPortfolioChips(){
+    const box = $('portfolioChips');
+    box.innerHTML = state.portfolios.map(p=>{
+      const rm = state.portfolios.length>1
+        ? `<button class="rmPortfolio" data-p="${escapeAttr(p)}" title="Remove portfolio" style="border:none;background:none;color:inherit;opacity:.6;cursor:pointer;margin-left:5px;padding:0;font-size:11px;line-height:1;">✕</button>`
+        : '';
+      return `<span class="pill"><span class="sw" style="background:${portfolioColor(p)}"></span>${escapeAttr(p)}${rm}</span>`;
+    }).join('');
+    box.querySelectorAll('.rmPortfolio').forEach(btn=>{
+      btn.addEventListener('click', ()=> removePortfolio(btn.dataset.p));
+    });
+  }
+  function addPortfolio(name){
+    name = name.trim();
+    if(!name){ $('portfolioStatus').textContent = 'Enter a name first.'; return; }
+    if(state.portfolios.includes(name)){ $('portfolioStatus').textContent = `"${name}" already exists.`; return; }
+    state.portfolios.push(name);
+    refreshPortfolioSelects();
+    $('portfolioStatus').textContent = `Added "${name}". Pick it from the Portfolio field when adding a holding.`;
+    scheduleAutosave();
+  }
+  function removePortfolio(name){
+    if(state.portfolios.length<=1){ $('portfolioStatus').textContent = 'You need at least one portfolio.'; return; }
+    const inUseHold = state.holdRows.filter(r=>r.portfolio===name).length;
+    const inUseTxn = state.manualTxns.filter(t=>t.portfolio===name).length;
+    const fallback = state.portfolios.find(p=>p!==name);
+    if(inUseHold>0 || inUseTxn>0){
+      const ok = confirm(`"${name}" is used by ${inUseHold} holding row(s) and ${inUseTxn} transaction(s). Removing it will move those to "${fallback}". Continue?`);
+      if(!ok) return;
+    }
+    state.holdRows.forEach(r=>{ if(r.portfolio===name) r.portfolio = fallback; });
+    state.manualTxns.forEach(t=>{ if(t.portfolio===name) t.portfolio = fallback; });
+    state.portfolios = state.portfolios.filter(p=>p!==name);
+    if(state.activePortfolios){ state.activePortfolios.delete(name); if(state.activePortfolios.size===0) state.activePortfolios = null; }
+    if(state.recoPortfolioFilter===name) state.recoPortfolioFilter = null;
+    refreshPortfolioSelects();
+    renderHoldTable();
+    renderTxnTable();
+    renderRealizedReport();
+    $('portfolioStatus').textContent = `Removed "${name}".`;
+    scheduleAutosave();
+  }
+  $('addPortfolioBtn').addEventListener('click', ()=>{
+    const name = $('newPortfolioInput').value.trim();
+    const before = state.portfolios.length;
+    addPortfolio(name);
+    if(state.portfolios.length > before) $('newPortfolioInput').value = '';
+  });
+  $('newPortfolioInput').addEventListener('keydown', (e)=>{
+    if(e.key==='Enter'){ e.preventDefault(); addPortfolio($('newPortfolioInput').value); $('newPortfolioInput').value=''; }
+  });
+  refreshPortfolioSelects();
 
   // ---------- theme ----------
   $('btnLight').addEventListener('click', ()=> setTheme('light'));
@@ -630,6 +726,7 @@ tbody tr:hover{background:var(--surface-2);}
     }
     state.holdRows.push({
       id:'h'+(state.holdIdSeq++),
+      portfolio: $('hfPortfolio').value || state.portfolios[0],
       symbol,
       broker:$('hfBroker').value, recommendedBy:$('hfReco').value, tradeDate:$('hfDate').value,
       qty, investedPrice, expenses: (expenses!=null && !isNaN(expenses)) ? expenses : null,
@@ -658,6 +755,7 @@ tbody tr:hover{background:var(--surface-2);}
       const checked = state.selectedHoldIds.has(r.id) ? 'checked' : '';
       return `<tr data-id="${r.id}">
         <td style="text-align:center;"><input type="checkbox" class="rowSelect" data-id="${r.id}" ${checked}></td>
+        <td class="left"><select class="hIn" data-f="portfolio">${state.portfolios.map(p=>`<option value="${escapeAttr(p)}" ${p===r.portfolio?'selected':''}>${escapeAttr(p)}</option>`).join('')}</select></td>
         <td class="left sym-cell"><input class="hIn" data-f="symbol" value="${escapeAttr(r.symbol)}" placeholder="e.g. INFY"></td>
         <td class="left"><select class="hIn" data-f="broker">${BROKER_CODES.map(b=>`<option value="${b}" ${b===r.broker?'selected':''}>${b}</option>`).join('')}</select></td>
         <td class="left"><select class="hIn" data-f="recommendedBy"><option value="">—</option>${RECO_OPTIONS.map(o=>`<option value="${o}" ${o===r.recommendedBy?'selected':''}>${o}</option>`).join('')}</select></td>
@@ -682,7 +780,7 @@ tbody tr:hover{background:var(--surface-2);}
         inp.addEventListener('input', ()=>{
           const row = state.holdRows.find(x=>x.id===id);
           const f = inp.dataset.f;
-          if(f==='symbol' || f==='broker' || f==='recommendedBy' || f==='tradeDate'){
+          if(f==='symbol' || f==='broker' || f==='recommendedBy' || f==='tradeDate' || f==='portfolio'){
             row[f] = inp.value;
           } else {
             row[f] = inp.value === '' ? null : parseFloat(inp.value);
@@ -768,6 +866,7 @@ tbody tr:hover{background:var(--surface-2);}
     const findExact = (cands)=>{ const f = norm.find(x=> cands.includes(x.n)); return f ? f.h : ''; };
     const findContains = (cands, exclude)=>{ const f = norm.find(x=> cands.some(c=>x.n.includes(c)) && !(exclude||[]).some(e=>x.n.includes(e))); return f ? f.h : ''; };
     return {
+      portfolio: findExact(['portfolio']) || findContains(['portfolio'], []),
       symbol: findExact(['symbol','ticker','scrip']) || findContains(['symbol','instrument','scrip','ticker'], []),
       broker: findExact(['broker']) || findContains(['broker'], []),
       recommendedBy: findExact(['recommendedby','recommended','reco']) || findContains(['recommend','reco'], []),
@@ -828,6 +927,7 @@ tbody tr:hover{background:var(--surface-2);}
     const norm = headers.map(h=>({h, n: normHeader(h)}));
     const findContains = (cands)=>{ const f = norm.find(x=> cands.some(c=>x.n.includes(c))); return f ? f.h : ''; };
     return {
+      portfolio: findContains(['portfolio']),
       symbol: findContains(['symbol']),
       tradeDate: findContains(['date']),
       type: findContains(['type']),
@@ -875,8 +975,10 @@ tbody tr:hover{background:var(--surface-2);}
         const price = cm.price ? num(r[cm.price]) : NaN;
         if(!symbol || isNaN(qty) || qty<=0 || isNaN(price) || price<=0){ skipped++; return; }
         if(cm.type && isSellType(r[cm.type])){ skippedSells++; return; }
+        const rawPortfolio = cm.portfolio ? String(r[cm.portfolio]||'').trim() : '';
         state.holdRows.push({
           id: 'h'+(state.holdIdSeq++),
+          portfolio: state.portfolios.includes(rawPortfolio) ? rawPortfolio : state.portfolios[0],
           symbol,
           broker: 'Z',
           recommendedBy: '',
@@ -897,8 +999,10 @@ tbody tr:hover{background:var(--surface-2);}
         const dividendVal = cm.dividend ? num(r[cm.dividend]) : NaN;
         const rawBroker = cm.broker ? String(r[cm.broker]||'').trim().toUpperCase() : '';
         const rawReco = cm.recommendedBy ? String(r[cm.recommendedBy]||'').trim() : '';
+        const rawPortfolio = cm.portfolio ? String(r[cm.portfolio]||'').trim() : '';
         state.holdRows.push({
           id: 'h'+(state.holdIdSeq++),
+          portfolio: state.portfolios.includes(rawPortfolio) ? rawPortfolio : state.portfolios[0],
           symbol,
           broker: BROKER_CODES.includes(rawBroker) ? rawBroker : 'Z',
           recommendedBy: RECO_OPTIONS.includes(rawReco) ? rawReco : '',
@@ -935,7 +1039,7 @@ tbody tr:hover{background:var(--surface-2);}
       const investedAmt = computeInvested(r);
       const curValAmt = computeCurVal(r);
       const key = symKey(symbol);
-      if(!merged[key]) merged[key] = {symbol, qty:0, invested:0, curVal:0, curValForXirr:0, dividend:0, brokers:new Set(), recos:new Set(), cfs:[]};
+      if(!merged[key]) merged[key] = {symbol, qty:0, invested:0, curVal:0, curValForXirr:0, dividend:0, brokers:new Set(), recos:new Set(), portfolios:new Set(), cfs:[]};
       const m = merged[key];
       m.symbol = symbol;
       m.qty += qty;
@@ -944,6 +1048,7 @@ tbody tr:hover{background:var(--surface-2);}
       m.dividend += (r.dividend||0);
       if(r.broker) m.brokers.add(r.broker);
       if(r.recommendedBy) m.recos.add(r.recommendedBy);
+      if(r.portfolio) m.portfolios.add(r.portfolio);
       if(r.tradeDate && investedAmt!=null && investedAmt>0){
         m.cfs.push({date: new Date(r.tradeDate+'T00:00:00'), amount: -investedAmt});
         // Only count this lot's current value toward the XIRR payout too — otherwise an
@@ -965,7 +1070,7 @@ tbody tr:hover{background:var(--surface-2);}
       }
       results.push({
         key:k, instrument:m.symbol, qty:m.qty, invested:m.invested, curVal:m.curVal, pnl:m.curVal-m.invested+m.dividend,
-        brokers:Array.from(m.brokers).sort(), recos:Array.from(m.recos).sort(),
+        brokers:Array.from(m.brokers).sort(), recos:Array.from(m.recos).sort(), portfolios:Array.from(m.portfolios).sort(),
         firstDate, xirr:ixirr, txnCount:m.cfs.length, cfs:m.cfs, curValForXirr:m.curValForXirr
       });
     });
@@ -974,13 +1079,16 @@ tbody tr:hover{background:var(--surface-2);}
 
   function runCalculation(){
     const valDate = new Date($('valDate').value + 'T00:00:00');
+    const portfoliosAll = Array.from(new Set(state.holdRows.map(r=>r.portfolio).filter(Boolean))).sort();
     const brokersAll = Array.from(new Set(state.holdRows.map(r=>r.broker).filter(Boolean))).sort();
     const recosAll = Array.from(new Set(state.holdRows.map(r=>r.recommendedBy).filter(Boolean))).sort();
 
     state.lastResults = {valDate};
+    state.activePortfolios = null;
     state.activeBrokers = null;
     state.activeRecos = null;
 
+    renderFilterBar($('filterBarPortfolio'), portfoliosAll, 'portfolio');
     renderFilterBar($('filterBarBroker'), brokersAll, 'broker');
     renderFilterBar($('filterBarReco'), recosAll, 'reco');
     applyFilterAndRender();
@@ -995,26 +1103,29 @@ tbody tr:hover{background:var(--surface-2);}
 
   function renderFilterBar(bar, items, kind){
     if(items.length===0){ bar.classList.remove('show'); bar.innerHTML=''; return; }
-    const label = kind==='broker' ? 'Filter by broker:' : 'Filter by recommendation:';
+    const label = kind==='broker' ? 'Filter by broker:' : kind==='reco' ? 'Filter by recommendation:' : 'Filter by portfolio:';
+    const colorFn = kind==='broker' ? brokerColor : kind==='reco' ? recoColor : portfolioColor;
+    const stateKey = kind==='broker' ? 'activeBrokers' : kind==='reco' ? 'activeRecos' : 'activePortfolios';
     let html = `<span class="flabel">${label}</span><button class="chip allchip active" data-v="__all__">All</button>`;
     items.forEach(v=>{
-      const sw = kind==='broker' ? brokerColor(v) : recoColor(v);
-      html += `<button class="chip" data-v="${v}"><span class="swatch" style="background:${sw}"></span>${v}</button>`;
+      html += `<button class="chip" data-v="${v}"><span class="swatch" style="background:${colorFn(v)}"></span>${v}</button>`;
     });
     bar.innerHTML = html;
     bar.classList.add('show');
     bar.querySelectorAll('.chip').forEach(chip=>{
       chip.addEventListener('click', ()=>{
         const v = chip.dataset.v;
-        const key = kind==='broker' ? 'activeBrokers' : 'activeRecos';
+        const key = stateKey;
         if(v === '__all__'){
           state[key] = null;
-        } else if(state[key] === null){
-          // Nothing filtered yet — clicking a chip selects just that one.
-          state[key] = new Set([v]);
+        } else if(state[key] !== null && state[key].size===1 && state[key].has(v)){
+          // Clicking the only currently-selected chip again — toggle back to "All".
+          state[key] = null;
         } else {
-          if(state[key].has(v)) state[key].delete(v); else state[key].add(v);
-          if(state[key].size === 0 || state[key].size === items.length) state[key] = null;
+          // Select just this one, replacing whatever was selected before —
+          // switching between "just Me" and "just Spouse" should do exactly
+          // that, not silently combine them.
+          state[key] = new Set([v]);
         }
         renderFilterChipStates(bar, items, key);
         applyFilterAndRender();
@@ -1032,11 +1143,12 @@ tbody tr:hover{background:var(--surface-2);}
 
   function applyFilterAndRender(){
     const {valDate} = state.lastResults;
-    const ab = state.activeBrokers, ar = state.activeRecos;
+    const ap = state.activePortfolios, ab = state.activeBrokers, ar = state.activeRecos;
     const filteredRows = state.holdRows.filter(r=>{
+      const pOk = ap===null || (r.portfolio && ap.has(r.portfolio));
       const bOk = ab===null || (r.broker && ab.has(r.broker));
       const rOk = ar===null || !r.recommendedBy || ar.has(r.recommendedBy);
-      return bOk && rOk;
+      return pOk && bOk && rOk;
     });
 
     const {results, warnings} = mergeHoldRows(filteredRows, valDate);
@@ -1085,6 +1197,7 @@ tbody tr:hover{background:var(--surface-2);}
       if(r.txnCount===0) flagHtml = `<span class="flag bad">no trade date</span>`;
       const price = r.qty>0 ? r.curVal/r.qty : NaN;
       return `<tr>
+        <td class="left">${chipsHtml(r.portfolios, portfolioColor)}</td>
         <td class="left">${r.instrument}${flagHtml}</td>
         <td class="left">${chipsHtml(r.brokers, brokerColor)}</td>
         <td class="left">${chipsHtml(r.recos, recoColor)}</td>
@@ -1265,7 +1378,7 @@ tbody tr:hover{background:var(--surface-2);}
       $('txStatus').textContent = 'Fill in instrument, date, qty and price.';
       return;
     }
-    state.manualTxns.push({id:'t'+(state.txnIdSeq++), instrument, broker, recommendedBy:$('txReco').value, type, date:new Date(dateVal+'T00:00:00'), qty, price});
+    state.manualTxns.push({id:'t'+(state.txnIdSeq++), portfolio: $('txPortfolio').value || state.portfolios[0], instrument, broker, recommendedBy:$('txReco').value, type, date:new Date(dateVal+'T00:00:00'), qty, price});
     $('txInstrument').value=''; $('txQty').value=''; $('txPrice').value='';
     $('txStatus').textContent = 'Transaction logged.';
     renderTxnTable();
@@ -1298,15 +1411,19 @@ tbody tr:hover{background:var(--surface-2);}
   }
 
   function computeRealizedReport(){
-    const bySym = {};
+    const byGroup = {};
     state.manualTxns.forEach(t=>{
-      const k = symKey(t.instrument);
-      if(!bySym[k]) bySym[k]=[];
-      bySym[k].push(t);
+      if(state.recoPortfolioFilter!==null && t.portfolio!==state.recoPortfolioFilter) return;
+      // Group by portfolio + symbol, not just symbol — a sell in one portfolio
+      // must never match FIFO against buy lots sitting in a different portfolio,
+      // even if both happen to hold the same stock.
+      const k = (t.portfolio||'') + '|||' + symKey(t.instrument);
+      if(!byGroup[k]) byGroup[k]=[];
+      byGroup[k].push(t);
     });
     const report = [];
-    Object.keys(bySym).forEach(k=>{
-      const list = bySym[k].slice().sort((a,b)=>a.date-b.date);
+    Object.keys(byGroup).forEach(k=>{
+      const list = byGroup[k].slice().sort((a,b)=>a.date-b.date);
       const buyQueue = [];
       list.forEach(t=>{
         if(t.type==='buy'){
@@ -1326,14 +1443,34 @@ tbody tr:hover{background:var(--surface-2);}
           const realized = proceeds - costBasis;
           const avgBuyPrice = matchedQty>0 ? costBasis/matchedQty : null;
           const returnPct = costBasis>0 ? (realized/costBasis)*100 : null;
-          report.push({instrument:t.instrument, recommendedBy:t.recommendedBy||'', sellDate:t.date, qtySold:t.qty, matchedQty, unmatchedQty:remaining, sellPrice:t.price, avgBuyPrice, realized, returnPct});
+          report.push({instrument:t.instrument, portfolio:t.portfolio||'', recommendedBy:t.recommendedBy||'', sellDate:t.date, qtySold:t.qty, matchedQty, unmatchedQty:remaining, sellPrice:t.price, avgBuyPrice, realized, returnPct});
         }
       });
     });
     return report.sort((a,b)=> b.sellDate-a.sellDate);
   }
 
+  function renderRecoPortfolioBar(){
+    const bar = $('recoPortfolioBar');
+    if(state.portfolios.length<=1){ bar.classList.remove('show'); bar.innerHTML=''; return; }
+    let html = `<span class="flabel">Portfolio:</span><button class="chip allchip ${state.recoPortfolioFilter===null?'active':''}" data-p="__all__">Combined</button>`;
+    state.portfolios.forEach(p=>{
+      html += `<button class="chip ${state.recoPortfolioFilter===p?'active':''}" data-p="${escapeAttr(p)}"><span class="swatch" style="background:${portfolioColor(p)}"></span>${escapeAttr(p)}</button>`;
+    });
+    bar.innerHTML = html;
+    bar.classList.add('show');
+    bar.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        const p = chip.dataset.p;
+        state.recoPortfolioFilter = (p==='__all__') ? null : p;
+        renderRecoPortfolioBar();
+        renderRealizedReport();
+      });
+    });
+  }
+
   function renderRealizedReport(){
+    renderRecoPortfolioBar();
     const report = computeRealizedReport();
     const recoRows = computeRecoSummary();
     const card = $('realizedCard');
@@ -1365,6 +1502,7 @@ tbody tr:hover{background:var(--surface-2);}
     const cfs = [];
     let curValSum = 0;
     state.holdRows.forEach(r=>{
+      if(state.recoPortfolioFilter!==null && r.portfolio!==state.recoPortfolioFilter) return;
       if(!holdPredicate(r)) return;
       const investedAmt = computeInvested(r);
       const curValAmt = computeCurVal(r);
@@ -1374,6 +1512,7 @@ tbody tr:hover{background:var(--surface-2);}
       if(curValAmt!=null) curValSum += curValAmt;
     });
     state.manualTxns.forEach(t=>{
+      if(state.recoPortfolioFilter!==null && t.portfolio!==state.recoPortfolioFilter) return;
       if(!txnPredicate(t)) return;
       const amt = t.qty*t.price;
       cfs.push({date: t.date, amount: t.type==='buy' ? -amt : amt});
@@ -1387,6 +1526,7 @@ tbody tr:hover{background:var(--surface-2);}
     const valDate = new Date(($('valDate').value || new Date().toISOString().slice(0,10)) + 'T00:00:00');
     const unreal = {};
     state.holdRows.forEach(r=>{
+      if(state.recoPortfolioFilter!==null && r.portfolio!==state.recoPortfolioFilter) return;
       const key = r.recommendedBy || 'Unspecified';
       const invested = computeInvested(r);
       const curVal = computeCurVal(r);
@@ -1464,6 +1604,7 @@ tbody tr:hover{background:var(--surface-2);}
     const groups = {};
     function keyOf(reco, symbol){ return reco + '|||' + symKey(symbol); }
     state.holdRows.forEach(r=>{
+      if(state.recoPortfolioFilter!==null && r.portfolio!==state.recoPortfolioFilter) return;
       const symbol = String(r.symbol||'').trim();
       if(!symbol) return;
       const qty = r.qty;
@@ -1638,8 +1779,11 @@ tbody tr:hover{background:var(--surface-2);}
         const data = JSON.parse(ev.target.result);
         if(!data || !Array.isArray(data.holdRows)) throw new Error("That file doesn't look like a backup from this app.");
 
+        if(Array.isArray(data.portfolios) && data.portfolios.length) state.portfolios = data.portfolios;
+
         state.holdRows = data.holdRows.map(r=>({
           id: r.id || ('h'+(state.holdIdSeq++)),
+          portfolio: (r.portfolio && state.portfolios.includes(r.portfolio)) ? r.portfolio : state.portfolios[0],
           symbol: r.symbol||'',
           broker: r.broker||'Z', recommendedBy: r.recommendedBy||'', tradeDate: r.tradeDate||'',
           qty: r.qty!=null?r.qty:null, investedPrice: r.investedPrice!=null?r.investedPrice:null,
@@ -1650,11 +1794,12 @@ tbody tr:hover{background:var(--surface-2);}
         state.holdRows.forEach(r=>{ const m = /^h(\d+)$/.exec(r.id); if(m) maxH = Math.max(maxH, +m[1]); });
         state.holdIdSeq = Math.max(state.holdIdSeq, maxH+1);
 
-        state.manualTxns = (data.manualTxns||[]).map(t=>({...t, date: new Date(t.date)}));
+        state.manualTxns = (data.manualTxns||[]).map(t=>({...t, portfolio: (t.portfolio && state.portfolios.includes(t.portfolio)) ? t.portfolio : state.portfolios[0], date: new Date(t.date)}));
         let maxT = 0;
         state.manualTxns.forEach(t=>{ const m = /^t(\d+)$/.exec(t.id); if(m) maxT = Math.max(maxT, +m[1]); });
         state.txnIdSeq = Math.max(state.txnIdSeq, maxT+1);
 
+        refreshPortfolioSelects();
         renderHoldTable();
         renderTxnTable();
         renderRealizedReport();
@@ -1679,6 +1824,8 @@ tbody tr:hover{background:var(--surface-2);}
     state.manualTxns = [];
     state.hiddenRecos = new Set();
     state.lastResults = null;
+    state.activePortfolios = null;
+    state.recoPortfolioFilter = null;
     state.activeBrokers = null;
     state.activeRecos = null;
 
@@ -1688,6 +1835,7 @@ tbody tr:hover{background:var(--surface-2);}
     try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){ /* ignore */ }
 
     $('statsRow').classList.remove('show');
+    $('filterBarPortfolio').classList.remove('show'); $('filterBarPortfolio').innerHTML = '';
     $('filterBarBroker').classList.remove('show'); $('filterBarBroker').innerHTML = '';
     $('filterBarReco').classList.remove('show'); $('filterBarReco').innerHTML = '';
     $('tableWrap').classList.remove('show'); $('tbody').innerHTML = '';
@@ -1710,6 +1858,11 @@ tbody tr:hover{background:var(--surface-2);}
     const keys = new Set(validRows.map(r=> symKey(r.symbol)));
     if(keys.size > 1){
       $('holdStatus').textContent = 'Selected lots are different stocks — select lots of the same stock to sell them together.';
+      return;
+    }
+    const portfolios = new Set(validRows.map(r=> r.portfolio||''));
+    if(portfolios.size > 1){
+      $('holdStatus').textContent = 'Selected lots belong to different portfolios — select lots from the same portfolio to sell them together.';
       return;
     }
     sellContext = validRows.map(r=>r.id);
@@ -1765,7 +1918,7 @@ tbody tr:hover{background:var(--surface-2);}
       const take = Math.min(row.qty, remainingToSell);
       if(take <= 1e-9) continue;
       if(row.investedPrice!=null){
-        state.manualTxns.push({id:'t'+(state.txnIdSeq++), instrument:row.symbol, broker:row.broker, recommendedBy:row.recommendedBy||'', type:'buy',
+        state.manualTxns.push({id:'t'+(state.txnIdSeq++), portfolio:row.portfolio, instrument:row.symbol, broker:row.broker, recommendedBy:row.recommendedBy||'', type:'buy',
           date: new Date((row.tradeDate || sellDate)+'T00:00:00'), qty:take, price:row.investedPrice});
         totalCostBasis += take*row.investedPrice;
         totalMatched += take;
@@ -1779,7 +1932,7 @@ tbody tr:hover{background:var(--surface-2);}
       }
       remainingToSell -= take;
     }
-    state.manualTxns.push({id:'t'+(state.txnIdSeq++), instrument:ordered[0].symbol, broker:ordered[0].broker, recommendedBy:ordered[0].recommendedBy||'', type:'sell',
+    state.manualTxns.push({id:'t'+(state.txnIdSeq++), portfolio:ordered[0].portfolio, instrument:ordered[0].symbol, broker:ordered[0].broker, recommendedBy:ordered[0].recommendedBy||'', type:'sell',
       date: new Date(sellDate+'T00:00:00'), qty:qtySold, price:soldPrice});
 
     if(emptiedIds.length){
