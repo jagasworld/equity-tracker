@@ -329,6 +329,34 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
   </div>
 
+  <div class="card controls-card">
+    <div class="field"><label>Valuation date</label><input type="date" id="valDate"></div>
+    <button class="calc-btn" id="calcBtn">Calculate returns →</button>
+    <div style="flex:1;"></div>
+  </div>
+  <div class="warnbox" id="warnBox" style="display:none;"></div>
+
+  <div class="stats-row" id="statsRow">
+    <div class="stat"><div class="k">Invested</div><div class="v" id="sumInvested">—</div></div>
+    <div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
+    <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
+    <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
+    <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
+  </div>
+
+  <div class="filterbar" id="filterBarPortfolio"></div>
+  <div class="filterbar" id="filterBarBroker"></div>
+  <div class="filterbar" id="filterBarReco"></div>
+
+  <div class="tablewrap" id="tableWrap">
+    <div class="tscroll">
+    <table class="resultstable">
+      <thead><tr><th class="left">Portfolio</th><th class="left">Instrument</th><th class="left">Broker</th><th class="left">Recommended by</th><th>First trade</th><th>Shares</th><th>Price</th><th>Invested</th><th>Current val</th><th>P&amp;L</th><th>Abs. return</th><th>XIRR</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div>
+  </div>
+
   <div class="card backup-bar">
     <div class="backup-left">
       <div class="card-icon">⇅</div>
@@ -382,33 +410,6 @@ tbody tr:hover{background:var(--surface-2);}
     <div class="status-text" id="sheetStatus"></div>
   </div>
 
-  <div class="card controls-card">
-    <div class="field"><label>Valuation date</label><input type="date" id="valDate"></div>
-    <button class="calc-btn" id="calcBtn">Calculate returns →</button>
-    <div style="flex:1;"></div>
-  </div>
-  <div class="warnbox" id="warnBox" style="display:none;"></div>
-
-  <div class="stats-row" id="statsRow">
-    <div class="stat"><div class="k">Invested</div><div class="v" id="sumInvested">—</div></div>
-    <div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
-    <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
-    <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
-    <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
-  </div>
-
-  <div class="filterbar" id="filterBarPortfolio"></div>
-  <div class="filterbar" id="filterBarBroker"></div>
-  <div class="filterbar" id="filterBarReco"></div>
-
-  <div class="tablewrap" id="tableWrap">
-    <div class="tscroll">
-    <table class="resultstable">
-      <thead><tr><th class="left">Portfolio</th><th class="left">Instrument</th><th class="left">Broker</th><th class="left">Recommended by</th><th>First trade</th><th>Shares</th><th>Price</th><th>Invested</th><th>Current val</th><th>P&amp;L</th><th>Abs. return</th><th>XIRR</th></tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    </div>
-  </div>
 
   <div class="section-title-row"><h2><span class="num">04</span>Transactions &amp; realized profit</h2></div>
   <div class="card">
