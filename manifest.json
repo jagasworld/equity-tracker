@@ -1,7 +1,7 @@
 {
-  "name": "Holdings XIRR",
-  "short_name": "Holdings XIRR",
-  "description": "Manual portfolio ledger with XIRR, realized/unrealized P&L, broker and recommendation tracking.",
+  "name": "WealthLedger — Portfolio Tracker",
+  "short_name": "WealthLedger",
+  "description": "A personal equity portfolio dashboard with XIRR, realized and unrealized P&L, broker and recommendation tracking.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

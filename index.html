@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Holdings XIRR</title>
+<title>WealthLedger — Private Equity Dashboard</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5B5BF6">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-180-apple.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Holdings XIRR">
+<meta name="apple-mobile-web-app-title" content="WealthLedger">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
@@ -147,7 +147,7 @@ tbody tr:hover{background:var(--surface-2);}
 
 .tablewrap{display:none; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);}
 .tablewrap.show{display:block;}
-.resultstable{min-width:1120px;}
+.resultstable{min-width:1000px;table-layout:auto;}
 
 .quickadd-grid{display:grid; grid-template-columns:1.3fr 0.8fr 0.8fr 1fr 0.8fr 1fr auto; gap:8px; align-items:end;}
 .quickadd-grid.quickadd-grid-tx{grid-template-columns:1.1fr 0.7fr 0.7fr 0.9fr 0.7fr 1fr 0.7fr 0.9fr auto;}
@@ -164,6 +164,52 @@ tbody tr:hover{background:var(--surface-2);}
 .holdform-grid .f:last-child{flex:0 0 auto;}
 
 .foot{padding:26px 4px 10px; font-size:11.5px; color:var(--text-faint); line-height:1.6;}
+
+/* ===== WealthLedger dashboard refresh ===== */
+.app-nav{display:flex;align-items:center;gap:6px;margin:0 0 18px;padding:6px;background:var(--surface-2);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);position:sticky;top:10px;z-index:50;backdrop-filter:blur(10px)}
+.nav-btn{border:0;background:transparent;color:var(--text-soft);padding:9px 14px;border-radius:9px;font:600 12px 'Inter',sans-serif;cursor:pointer;transition:all .15s ease}
+.nav-btn:hover{color:var(--text);background:var(--surface)}
+.nav-btn.active{background:var(--surface);color:var(--brand);box-shadow:var(--shadow)}
+.view-panel{display:block;animation:viewIn .18s ease}.view-panel.hidden{display:none}
+@keyframes viewIn{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:none}}
+.hero{margin:4px 0 18px;display:flex;align-items:flex-end;justify-content:space-between;gap:18px}.hero-copy{max-width:780px}.hero-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--brand);font-weight:800;margin-bottom:7px}.hero-badge{flex:none;padding:9px 12px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-size:11px;font-weight:700}.hero h1{font-size:30px;line-height:1.12;margin-bottom:7px}
+.dashboard-update{display:grid;grid-template-columns:auto minmax(250px,1fr) auto;gap:12px;align-items:center;margin-bottom:14px}.update-date{padding:11px 12px;border:1px solid var(--border);background:var(--surface-2);border-radius:10px;min-width:145px}.update-date .k,.update-status .k{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);font-weight:700;margin-bottom:4px}.update-date input{width:100%;border:0;background:transparent;color:var(--text);font:600 13px 'Inter',sans-serif;padding:0;outline:0}.update-status{min-height:44px;padding:10px 12px;border:1px solid var(--border);background:var(--surface);border-radius:10px}.update-status .v{font-size:12px;color:var(--text-soft)}
+.refresh-btn{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;background:linear-gradient(135deg,var(--brand),#8f7cff);color:#fff;border:none;padding:12px 17px;border-radius:10px;cursor:pointer;box-shadow:0 8px 20px -10px rgba(91,91,246,.6)}.refresh-btn:hover{filter:brightness(1.06)}.refresh-btn:disabled{opacity:.55;cursor:wait}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.8fr);gap:14px;align-items:start;margin-top:14px}.allocation-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.allocation-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.allocation-head b{font:700 14px 'Space Grotesk',sans-serif}.allocation-sub{font-size:10px;color:var(--text-faint)}.alloc-row{margin-bottom:12px}.alloc-top{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;margin-bottom:5px}.alloc-name{font-weight:600}.alloc-val{color:var(--text-soft);font-variant-numeric:tabular-nums}.alloc-track{height:7px;background:var(--surface-2);border-radius:999px;overflow:hidden;border:1px solid var(--border)}.alloc-bar{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--brand),#b396ff)}
+.sortable{cursor:pointer;user-select:none}.sortable:hover{color:var(--text);background:var(--brand-soft)}.sort-arrow{display:inline-block;min-width:9px;margin-left:4px;color:var(--brand);font-size:9px}.toast{position:fixed;right:20px;bottom:20px;z-index:1200;max-width:420px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,.15);font-size:12.5px;opacity:0;transform:translateY(8px);pointer-events:none;transition:all .2s ease}.toast.show{opacity:1;transform:translateY(0)}.toast.success{border-color:var(--gain)}.toast.error{border-color:var(--loss)}.table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px 12px;border-bottom:1px solid var(--border);background:var(--surface-2)}.table-toolbar .hint{font-size:11px;color:var(--text-faint)}
+.manage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.activity-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}.section-title-row{margin:24px 0 10px}.portfolio-primary-title{margin-top:4px}.section-title-row h2{font-size:16px}
+@media (max-width:900px){.dashboard-grid{grid-template-columns:1fr}.manage-grid{grid-template-columns:1fr}.dashboard-update{grid-template-columns:1fr 1fr}.update-status{grid-column:1 / -1;grid-row:1}}
+@media (max-width:700px){.app-nav{position:static;overflow-x:auto;white-space:nowrap}.hero{align-items:flex-start;flex-direction:column}.hero h1{font-size:24px}.hero-badge{align-self:flex-start}.dashboard-update{grid-template-columns:1fr}.update-status{grid-column:auto;grid-row:auto}}
+
+/* ===== WealthLedger v6 visual system ===== */
+:root{
+  --bg:#f5f6fb; --bg-soft:#edf0f7; --surface:#ffffff; --surface-2:#f7f8fc; --border:#e1e5ef;
+  --text:#141721; --text-soft:#646b7d; --text-faint:#9aa2b3; --brand:#6c63ff; --brand-2:#9b8cff; --brand-soft:#efeeff;
+  --gain:#12a875; --gain-soft:#e9faf3; --loss:#e24d4d; --loss-soft:#fff0f0; --amber:#c88419; --amber-soft:#fff5e6;
+  --shadow:0 10px 30px rgba(29,34,54,.07); --shadow-soft:0 1px 2px rgba(29,34,54,.05),0 6px 18px rgba(29,34,54,.05); --radius:18px;
+}
+[data-theme="dark"]{
+  --bg:#0a0c12; --bg-soft:#0f121a; --surface:#11151d; --surface-2:#171b24; --border:#262c38;
+  --text:#f1f3f8; --text-soft:#9ba3b4; --text-faint:#697183; --brand:#8b83ff; --brand-2:#b0a7ff; --brand-soft:#1e2037;
+  --gain:#35d69a; --gain-soft:#102b23; --loss:#ff6d6d; --loss-soft:#341818; --amber:#e3a23d; --amber-soft:#332812;
+  --shadow:0 14px 34px rgba(0,0,0,.3); --shadow-soft:0 8px 24px rgba(0,0,0,.22);
+}
+body{background:radial-gradient(1000px 420px at 12% -10%, rgba(108,99,255,.10), transparent 58%),radial-gradient(700px 360px at 88% 0%, rgba(176,167,255,.08), transparent 60%),var(--bg);}
+.wrap{max-width:1320px;padding:0 24px 96px}.topbar{padding:20px 0 12px}.brand-mark .dot{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--brand-2));font-size:15px;box-shadow:0 8px 22px rgba(108,99,255,.25)}.brand-mark span{font-size:17px}
+.app-nav{margin:4px 0 18px;padding:5px;border-radius:12px;background:rgba(255,255,255,.70);backdrop-filter:blur(16px);box-shadow:var(--shadow-soft)}[data-theme="dark"] .app-nav{background:rgba(17,21,29,.78)}.nav-btn{padding:8px 15px;font-size:12px;border-radius:8px}.nav-btn.active{background:var(--brand);color:#fff;box-shadow:0 8px 18px rgba(108,99,255,.24)}.nav-btn:hover{background:var(--brand-soft)}
+.hero{margin:10px 0 20px;padding:28px 30px;border:1px solid var(--border);border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.90),rgba(246,247,253,.82));box-shadow:var(--shadow);overflow:hidden;position:relative}[data-theme="dark"] .hero{background:linear-gradient(135deg,rgba(20,24,33,.94),rgba(16,19,27,.92))}.hero:after{content:"";position:absolute;right:-70px;top:-90px;width:270px;height:270px;border-radius:50%;background:radial-gradient(circle,rgba(108,99,255,.23),transparent 68%);pointer-events:none}.hero-copy{max-width:760px;position:relative;z-index:1}.hero-kicker{font-size:9.5px;letter-spacing:.16em}.hero h1{font-size:34px;line-height:1.08;letter-spacing:-.03em;margin-bottom:9px}.hero p{font-size:13.5px;max-width:70ch}.hero-badge{z-index:1;background:var(--brand-soft);border:1px solid rgba(108,99,255,.12)}
+.portfolio-primary-title{display:flex;align-items:flex-end;margin:22px 0 12px}.portfolio-primary-title h2{font-size:20px;letter-spacing:-.015em}.section-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--brand);font-weight:800;margin-bottom:3px}.live-dot{font-size:10.5px;color:var(--text-faint);display:flex;align-items:center;gap:7px}.live-dot span{width:7px;height:7px;border-radius:50%;background:var(--gain);box-shadow:0 0 0 4px var(--gain-soft)}
+.dashboard-update{margin-bottom:16px;grid-template-columns:170px minmax(220px,1fr) auto;padding:12px;border-radius:16px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-soft)}.update-date,.update-status{border:0;background:var(--surface-2);border-radius:12px}.update-date{padding:11px 13px}.update-status{padding:11px 13px}.refresh-btn{padding:13px 18px;border-radius:11px;background:linear-gradient(135deg,var(--brand),#8b7dff);box-shadow:0 10px 24px rgba(108,99,255,.25)}
+.stats-row{gap:12px;margin:0 0 16px;display:none}.stats-row.show{display:grid}.stat{border-radius:16px;padding:17px 18px;background:var(--surface);box-shadow:var(--shadow-soft)}.stat .k{font-size:9px;letter-spacing:.12em;margin-bottom:9px}.stat .v{font-size:21px;letter-spacing:-.02em}.stat.brand{background:linear-gradient(135deg,var(--brand-soft),var(--surface))}.stat.brand .v{font-size:23px}
+.filterbar{margin:0 0 8px;gap:6px}.filterbar .flabel{font-size:10px;text-transform:uppercase;letter-spacing:.12em}.chip{border-radius:999px;padding:7px 12px;background:rgba(255,255,255,.55);border-color:var(--border);font-size:11.5px}.chip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.tablewrap{margin-top:12px;border-radius:18px;box-shadow:var(--shadow);border-color:var(--border);background:var(--surface);overflow:hidden}.table-toolbar{background:transparent;padding:12px 15px}.table-toolbar .hint{font-size:10.5px}.tscroll{scrollbar-color:var(--brand) var(--surface-2)}.resultstable{min-width:980px}thead th{background:var(--surface);padding:12px 11px;font-size:9.5px;color:var(--text-faint);position:sticky;top:0;z-index:3}.resultstable tbody td{padding:10px 11px;font-size:12px}.resultstable tbody tr{transition:background .14s ease}.resultstable tbody tr:hover{background:var(--brand-soft)}.resultstable th.sortable:hover{background:var(--brand-soft)}
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.insight-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px 17px;box-shadow:var(--shadow-soft)}.insight-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.insight-kicker{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--text-faint);font-weight:800;margin-bottom:2px}.insight-head b{font:700 14px 'Space Grotesk',sans-serif}.insight-icon{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--gain-soft);color:var(--gain);font-weight:800}.insight-icon.danger{background:var(--loss-soft);color:var(--loss)}.insight-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--border)}.insight-row:first-child{border-top:0}.insight-name{font-weight:700}.insight-note{font-size:10px;color:var(--text-faint)}.insight-number{font-weight:700;font-variant-numeric:tabular-nums}.insight-positive{color:var(--gain)}.insight-negative{color:var(--loss)}
+.allocation-card{border-radius:18px;box-shadow:var(--shadow-soft);padding:18px}.allocation-head{margin-bottom:13px}.alloc-track{height:8px}.alloc-bar{background:linear-gradient(90deg,var(--brand),var(--brand-2))}.section-title-row{margin:28px 0 10px}.section-title-row h2{font-size:16px}.card{border-radius:18px;box-shadow:var(--shadow-soft)}.toast{border-radius:13px;box-shadow:var(--shadow);padding:12px 15px}.foot{font-size:10.5px;opacity:.8;max-width:90ch}
+.section-anchor{scroll-margin-top:24px;height:1px;}
+@media(max-width:900px){.insights-grid{grid-template-columns:1fr}.hero{padding:24px}.hero h1{font-size:29px}.stats-row{grid-template-columns:repeat(2,1fr)}.dashboard-update{grid-template-columns:1fr 1fr}.update-status{grid-column:auto;grid-row:auto}}
+@media(max-width:700px){.wrap{padding:0 12px 70px}.topbar{padding:14px 0 10px}.hero{padding:20px;border-radius:18px}.hero h1{font-size:25px}.hero p{font-size:12.5px}.dashboard-update{grid-template-columns:1fr}.update-status{grid-column:auto}.refresh-btn{width:100%}.stats-row{grid-template-columns:1fr 1fr}.stat{padding:13px}.stat .v{font-size:18px}.portfolio-primary-title h2{font-size:18px}.tablewrap{border-radius:14px}.resultstable{min-width:900px}}
+@media(max-width:460px){.stats-row{grid-template-columns:1fr}.hero-badge{display:none}}
+
 
 .tabs{display:flex; gap:6px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:4px; margin-bottom:14px; max-width:340px;}
 .tabbtn{flex:1; border:none; background:transparent; padding:8px 10px; border-radius:7px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--text-soft); cursor:pointer; transition:all .12s ease;}
@@ -228,25 +274,153 @@ tbody tr:hover{background:var(--surface-2);}
   .quickadd-grid, .quickadd-grid.quickadd-grid-tx{grid-template-columns:1fr;}
   .quickadd-grid .f:last-child{grid-column:auto;}
 }
+
+
+/* ===== WealthLedger v7 — modern editorial / fintech redesign ===== */
+html{scroll-behavior:smooth}
+body{background:#f7f7f4;color:#171717;overflow-x:hidden}
+.wrap{max-width:1440px;padding:0 34px 110px}
+.theme-toggle{display:none!important}
+.topbar{position:sticky;top:0;z-index:50;padding:16px 0 12px;background:rgba(247,247,244,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(23,23,23,.07)}
+.brand-mark{gap:11px}.brand-mark .dot{width:36px;height:36px;border-radius:12px;background:#111;color:#fff;box-shadow:none;font-size:15px}.brand-mark span{font-size:17px;letter-spacing:-.03em;color:#111}
+.app-nav{display:flex;align-items:center;gap:3px;width:max-content;margin:10px 0 26px;padding:4px;background:#fff;border:1px solid #e8e8e4;border-radius:999px;box-shadow:0 3px 18px rgba(17,17,17,.05)}
+.nav-btn{padding:9px 17px;border-radius:999px;color:#676767;font-size:12px}.nav-btn:hover{background:#f2f2ef;color:#111}.nav-btn.active{background:#111;color:#fff;box-shadow:none}
+.hero{margin:0 0 28px;padding:48px 52px;border:0;border-radius:30px;background:#111;box-shadow:0 22px 60px rgba(17,17,17,.16);color:#fff;display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:end;gap:28px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;right:-120px;top:-180px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(132,111,255,.65),rgba(132,111,255,.12) 34%,transparent 64%)}
+.hero:after{content:"";position:absolute;right:80px;bottom:-180px;width:420px;height:420px;border-radius:50%;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 0 40px rgba(255,255,255,.025),0 0 0 80px rgba(255,255,255,.02);pointer-events:none}
+.hero-copy,.hero-side{position:relative;z-index:1}.hero-kicker{color:#bcb4ff;font-size:10px;letter-spacing:.16em;margin-bottom:14px}.hero h1{font-size:clamp(40px,5vw,72px);line-height:.96;letter-spacing:-.055em;margin:0 0 16px;max-width:820px;color:#fff}.hero p{color:#c8c8c8;font-size:15px;line-height:1.7;max-width:650px;margin:0}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.hero-primary,.hero-secondary{border:0;padding:12px 18px;border-radius:999px;font:700 12px 'Inter',sans-serif;cursor:pointer;transition:transform .15s ease,background .15s ease}.hero-primary{background:#fff;color:#111}.hero-primary:hover,.hero-secondary:hover{transform:translateY(-1px)}.hero-secondary{background:#242424;color:#fff;border:1px solid rgba(255,255,255,.12)}.hero-side{align-self:stretch;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;text-align:right}.hero-badge{background:#242424;border:1px solid rgba(255,255,255,.12);color:#ddd;padding:9px 12px;font-size:10px;letter-spacing:.08em}.hero-mini{font-size:11px;line-height:1.5;color:#999;max-width:160px}
+.section-title-row{margin:34px 0 12px}.portfolio-primary-title{margin-top:0}.section-eyebrow{font-size:9px;letter-spacing:.15em;color:#777}.portfolio-primary-title h2{font-size:24px;letter-spacing:-.035em;color:#111}.live-dot{color:#777}.live-dot span{box-shadow:0 0 0 4px #e8f8f2}
+.dashboard-update{margin-bottom:18px;grid-template-columns:180px minmax(240px,1fr) auto;padding:8px;border-radius:20px;background:#fff;border:1px solid #e8e8e4;box-shadow:0 8px 30px rgba(17,17,17,.06)}.update-date{border:0;background:#f5f5f2;border-radius:15px;padding:12px 14px}.update-status{border:0;background:#f8f8f6;border-radius:15px;padding:12px 14px}.refresh-btn{padding:14px 20px;border-radius:15px;background:#6c63ff;box-shadow:none}.refresh-btn:hover{filter:brightness(1.05)}
+.stats-row{gap:12px;margin:0 0 18px}.stat{border:1px solid #e7e7e2;box-shadow:none;border-radius:18px;background:#fff;padding:18px 19px}.stat .k{color:#858585;letter-spacing:.11em}.stat .v{font-size:24px;color:#111}.stat.brand{background:#111;color:#fff;border-color:#111}.stat.brand .k{color:#9d9d9d}.stat.brand .v{color:#bfb7ff;font-size:26px}
+.filterbar{margin:0 0 7px}.filterbar .flabel{color:#888;letter-spacing:.1em}.chip{background:#fff;border-color:#e5e5e0;color:#666;box-shadow:none}.chip:hover{border-color:#c9c9c3}.chip.active{background:#111;color:#fff;border-color:#111}
+.tablewrap{margin-top:14px;border:1px solid #e6e6e2;box-shadow:0 15px 38px rgba(17,17,17,.06);border-radius:22px;background:#fff}.table-toolbar{padding:13px 16px;background:#fff;border-bottom:1px solid #ecece8}.table-toolbar .hint{color:#8b8b8b}.resultstable{min-width:960px}.resultstable thead th{background:#fff;color:#898989;border-bottom:1px solid #e9e9e5;padding:13px 11px}.resultstable tbody td{padding:12px 11px;font-size:12.5px;border-bottom:1px solid #eeeeea}.resultstable tbody tr:hover{background:#faf9ff}.sortable:hover{background:#f4f2ff!important;color:#111}
+.insights-grid{gap:14px;margin-top:16px}.insight-card,.allocation-card{border:1px solid #e7e7e2;box-shadow:none;background:#fff;border-radius:20px}.insight-card{padding:18px}.insight-head b{font-size:15px;color:#111}.insight-kicker{color:#8a8a8a}.insight-row{border-top-color:#ededE8}.allocation-card{padding:18px;margin-top:16px!important}.allocation-bar{background:linear-gradient(90deg,#6c63ff,#9b8cff)}
+.card{border:1px solid #e7e7e2;box-shadow:none;background:#fff;border-radius:20px}.card-head b{color:#111}.card-hint{color:#8a8a8a}.btn-small{border-radius:999px;padding:10px 15px;background:#111}.btn-small.ghost{background:#fff;color:#555;border-color:#deded8}.btn-small.danger{border-radius:999px}.tabs{border:1px solid #e5e5df;background:#f3f3ef;border-radius:999px;padding:4px}.tabbtn{border-radius:999px}.tabbtn.active{background:#111;color:#fff;box-shadow:none}
+select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff;border-color:#deded8;border-radius:11px}.pastearea{background:#fbfbf8;border-color:#deded8;border-radius:14px}
+.toaster{}.toast{border-color:#deded8;border-radius:14px;box-shadow:0 18px 45px rgba(0,0,0,.12)}
+.foot{color:#888}.modal-card{border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.momentum-card{margin:14px 0 16px;padding:20px 22px;border:1px solid #e6e6df;border-radius:22px;background:linear-gradient(135deg,#fffefa,#f6f4ff);box-shadow:0 12px 30px rgba(37,32,90,.06)}.trend-card{margin:0 0 16px;padding:18px 20px;border:1px solid #e6e6df;border-radius:22px;background:#fff;box-shadow:none}.trend-table-wrap{margin-top:12px;overflow:auto}.trend-table{width:100%;border-collapse:collapse;font-size:12px}.trend-table th{padding:9px 10px;text-align:right;color:#8d8d8d;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #ecece7;background:#fafaf7}.trend-table th.left{text-align:left}.trend-table td{padding:9px 10px;text-align:right;border-bottom:1px solid #f0f0ec}.trend-table td.left{text-align:left;font-weight:700;color:#222}.trend-table tr:last-child td{border-bottom:none}.trend-up{color:#0b8f63;font-weight:700}.trend-down{color:#d34840;font-weight:700}.trend-flat{color:#7d7d7d;font-weight:600}@media(max-width:700px){.trend-table{min-width:520px}}
+.momentum-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.momentum-head h3{margin:2px 0 4px;font:700 22px/1.15 'Space Grotesk',sans-serif;letter-spacing:-.02em}.momentum-sub{color:#7a7a86;font-size:12px}.momentum-badge{padding:8px 11px;border-radius:999px;background:#eeebff;color:#5b5bf6;font-weight:700;font-size:11px;white-space:nowrap}.momentum-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.momentum-item{background:#fff;border:1px solid #ece9e3;border-radius:16px;padding:13px 14px}.momentum-item .mi-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.momentum-item b{font:700 14px 'Space Grotesk',sans-serif}.momentum-item .mi-change{font:700 15px 'Space Grotesk',sans-serif;color:#0b8f63}.momentum-item .mi-meta{margin-top:5px;color:#7a7a86;font-size:11px}.momentum-empty{padding:12px 2px;color:#777;font-size:12px}.compact-setting{min-width:110px}.compact-setting label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#9a9aa4;margin-bottom:5px;font-weight:700}.compact-setting input{width:110px}@media(max-width:700px){.momentum-list{grid-template-columns:1fr}.momentum-head{flex-direction:column}.compact-setting{flex:1 1 40%}.compact-setting input{width:100%}}
+@media(max-width:900px){.wrap{padding:0 20px 90px}.hero{grid-template-columns:1fr;padding:36px 30px}.hero-side{align-items:flex-start;text-align:left;gap:16px}.stats-row{grid-template-columns:repeat(2,1fr)}.dashboard-update{grid-template-columns:1fr 1fr}.update-status{grid-column:1 / -1;grid-row:1}}
+@media(max-width:700px){.wrap{padding:0 12px 70px}.topbar{padding:12px 0 9px}.app-nav{max-width:100%;overflow-x:auto}.hero{padding:28px 22px;border-radius:24px}.hero h1{font-size:43px}.hero p{font-size:13px}.dashboard-update{grid-template-columns:1fr}.update-status{grid-column:auto;grid-row:auto}.refresh-btn{width:100%}.stats-row{grid-template-columns:1fr 1fr}.resultstable{min-width:900px}}
+@media(max-width:460px){.stats-row{grid-template-columns:1fr}.hero h1{font-size:37px}.hero-actions{flex-direction:column}.hero-primary,.hero-secondary{width:100%}}
+
 </style>
 </head>
-<body data-theme="light">
+<body data-theme="light" class="wl-v7-light">
 <div class="wrap">
 
   <div class="topbar">
-    <div class="brand-mark"><div class="dot">₹</div><span>Holdings XIRR</span></div>
+    <div class="brand-mark"><div class="dot">₹</div><span>WealthLedger</span></div>
     <div class="theme-toggle">
       <button id="btnLight" class="active">☀ Light</button>
       <button id="btnDark">☾ Dark</button>
     </div>
   </div>
 
-  <div class="hero">
-    <h1>Your holdings, entered by hand, priced from Google Sheets</h1>
-    <p>Type in each position directly — no file uploads. Tag broker and recommendation, log the trade date for XIRR, and refresh current price from a Google Sheet whenever you want.</p>
+  <div class="app-nav" id="appNav">
+    <button class="nav-btn active" data-view="dashboard">Overview</button>
+    <button class="nav-btn" data-view="activity">Activity</button>
+    <button class="nav-btn" data-view="manage">Settings</button>
   </div>
 
-  <div class="section-title-row"><h2><span class="num">01</span>Add a holding</h2></div>
+  <div class="hero" id="pageHero">
+    <div class="hero-copy">
+      <div class="hero-kicker" id="heroKicker">YOUR PRIVATE INVESTMENT DASHBOARD</div>
+      <h1 id="heroTitle">Know what your money is doing.</h1>
+      <p id="heroText">Track every equity position, compare returns, and refresh your portfolio in one place — without sending your holdings to a server.</p>
+      <div class="hero-actions">
+        <button class="hero-primary" id="heroPrimaryBtn">Refresh portfolio</button>
+        <button class="hero-secondary" id="heroSecondaryBtn">View holdings</button>
+      </div>
+    </div>
+    <div class="hero-side">
+      <div class="hero-badge" id="heroBadge">PRIVATE · LOCAL-FIRST · PWA</div>
+      <div class="hero-mini" id="heroMini">Your data stays in your browser.</div>
+    </div>
+  </div>
+
+  <section id="viewDashboard" class="view-panel">
+  <div class="section-title-row portfolio-primary-title"><div><div class="section-eyebrow">Portfolio</div><h2>Your holdings</h2></div><div class="live-dot"><span></span> Live view</div></div>
+  <div class="card dashboard-update">
+    <div class="update-date"><span class="k">Valuation date</span><input type="date" id="valDate"></div>
+    <div class="update-status"><span class="k">Portfolio update</span><div class="v" id="combinedStatus">Ready to refresh prices and calculate.</div></div>
+    <button class="refresh-btn" id="refreshCalcBtn">↻ Refresh prices &amp; calculate</button>
+    <button id="calcBtn" style="display:none;">Calculate returns</button>
+  </div>
+  <div class="warnbox" id="warnBox" style="display:none;"></div>
+
+  <div class="stats-row" id="statsRow">
+    <div class="stat"><div class="k">Invested</div><div class="v" id="sumInvested">—</div></div>
+    <div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
+    <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
+    <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
+    <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
+  </div>
+
+  <div class="momentum-card" id="momentumCard" style="display:none;">
+    <div class="momentum-head">
+      <div><div class="section-eyebrow">Market signals</div><h3>Price movement alerts</h3><div class="momentum-sub" id="momentumSummary">—</div></div>
+      <div class="momentum-badge" id="momentumBadge">0 alerts</div>
+    </div>
+    <div class="momentum-list" id="momentumList"></div>
+  </div>
+
+  <div class="trend-card" id="trendCard" style="display:none;">
+    <div class="momentum-head">
+      <div><div class="section-eyebrow">Recent price trend</div><h3>1D · 3D · 5D · 7D</h3><div class="momentum-sub" id="trendSummary">Refresh the portfolio to load recent trading-day movements.</div></div>
+    </div>
+    <div class="trend-table-wrap">
+      <table class="trend-table">
+        <thead><tr><th class="left">Stock</th><th>1D</th><th>3D</th><th>5D</th><th>7D</th></tr></thead>
+        <tbody id="trendBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="filterbar" id="filterBarPortfolio"></div>
+  <div class="filterbar" id="filterBarBroker"></div>
+  <div class="filterbar" id="filterBarReco"></div>
+
+  <div class="tablewrap" id="tableWrap">
+    <div class="table-toolbar"><span class="hint">Click any column heading to sort ↑ / ↓</span><span class="hint" id="tableCount"></span></div>
+    <div class="tscroll">
+    <table class="resultstable">
+      <thead><tr>
+        <th class="left sortable" data-sort="instrument">Instrument<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="firstDate">First trade<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="qty">Shares<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="investedPrice">Invested / share<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="currentPrice">Current / share<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="invested">Invested<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="curVal">Current val<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="pnl">P&amp;L<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="absReturn">Abs. return<span class="sort-arrow"></span></th>
+        <th class="sortable" data-sort="xirr">XIRR<span class="sort-arrow"></span></th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="insights-grid" id="insightsGrid" style="display:none;">
+    <div class="insight-card">
+      <div class="insight-head"><div><span class="insight-kicker">Momentum</span><b>Top performers</b></div><span class="insight-icon">↗</span></div>
+      <div id="topPerformers"></div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-head"><div><span class="insight-kicker">Watchlist</span><b>Needs attention</b></div><span class="insight-icon danger">↘</span></div>
+      <div id="topLosers"></div>
+    </div>
+  </div>
+
+
+  <div class="allocation-card" id="allocationCard" style="display:none;margin-top:14px;">
+    <div class="allocation-head"><div><b>Top holdings</b><div class="allocation-sub">By current market value</div></div><span class="allocation-sub" id="allocationTotal">—</span></div>
+    <div id="allocationList"></div>
+  </div>
+
+  <div class="section-title-row"><h2><span class="num">02</span>Add / import holdings</h2></div>
   <div class="card">
     <div class="tabs">
       <button class="tabbtn active" data-tab="single">Single entry</button>
@@ -280,7 +454,7 @@ tbody tr:hover{background:var(--surface-2);}
   </div>
 
   <div class="section-title-row">
-    <h2><span class="num">02</span>Holdings ledger</h2>
+    <h2><span class="num">03</span>Holdings</h2>
     <button class="chevron-btn" id="ledgerToggleBtn" title="Collapse this section" aria-expanded="true">▾</button>
   </div>
   <div class="card">
@@ -329,40 +503,17 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
   </div>
 
-  <div class="card controls-card">
-    <div class="field"><label>Valuation date</label><input type="date" id="valDate"></div>
-    <button class="calc-btn" id="calcBtn">Calculate returns →</button>
-    <div style="flex:1;"></div>
-  </div>
-  <div class="warnbox" id="warnBox" style="display:none;"></div>
+  </section>
 
-  <div class="stats-row" id="statsRow">
-    <div class="stat"><div class="k">Invested</div><div class="v" id="sumInvested">—</div></div>
-    <div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
-    <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
-    <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
-    <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
-  </div>
-
-  <div class="filterbar" id="filterBarPortfolio"></div>
-  <div class="filterbar" id="filterBarBroker"></div>
-  <div class="filterbar" id="filterBarReco"></div>
-
-  <div class="tablewrap" id="tableWrap">
-    <div class="tscroll">
-    <table class="resultstable">
-      <thead><tr><th class="left">Portfolio</th><th class="left">Instrument</th><th class="left">Broker</th><th class="left">Recommended by</th><th>First trade</th><th>Shares</th><th>Price</th><th>Invested</th><th>Current val</th><th>P&amp;L</th><th>Abs. return</th><th>XIRR</th></tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    </div>
-  </div>
-
+  <section id="viewManage" class="view-panel hidden">
+  <div id="settingsTopAnchor" class="section-anchor"></div>
+  <div id="backupAnchor" class="section-anchor"></div>
   <div class="card backup-bar">
     <div class="backup-left">
       <div class="card-icon">⇅</div>
       <div>
         <b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Backup &amp; restore</b>
-        <div class="card-hint" style="margin:2px 0 0;">Autosave is tied to this exact file on your computer — a newly downloaded copy (even with the same name) starts empty. Whenever you get an updated version of this app, download a backup here first, then use Restore on the new version to carry your data across.</div>
+        <div class="card-hint" style="margin:2px 0 0;">Autosave stays in this browser on the current site. Use Download backup before moving devices or installing a new version, then Restore on the other copy.</div>
       </div>
     </div>
     <div class="inline-row" style="flex:none;">
@@ -392,9 +543,10 @@ tbody tr:hover{background:var(--surface-2);}
   <div class="status-text" id="portfolioStatus" style="margin:-8px 0 16px;"></div>
 
 
-  <div class="section-title-row"><h2><span class="num">03</span>Refresh current price from Google Sheets</h2></div>
+  <div id="dataConnectionsAnchor" class="section-anchor"></div>
+  <div class="section-title-row"><h2><span class="num">03</span>Data connections</h2></div>
   <div class="card">
-    <p class="card-hint">GOOGLEFINANCE runs on Google's own servers with Google's market-data license — a page like this one can't call it directly. This reads your sheet's data instead, matching whichever symbols it finds against your holdings above.</p>
+    <p class="card-hint">GOOGLEFINANCE runs on Google's own servers. Connect a viewable sheet here once, then use <b>Refresh prices &amp; calculate</b> from the Overview tab whenever you want a new valuation.</p>
     <div class="mapbox" style="margin-top:0;">
       <b>One-time setup</b>
       <div style="margin-top:8px; line-height:1.7;">
@@ -405,13 +557,41 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
     <div class="inline-row" style="margin-top:12px;">
       <input class="text-input" id="sheetUrl" style="flex:1; min-width:260px;" value="https://docs.google.com/spreadsheets/d/1MG1-urrfHN5zRtaozDEOl_8a8cUQohjShm4PHH8sLMM/edit?usp=sharing" placeholder="https://docs.google.com/spreadsheets/d/XXXXXXXX/edit#gid=0">
-      <button class="btn-small" id="fetchSheetBtn">Fetch prices</button>
+      <button class="btn-small" id="fetchSheetBtn">Refresh prices only</button>
     </div>
     <div class="status-text" id="sheetStatus"></div>
   </div>
 
+  <div id="priceHistoryAnchor" class="section-anchor"></div>
+  <div class="section-title-row"><h2><span class="num">04</span>Price history &amp; alerts</h2></div>
+  <div class="card">
+    <p class="card-hint">WealthLedger now reads price history directly from the same Google Sheet you already use for current prices. Keep at least 10 trading days for each stock. No second sheet or second connection is required.</p>
+    <div class="mapbox" style="margin-top:0;">
+      <b>Sheet layout expected</b>
+      <div style="margin-top:8px; line-height:1.7;">
+        Your existing layout is supported: each stock row contains the <code>Symbol</code> in column B, and the following two rows contain <code>Date</code> / <code>Close</code> history starting from column H. Example: <code>Date → 09/07, 09/08, 09/09...</code> and the next row <code>Close → 862.65, 867, 829.65...</code>.
+      </div>
+    </div>
+    <div class="inline-row" style="margin-top:12px;">
+      <span class="status-text" id="historyStatus" style="margin:0;">History is checked automatically when you refresh the portfolio.</span>
+    </div>
+    <div class="inline-row" style="margin-top:12px;">
+      <div class="field compact-setting"><label>1 day alert %</label><input class="text-input" id="alert1d" type="number" min="0" step="0.1" value="5"></div>
+      <div class="field compact-setting"><label>3 day alert %</label><input class="text-input" id="alert3d" type="number" min="0" step="0.1" value="10"></div>
+      <div class="field compact-setting"><label>7 day alert %</label><input class="text-input" id="alert7d" type="number" min="0" step="0.1" value="20"></div>
+      <div class="field compact-setting"><label>14 day alert %</label><input class="text-input" id="alert14d" type="number" min="0" step="0.1" value="30"></div>
+      <div class="field compact-setting"><label>30 day alert %</label><input class="text-input" id="alert30d" type="number" min="0" step="0.1" value="40"></div>
+    </div>
+  </div>
 
+
+  </section>
+
+  <section id="viewActivity" class="view-panel hidden">
+  <div id="activityTopAnchor" class="section-anchor"></div>
+  <div id="transactionsAnchor" class="section-anchor"></div>
   <div class="section-title-row"><h2><span class="num">04</span>Transactions &amp; realized profit</h2></div>
+  <div id="addTransactionAnchor" class="section-anchor"></div>
   <div class="card">
     <p class="card-hint">Log a buy or sell by hand — sells are matched FIFO against earlier buys of the same instrument to work out realized profit. This is independent of the holdings table above.</p>
     <div class="quickadd-grid quickadd-grid-tx">
@@ -436,6 +616,7 @@ tbody tr:hover{background:var(--surface-2);}
 
   <div class="filterbar" id="recoPortfolioBar"></div>
 
+  <div id="realizedAnchor" class="section-anchor"></div>
   <div class="card" id="realizedCard" style="display:none;">
     <div class="card-head"><div class="card-icon">◆</div><b>Realized profit &amp; P&amp;L by recommendation</b></div>
     <p class="card-hint">Every sell is matched FIFO against the earliest unsold buys of that instrument, within whichever portfolio it belongs to. Switch between the recommender summary and the individual sales behind it.</p>
@@ -481,6 +662,10 @@ tbody tr:hover{background:var(--surface-2);}
     </div>
   </div>
 
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <div class="foot">Absolute return uses invested and current value exactly as entered. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. This page can't call market-data providers directly — that's blocked by their own cross-origin policy — so the Google Sheets refresh loads your sheet the way public embeds do, which needs the sheet link-shared as viewable. The realized profit report tracks whatever buy/sell entries you log manually, matched FIFO per instrument, independent of the holdings table.</div>
 
 </div>
@@ -515,7 +700,11 @@ tbody tr:hover{background:var(--surface-2);}
     manualTxns: [],
     txnIdSeq: 1,
     hiddenRecos: new Set(),
-    selectedHoldIds: new Set()
+    selectedHoldIds: new Set(),
+    tableSort: {key:null, dir:1},
+    priceHistory: new Map(),
+    momentumAlerts: [],
+    priceHistoryUrl: ''
   };
 
   // ---------- autosave (survives closing the tab / restarting the PC, when
@@ -574,8 +763,21 @@ tbody tr:hover{background:var(--surface-2);}
   loadFromLocalStorage();
 
   const $ = (id) => document.getElementById(id);
+  let toastTimer = null;
+  function showToast(message, type='success'){
+    const el = $('toast');
+    if(!el) return;
+    clearTimeout(toastTimer);
+    el.textContent = message;
+    el.className = 'toast show ' + type;
+    toastTimer = setTimeout(()=>{ el.className = 'toast'; }, 4200);
+  }
   $('valDate').value = new Date().toISOString().slice(0,10);
   $('txDate').value = new Date().toISOString().slice(0,10);
+  try{
+    const savedAlerts = JSON.parse(localStorage.getItem('wealthledger-price-alerts-v1') || '{}');
+    ['1d','3d','7d','14d','30d'].forEach(k=>{ const el=$('alert'+k); if(savedAlerts[k]!=null && el) el.value = savedAlerts[k]; });
+  }catch(err){}
 
   function fillSelect(sel, options, withBlank){
     sel.innerHTML = (withBlank ? '<option value="">—</option>' : '') + options.map(o=>`<option value="${o}">${o}</option>`).join('');
@@ -655,7 +857,7 @@ tbody tr:hover{background:var(--surface-2);}
     $('btnLight').classList.toggle('active', t==='light');
     $('btnDark').classList.toggle('active', t==='dark');
   }
-  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
+  setTheme('light');
 
   // ---------- helpers ----------
   function escapeAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -1028,6 +1230,59 @@ tbody tr:hover{background:var(--surface-2);}
 
   // ================= CALCULATE =================
   $('calcBtn').addEventListener('click', runCalculation);
+  document.querySelectorAll('#appNav .nav-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>switchView(btn.dataset.view));
+  });
+  function scrollToSection(id){
+    const target = $(id);
+    if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  const heroViews = {
+    dashboard: {
+      kicker:'YOUR PRIVATE INVESTMENT DASHBOARD',
+      title:'Know what your money is doing.',
+      text:'Track every equity position, compare returns, and refresh your portfolio in one place — without sending your holdings to a server.',
+      primary:'Refresh portfolio', secondary:'View holdings',
+      badge:'PRIVATE · LOCAL-FIRST · PWA', mini:'Your data stays in your browser.',
+      primaryAction:()=>{ const btn=$('refreshCalcBtn'); if(btn) btn.click(); },
+      secondaryAction:()=>scrollToSection('tableWrap')
+    },
+    activity: {
+      kicker:'ACTIVITY & REALIZED PERFORMANCE',
+      title:'Track every move.',
+      text:'Log buys and sells, review FIFO realized profit, and see how each recommendation is performing over time.',
+      primary:'Add transaction', secondary:'View realized P&amp;L',
+      badge:'TRANSACTIONS · FIFO · REALIZED', mini:'Your trading history stays in this browser.',
+      primaryAction:()=>scrollToSection('addTransactionAnchor'),
+      secondaryAction:()=>scrollToSection('realizedAnchor')
+    },
+    manage: {
+      kicker:'PORTFOLIO SETTINGS',
+      title:'Keep your data in your hands.',
+      text:'Back up your portfolio, restore it on another device, manage portfolios, and keep your Google Sheets price connection ready.',
+      primary:'Backup &amp; restore', secondary:'Price alerts',
+      badge:'BACKUP · PORTFOLIOS · DATA', mini:'Nothing leaves your browser unless you choose to share it.',
+      primaryAction:()=>scrollToSection('backupAnchor'),
+      secondaryAction:()=>scrollToSection('priceHistoryAnchor')
+    }
+  };
+
+  function updateHeroForView(view){
+    const cfg=heroViews[view] || heroViews.dashboard;
+    $('heroKicker').textContent=cfg.kicker;
+    $('heroTitle').textContent=cfg.title;
+    $('heroText').textContent=cfg.text;
+    $('heroBadge').textContent=cfg.badge;
+    $('heroMini').textContent=cfg.mini;
+    $('heroPrimaryBtn').innerHTML=cfg.primary;
+    $('heroSecondaryBtn').innerHTML=cfg.secondary;
+    $('heroPrimaryBtn').onclick=cfg.primaryAction;
+    $('heroSecondaryBtn').onclick=cfg.secondaryAction;
+  }
+
+  updateHeroForView('dashboard');
+
 
   function mergeHoldRows(rows, valDate){
     const merged = {};
@@ -1040,12 +1295,13 @@ tbody tr:hover{background:var(--surface-2);}
       const investedAmt = computeInvested(r);
       const curValAmt = computeCurVal(r);
       const key = symKey(symbol);
-      if(!merged[key]) merged[key] = {symbol, qty:0, invested:0, curVal:0, curValForXirr:0, dividend:0, brokers:new Set(), recos:new Set(), portfolios:new Set(), cfs:[]};
+      if(!merged[key]) merged[key] = {symbol, qty:0, invested:0, curVal:0, curValForXirr:0, dividend:0, investedPriceTotal:0, brokers:new Set(), recos:new Set(), portfolios:new Set(), cfs:[]};
       const m = merged[key];
       m.symbol = symbol;
       m.qty += qty;
       m.invested += (investedAmt||0);
       m.curVal += (curValAmt||0);
+      if(r.investedPrice!=null && !isNaN(r.investedPrice)) m.investedPriceTotal += qty * r.investedPrice;
       m.dividend += (r.dividend||0);
       if(r.broker) m.brokers.add(r.broker);
       if(r.recommendedBy) m.recos.add(r.recommendedBy);
@@ -1072,7 +1328,9 @@ tbody tr:hover{background:var(--surface-2);}
       results.push({
         key:k, instrument:m.symbol, qty:m.qty, invested:m.invested, curVal:m.curVal, pnl:m.curVal-m.invested+m.dividend,
         brokers:Array.from(m.brokers).sort(), recos:Array.from(m.recos).sort(), portfolios:Array.from(m.portfolios).sort(),
-        firstDate, xirr:ixirr, txnCount:m.cfs.length, cfs:m.cfs, curValForXirr:m.curValForXirr
+        firstDate, xirr:ixirr, txnCount:m.cfs.length, cfs:m.cfs, curValForXirr:m.curValForXirr,
+        investedPrice:m.qty>0 ? m.investedPriceTotal/m.qty : null,
+        currentPrice:m.qty>0 ? m.curVal/m.qty : null
       });
     });
     return {results, warnings};
@@ -1170,6 +1428,7 @@ tbody tr:hover{background:var(--surface-2);}
 
     renderStats({totalInvested, totalCurVal, totalPnl, absReturn, portXirr});
     renderTable(results);
+    renderMomentumTrends(filteredRows);
   }
 
   function renderStats(sum){
@@ -1186,25 +1445,77 @@ tbody tr:hover{background:var(--surface-2);}
     return list.map(v=>`<span class="pill"><span class="sw" style="background:${colorFn(v)}"></span>${v}</span>`).join('');
   }
 
+  function displaySortValue(r, key){
+    if(key==='portfolio') return (r.portfolios||[]).join(', ').toLowerCase();
+    if(key==='instrument') return String(r.instrument||'').toLowerCase();
+    if(key==='broker') return (r.brokers||[]).join(', ').toLowerCase();
+    if(key==='reco') return (r.recos||[]).join(', ').toLowerCase();
+    if(key==='firstDate') return r.firstDate ? r.firstDate.getTime() : -Infinity;
+    if(key==='absReturn') return r.invested>0 ? (r.pnl/r.invested)*100 : -Infinity;
+    if(key==='investedPrice') return r.investedPrice==null ? -Infinity : r.investedPrice;
+    if(key==='currentPrice') return r.currentPrice==null ? -Infinity : r.currentPrice;
+    const v=r[key];
+    return (v==null || isNaN(v)) ? -Infinity : v;
+  }
+  function sortResults(rows){
+    const {key,dir}=state.tableSort;
+    if(!key) return rows.slice();
+    return rows.slice().sort((a,b)=>{
+      const av=displaySortValue(a,key), bv=displaySortValue(b,key);
+      if(typeof av==='string' || typeof bv==='string') return String(av).localeCompare(String(bv),undefined,{numeric:true,sensitivity:'base'})*dir;
+      if(av===bv) return String(a.instrument||'').localeCompare(String(b.instrument||''));
+      return (av<bv?-1:1)*dir;
+    });
+  }
+  function renderSortIndicators(){
+    document.querySelectorAll('#tableWrap .sortable').forEach(th=>{
+      const arrow=th.querySelector('.sort-arrow');
+      if(!arrow) return;
+      arrow.textContent=th.dataset.sort===state.tableSort.key ? (state.tableSort.dir===1?'↑':'↓') : '';
+    });
+  }
+  function renderAllocation(visible){
+    const card=$('allocationCard'), list=$('allocationList');
+    if(!visible || !visible.length){card.style.display='none';return;}
+    const total=visible.reduce((s,r)=>s+(isNaN(r.curVal)?0:r.curVal),0);
+    if(!(total>0)){card.style.display='none';return;}
+    const rows=visible.slice().sort((a,b)=>(b.curVal||0)-(a.curVal||0)).slice(0,5);
+    card.style.display='block';$('allocationTotal').textContent=fmtINR(total);
+    list.innerHTML=rows.map(r=>{
+      const pct=Math.max(0,Math.min(100,((r.curVal||0)/total)*100));
+      return `<div class="alloc-row"><div class="alloc-top"><span class="alloc-name">${escapeAttr(r.instrument)}</span><span class="alloc-val">${fmtINR(r.curVal)} · ${pct.toFixed(1)}%</span></div><div class="alloc-track"><div class="alloc-bar" style="width:${pct}%"></div></div></div>`;
+    }).join('');
+  }
+  function renderInsights(visible){
+    const wrap=$('insightsGrid'), winners=$('topPerformers'), losers=$('topLosers');
+    if(!visible || !visible.length){ wrap.style.display='none'; winners.innerHTML=''; losers.innerHTML=''; return; }
+    const scored=visible.filter(r=>Number.isFinite(r.pnl) && Number.isFinite(r.invested) && r.invested>0).map(r=>({...r, returnPct:(r.pnl/r.invested)*100}));
+    if(!scored.length){ wrap.style.display='none'; winners.innerHTML=''; losers.innerHTML=''; return; }
+    const top=scored.filter(r=>r.returnPct>=0).sort((a,b)=>b.returnPct-a.returnPct).slice(0,3);
+    const bottom=scored.filter(r=>r.returnPct<0).sort((a,b)=>a.returnPct-b.returnPct).slice(0,3);
+    const rowHtml=(r, positive)=>`<div class=\"insight-row\"><div><div class=\"insight-name\">${escapeAttr(r.instrument)}</div><div class=\"insight-note\">${fmtINR(r.curVal)} current value</div></div><span class=\"insight-note\">${fmtINR(r.pnl)} P&amp;L</span><span class=\"insight-number ${positive?'insight-positive':'insight-negative'}\">${fmtPct(r.returnPct)}</span></div>`;
+    winners.innerHTML=top.length ? top.map(r=>rowHtml(r,true)).join('') : `<div class=\"muted\" style=\"padding:8px 0;\">No positive positions in the current view.</div>`;
+    losers.innerHTML=bottom.length ? bottom.map(r=>rowHtml(r,false)).join('') : `<div class=\"muted\" style=\"padding:8px 0;\">No losing positions in the current view.</div>`;
+    wrap.style.display='grid';
+  }
+
   function renderTable(visible){
     $('tableWrap').classList.add('show');
-    $('tbody').innerHTML = visible.map(r=>{
-      const pnlClass = r.pnl>=0?'gain':'loss';
-      const absR = r.invested>0 ? (r.pnl/r.invested)*100 : NaN;
-      const dateStr = r.firstDate ? r.firstDate.toLocaleDateString('en-IN',{year:'2-digit',month:'short',day:'2-digit'}) : '—';
-      const xirrStr = r.xirr!==null ? fmtPct(r.xirr*100) : '<span class="muted">n/a</span>';
-      const xirrClass = r.xirr!==null ? (r.xirr>=0?'gain':'loss') : '';
-      let flagHtml = '';
-      if(r.txnCount===0) flagHtml = `<span class="flag bad">no trade date</span>`;
-      const price = r.qty>0 ? r.curVal/r.qty : NaN;
+    const sorted=sortResults(visible);
+    $('tableCount').textContent=`${sorted.length} holding${sorted.length===1?'':'s'}`;
+    $('tbody').innerHTML=sorted.map(r=>{
+      const pnlClass=r.pnl>=0?'gain':'loss';
+      const absR=r.invested>0?(r.pnl/r.invested)*100:NaN;
+      const dateStr=r.firstDate?r.firstDate.toLocaleDateString('en-IN',{year:'2-digit',month:'short',day:'2-digit'}):'—';
+      const xirrStr=r.xirr!==null?fmtPct(r.xirr*100):'<span class="muted">n/a</span>';
+      const xirrClass=r.xirr!==null?(r.xirr>=0?'gain':'loss'):'';
+      const flagHtml=r.txnCount===0?`<span class="flag bad">no trade date</span>`:'';
       return `<tr>
-        <td class="left">${chipsHtml(r.portfolios, portfolioColor)}</td>
         <td class="left">${r.instrument}${flagHtml}</td>
-        <td class="left">${chipsHtml(r.brokers, brokerColor)}</td>
-        <td class="left">${chipsHtml(r.recos, recoColor)}</td>
         <td>${dateStr}</td>
         <td>${fmtQty(r.qty)}</td>
-        <td>${isNaN(price)?'—':fmtINR(price)}</td>
+        <td>${r.investedPrice!=null?fmtINR2(r.investedPrice):'—'}</td>
+        <td>${r.currentPrice!=null?fmtINR2(r.currentPrice):'—'}</td>
         <td>${fmtINR(r.invested)}</td>
         <td>${fmtINR(r.curVal)}</td>
         <td class="${pnlClass}">${fmtINR(r.pnl)}</td>
@@ -1212,6 +1523,109 @@ tbody tr:hover{background:var(--surface-2);}
         <td class="${xirrClass}">${xirrStr}</td>
       </tr>`;
     }).join('');
+    renderSortIndicators();
+    renderInsights(sorted);
+    renderAllocation(sorted);
+  }
+  document.querySelectorAll('#tableWrap .sortable').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const key=th.dataset.sort;
+      if(state.tableSort.key===key) state.tableSort.dir*=-1;
+      else {state.tableSort.key=key;state.tableSort.dir=1;}
+      if(state.lastResults) applyFilterAndRender();
+    });
+  });
+
+  function alertThresholds(){
+    return {
+      1: Math.max(0, num($('alert1d')?.value) || 5),
+      3: Math.max(0, num($('alert3d')?.value) || 10),
+      7: Math.max(0, num($('alert7d')?.value) || 20),
+      14: Math.max(0, num($('alert14d')?.value) || 30),
+      30: Math.max(0, num($('alert30d')?.value) || 40)
+    };
+  }
+  function saveAlertSettings(){
+    const t=alertThresholds();
+    localStorage.setItem('wealthledger-price-alerts-v1', JSON.stringify({
+      '1d':t[1],'3d':t[3],'7d':t[7],'14d':t[14],'30d':t[30]
+    }));
+  }
+  function historyDateKey(v){
+    const d=parseDateCellLoose(v);
+    return d || '';
+  }
+  function parseHistorySheet(aoa){
+    const hdr=findHeaderRow(aoa,[['date'],PRICE_GROUPS.symbol,PRICE_GROUPS.price]);
+    if(hdr.idx===-1) return null;
+    const {headers,rows}=buildRowsFromHeader(aoa,hdr.idx);
+    const norm=headers.map(h=>({h,n:normHeader(h)}));
+    const pick=(cands)=>{const f=norm.find(x=>cands.includes(x.n));return f?f.h:''};
+    const dateCol=pick(['date','pricedate','tradingdate']) || headers.find(h=>normHeader(h).includes('date')) || '';
+    const symbolCol=pick(['symbol','ticker','scrip','instrument']) || headers.find(h=>['symbol','ticker','scrip','instrument'].some(c=>normHeader(h).includes(c))) || '';
+    const priceCol=pick(['price','ltp','lastprice','closeprice','lasttradedprice']) || headers.find(h=>['price','ltp','last','close'].some(c=>normHeader(h).includes(c))) || '';
+    if(!dateCol || !symbolCol || !priceCol) return null;
+    return {rows,colMap:{date:dateCol,symbol:symbolCol,price:priceCol}};
+  }
+  function computeMomentum(currentPrice, history, valDate){
+    if(currentPrice==null || isNaN(currentPrice) || currentPrice<=0) return [];
+    const arr=(history||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+    const today=String(valDate||new Date().toISOString().slice(0,10));
+    const dedup=new Map();
+    arr.forEach(x=>{ if(x.date && x.price>0) dedup.set(x.date,x.price); });
+    dedup.set(today,currentPrice);
+    const points=Array.from(dedup.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
+    const out=[];
+    [1,3,5,7,14,30].forEach(days=>{
+      const idx=points.length-1-days;
+      if(idx>=0){
+        const base=points[idx][1];
+        if(base>0) out.push({days,pct:(currentPrice/base-1)*100,baseDate:points[idx][0]});
+      }
+    });
+    return out;
+  }
+  function renderMomentumAlerts(){
+    const card=$('momentumCard'), list=$('momentumList'), badge=$('momentumBadge'), summary=$('momentumSummary');
+    if(!card||!list) return;
+    const thresholds=alertThresholds(), alerts=[];
+    const seen=new Set();
+    state.holdRows.forEach(r=>{
+      const key=symKey(r.symbol); if(!key || seen.has(key)) return; seen.add(key);
+      const current=r.currentPrice; const hist=state.priceHistory.get(key)||[];
+      const moves=computeMomentum(current,hist,$('valDate').value);
+      moves.forEach(m=>{ if(m.pct>=thresholds[m.days]) alerts.push({symbol:r.symbol,days:m.days,pct:m.pct,threshold:thresholds[m.days]}); });
+    });
+    alerts.sort((a,b)=>b.pct-a.pct);
+    state.momentumAlerts=alerts;
+    card.style.display=alerts.length?'block':'none';
+    badge.textContent=`${alerts.length} alert${alerts.length===1?'':'s'}`;
+    summary.textContent=alerts.length?`${alerts.length} price movement${alerts.length===1?'':'s'} crossed your configured thresholds.`:'No alerts';
+    list.innerHTML=alerts.length?alerts.slice(0,12).map(a=>`<div class="momentum-item"><div class="mi-top"><b>${escapeAttr(a.symbol)}</b><span class="mi-change">+${a.pct.toFixed(2)}%</span></div><div class="mi-meta">Over ${a.days} trading day${a.days===1?'':'s'} · threshold +${a.threshold.toFixed(1)}%</div></div>`).join(''):'<div class="momentum-empty">No stocks crossed your thresholds.</div>';
+  }
+
+  function renderMomentumTrends(rows){
+    const card=$('trendCard'), body=$('trendBody'), summary=$('trendSummary');
+    if(!card||!body) return;
+    const seen=new Set(), items=[];
+    (rows||state.holdRows).forEach(r=>{
+      const key=symKey(r.symbol);
+      if(!key || seen.has(key)) return;
+      seen.add(key);
+      const current=r.currentPrice, hist=state.priceHistory.get(key)||[];
+      const moves=computeMomentum(current,hist,$('valDate').value);
+      const map={}; moves.forEach(m=>{map[m.days]=m.pct;});
+      if(current!=null && moves.length) items.push({symbol:r.symbol, map});
+    });
+    if(!items.length){ card.style.display='none'; body.innerHTML=''; return; }
+    const cell=(v)=>{
+      if(v==null || isNaN(v)) return '<span class="muted">—</span>';
+      const cls=v>0?'trend-up':v<0?'trend-down':'trend-flat';
+      return `<span class="${cls}">${v>=0?'+':''}${v.toFixed(2)}%</span>`;
+    };
+    body.innerHTML=items.map(x=>`<tr><td class="left">${escapeAttr(x.symbol)}</td><td>${cell(x.map[1])}</td><td>${cell(x.map[3])}</td><td>${cell(x.map[5])}</td><td>${cell(x.map[7])}</td></tr>`).join('');
+    summary.textContent=`Recent trading-day movement for ${items.length} stock${items.length===1?'':'s'} in the current view.`;
+    card.style.display='block';
   }
 
   // ================= GOOGLE SHEETS PRICE REFRESH =================
@@ -1313,53 +1727,131 @@ tbody tr:hover{background:var(--surface-2);}
     });
   }
 
-  $('fetchSheetBtn').addEventListener('click', async ()=>{
-    const raw = $('sheetUrl').value.trim();
-    if(!raw){ $('sheetStatus').textContent = 'Paste your sheet link first.'; return; }
-    $('sheetStatus').textContent = 'Fetching…';
-    try{
-      let aoa;
-      if(/\/d\/e\//.test(raw)){
-        const res = await fetch(raw);
-        if(!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-        aoa = parseCSV(text);
-      } else {
-        const idMatch = raw.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if(!idMatch) throw new Error("That doesn't look like a Google Sheets link.");
-        const sheetId = idMatch[1];
-        const gidMatch = raw.match(/[#&?]gid=(\d+)/);
-        const gid = gidMatch ? gidMatch[1] : '0';
-        const data = await fetchGvizJsonp(sheetId, gid);
-        if(!data || !data.table) throw new Error('Unexpected response from the sheet.');
-        aoa = gvizToAOA(data);
-      }
-      const parsed = parsePriceSheet(aoa);
-      if(!parsed){ $('sheetStatus').textContent = 'Fetched the sheet, but could not find Symbol/Price columns in it.'; return; }
-      const cm = parsed.colMap;
-      const priceMap = {};
-      parsed.rows.forEach(r=>{
-        const sym = cm.symbol ? String(r[cm.symbol]||'').trim() : '';
-        const price = cm.price ? num(r[cm.price]) : NaN;
-        if(sym && !isNaN(price) && price>0) priceMap[symKey(sym)] = price;
-      });
-      let updated = 0;
-      state.holdRows.forEach(row=>{
-        const sym = String(row.symbol||'').trim();
-        if(!sym) return;
-        const p = priceMap[symKey(sym)];
-        if(p!=null){
-          row.currentPrice = p;
-          updated++;
-        }
-      });
-      renderHoldTable();
-      $('sheetStatus').textContent = updated>0
-        ? `Updated current price for ${updated} row(s) — recalculate to refresh returns.`
-        : 'Fetched the sheet, but none of its symbols matched your holdings.';
-    }catch(err){
-      $('sheetStatus').textContent = (err && err.message) ? err.message : "Couldn't reach that sheet.";
+  async function fetchSheetPrices(){
+    const raw=$('sheetUrl').value.trim();
+    if(!raw) throw new Error('Paste your Google Sheets link in Manage first.');
+    $('sheetStatus').textContent='Fetching…';
+    let aoa;
+    if(/\/d\/e\//.test(raw)){
+      const res=await fetch(raw);
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      aoa=parseCSV(await res.text());
+    } else {
+      const idMatch=raw.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if(!idMatch) throw new Error("That doesn't look like a Google Sheets link.");
+      const sheetId=idMatch[1];
+      const gidMatch=raw.match(/[#&?]gid=(\d+)/);
+      const gid=gidMatch?gidMatch[1]:'0';
+      const data=await fetchGvizJsonp(sheetId,gid);
+      if(!data || !data.table) throw new Error('Unexpected response from the sheet.');
+      aoa=gvizToAOA(data);
     }
+    state.lastSheetAoa = aoa;
+    const parsed=parsePriceSheet(aoa);
+    if(!parsed) throw new Error('Fetched the sheet, but could not find Symbol/Price columns in it.');
+    const cm=parsed.colMap, priceMap={};
+    parsed.rows.forEach(r=>{
+      const sym=cm.symbol?String(r[cm.symbol]||'').trim():'';
+      const price=cm.price?num(r[cm.price]):NaN;
+      if(sym && !isNaN(price) && price>0) priceMap[symKey(sym)]=price;
+    });
+    let updated=0;
+    state.holdRows.forEach(row=>{
+      const sym=String(row.symbol||'').trim(); if(!sym) return;
+      const p=priceMap[symKey(sym)];
+      if(p!=null){row.currentPrice=p;updated++;}
+    });
+    renderHoldTable();
+    $('sheetStatus').textContent=updated>0?`Updated current price for ${updated} row(s).`:'Fetched the sheet, but none of its symbols matched your holdings.';
+    scheduleAutosave();
+    return updated;
+  }
+
+  function parseInlineHistoryFromSheet(aoa){
+    const map=new Map();
+    if(!Array.isArray(aoa) || !aoa.length) return map;
+    const symbolIndex=1; // column B in your current sheet layout
+    const historyStartIndex=8; // column I; column H contains Date/Close labels
+    for(let i=0;i<aoa.length;i++){
+      const row=aoa[i]||[];
+      const symbol=String(row[symbolIndex]||'').trim();
+      if(!symbol) continue;
+      const dateRow=aoa[i+1]||[];
+      const closeRow=aoa[i+2]||[];
+      const marker=String(row[7]||'').trim().toLowerCase();
+      const dateMarker=String(dateRow[7]||'').trim().toLowerCase();
+      const closeMarker=String(closeRow[7]||'').trim().toLowerCase();
+      if(marker && marker!=='date' && dateMarker!=='date') continue;
+      if(dateMarker!=='date' || closeMarker!=='close') continue;
+      const key=symKey(symbol);
+      const entries=[];
+      for(let c=historyStartIndex;c<Math.max(dateRow.length,closeRow.length);c++){
+        const date=historyDateKey(dateRow[c]);
+        const price=num(closeRow[c]);
+        if(date && !isNaN(price) && price>0) entries.push({date,price});
+      }
+      if(entries.length) map.set(key,entries.sort((a,b)=>a.date.localeCompare(b.date)));
+      i+=2;
+    }
+    return map;
+  }
+
+  async function fetchHistoryPrices(aoaOverride=null){
+    try{
+      const raw=$('sheetUrl').value.trim();
+      if(!raw){ state.priceHistory=new Map(); $('historyStatus').textContent='Connect your Google Sheet first.'; return 0; }
+      let aoa=aoaOverride;
+      if(!aoa){
+        if(/\/d\/e\//.test(raw)){
+          const res=await fetch(raw);
+          if(!res.ok) throw new Error('HTTP '+res.status);
+          aoa=parseCSV(await res.text());
+        } else {
+          const idMatch=raw.match(/\/d\/([a-zA-Z0-9-_]+)/);
+          if(!idMatch) throw new Error("That doesn't look like a Google Sheets link.");
+          const gidMatch=raw.match(/[#&?]gid=(\d+)/);
+          const gid=gidMatch?gidMatch[1]:'0';
+          const data=await fetchGvizJsonp(idMatch[1],gid);
+          if(!data||!data.table) throw new Error('Unexpected response from the sheet.');
+          aoa=gvizToAOA(data);
+        }
+      }
+      const map=parseInlineHistoryFromSheet(aoa);
+      state.priceHistory=map;
+      $('historyStatus').textContent=map.size
+        ? `Loaded rolling history for ${map.size} stock${map.size===1?'':'s'} from the current price sheet.`
+        : 'No inline Date / Close history found yet. Keep the Date and Close rows under each stock as shown above.';
+      renderMomentumAlerts();
+      if(state.lastResults) renderMomentumTrends(state.holdRows);
+      return Array.from(map.values()).reduce((n,v)=>n+v.length,0);
+    }catch(err){
+      $('historyStatus').textContent=err&&err.message?err.message:'Could not load price history.';
+      return 0;
+    }
+  }
+
+  $('fetchHistoryBtn')?.addEventListener('click',async()=>{ await fetchHistoryPrices(); });
+  ['alert1d','alert3d','alert7d','alert14d','alert30d'].forEach(id=>{ $(id)?.addEventListener('change',()=>{ saveAlertSettings(); renderMomentumAlerts(); }); });
+
+  $('fetchSheetBtn').addEventListener('click',async()=>{
+    try{ await fetchSheetPrices(); }
+    catch(err){ $('sheetStatus').textContent=err&&err.message?err.message:"Couldn't reach that sheet."; }
+  });
+
+  $('refreshCalcBtn').addEventListener('click',async()=>{
+    const btn=$('refreshCalcBtn'), status=$('combinedStatus');
+    btn.disabled=true; btn.textContent='↻ Updating…'; status.textContent='Refreshing prices from Google Sheets…';
+    try{
+      const updated=await fetchSheetPrices();
+      await fetchHistoryPrices(state.lastSheetAoa);
+      runCalculation();
+      renderMomentumAlerts();
+      const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+      status.textContent=`Updated ${updated} price${updated===1?'':'s'} and recalculated at ${now}.`;
+    }catch(err){
+      runCalculation();
+      status.textContent=`Calculated using existing prices. Price refresh: ${err&&err.message?err.message:'unavailable'}`;
+    }finally{btn.disabled=false;btn.textContent='↻ Refresh prices & calculate';}
   });
 
   // ================= TRANSACTIONS / REALIZED P&L =================
@@ -1749,6 +2241,7 @@ tbody tr:hover{background:var(--surface-2);}
       app: 'holdings-xirr-backup',
       version: 1,
       savedAt: new Date().toISOString(),
+      portfolios: state.portfolios,
       holdRows: state.holdRows,
       manualTxns: state.manualTxns.map(t=>({...t, date: t.date.toISOString()}))
     };
@@ -1763,6 +2256,7 @@ tbody tr:hover{background:var(--surface-2);}
     a.remove();
     URL.revokeObjectURL(url);
     $('backupStatus').textContent = `Backup downloaded — ${state.holdRows.length} holding row(s), ${state.manualTxns.length} transaction(s).`;
+    showToast(`Backup downloaded successfully — ${state.holdRows.length} holdings and ${state.manualTxns.length} transactions.`, 'success');
   });
 
   $('restoreBtn').addEventListener('click', ()=> $('restoreFile').click());
@@ -1800,23 +2294,65 @@ tbody tr:hover{background:var(--surface-2);}
         state.manualTxns.forEach(t=>{ const m = /^t(\d+)$/.exec(t.id); if(m) maxT = Math.max(maxT, +m[1]); });
         state.txnIdSeq = Math.max(state.txnIdSeq, maxT+1);
 
+        state.lastResults = null;
+        state.activePortfolios = null;
+        state.activeBrokers = null;
+        state.activeRecos = null;
+        state.recoPortfolioFilter = null;
+        state.tableSort = {key:null, dir:1};
         refreshPortfolioSelects();
         renderHoldTable();
         renderTxnTable();
         renderRealizedReport();
+        resetCalculatedViews();
+        switchView('dashboard');
         const when = data.savedAt ? new Date(data.savedAt).toLocaleString('en-IN') : 'unknown time';
         $('backupStatus').textContent = `Restored ${state.holdRows.length} holding row(s) and ${state.manualTxns.length} transaction(s) from a backup saved ${when}.`;
+        showToast(`Restore successful — ${state.holdRows.length} holdings and ${state.manualTxns.length} transactions restored.`, 'success');
         saveToLocalStorage();
       }catch(err){
-        $('backupStatus').textContent = "Couldn't restore that file — " + (err && err.message ? err.message : 'it may not be a valid backup.');
+        const msg = "Couldn't restore that file — " + (err && err.message ? err.message : 'it may not be a valid backup.');
+        $('backupStatus').textContent = msg;
+        showToast(msg, 'error');
       }
     };
     reader.readAsText(file);
   });
 
+  function resetCalculatedViews(){
+    if($('statsRow')) $('statsRow').classList.remove('show');
+    ['filterBarPortfolio','filterBarBroker','filterBarReco','recoPortfolioBar'].forEach(id=>{
+      const el=$(id); if(el){ el.classList.remove('show'); el.innerHTML=''; }
+    });
+    if($('tableWrap')){ $('tableWrap').classList.remove('show'); $('tbody').innerHTML=''; }
+    if($('allocationCard')){ $('allocationCard').style.display='none'; $('allocationList').innerHTML=''; $('allocationTotal').textContent='—'; }
+    if($('insightsGrid')){ $('insightsGrid').style.display='none'; $('topPerformers').innerHTML=''; $('topLosers').innerHTML=''; }
+    if($('warnBox')){ $('warnBox').style.display='none'; $('warnBox').innerHTML=''; }
+    if($('realizedCard')) $('realizedCard').style.display='none';
+    if($('recoStockCard')) $('recoStockCard').style.display='none';
+    ['realizedBody','recoSummaryBody','recoStockBody'].forEach(id=>{ if($(id)) $(id).innerHTML=''; });
+    ['realTotal','realWins','realLosses'].forEach(id=>{ if($(id)) $(id).textContent='—'; });
+    if($('combinedStatus')) $('combinedStatus').textContent='Ready to refresh prices and calculate.';
+    if($('sheetStatus')) $('sheetStatus').textContent='';
+    if($('selectStatus')) $('selectStatus').textContent='';
+    if($('sellSelectedBtn')){ $('sellSelectedBtn').disabled=true; $('sellSelectedBtn').textContent='Sell selected (0)'; }
+    if($('recoStockFilter')) $('recoStockFilter').value='__all__';
+    state.selectedHoldIds = new Set();
+  }
+
+  function switchView(view){
+    document.querySelectorAll('#appNav .nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+    document.querySelectorAll('.view-panel').forEach(panel=>panel.classList.toggle('hidden', panel.id!=='view'+view.charAt(0).toUpperCase()+view.slice(1)));
+    updateHeroForView(view);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
   $('wipeBtn').addEventListener('click', ()=>{
     if(state.holdRows.length===0 && state.manualTxns.length===0){
+      resetCalculatedViews();
+      switchView('dashboard');
       $('backupStatus').textContent = 'Nothing to wipe — the ledger is already empty.';
+      showToast('Nothing to wipe — the ledger is already empty.', 'success');
       return;
     }
     const ok = confirm('This permanently clears every holding and transaction currently entered. This cannot be undone unless you have a backup file. Continue?');
@@ -1829,20 +2365,15 @@ tbody tr:hover{background:var(--surface-2);}
     state.recoPortfolioFilter = null;
     state.activeBrokers = null;
     state.activeRecos = null;
-
+    state.tableSort = {key:null, dir:1};
     renderHoldTable();
     renderTxnTable();
     renderRealizedReport();
-    try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){ /* ignore */ }
-
-    $('statsRow').classList.remove('show');
-    $('filterBarPortfolio').classList.remove('show'); $('filterBarPortfolio').innerHTML = '';
-    $('filterBarBroker').classList.remove('show'); $('filterBarBroker').innerHTML = '';
-    $('filterBarReco').classList.remove('show'); $('filterBarReco').innerHTML = '';
-    $('tableWrap').classList.remove('show'); $('tbody').innerHTML = '';
-    $('warnBox').style.display = 'none';
-
-    $('backupStatus').textContent = 'All holdings and transactions wiped. Download a backup beforehand next time if you want to undo this.';
+    try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){}
+    resetCalculatedViews();
+    switchView('dashboard');
+    $('backupStatus').textContent = 'All holdings and transactions wiped successfully.';
+    showToast('Wipe successful — all holdings, transactions, results and filters were cleared.', 'success');
   });
 
   // ================= SELL FROM HOLDINGS =================
