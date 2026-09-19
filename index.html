@@ -299,6 +299,7 @@ body{background:#f7f7f4;color:#171717;overflow-x:hidden}
 select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff;border-color:#deded8;border-radius:11px}.pastearea{background:#fbfbf8;border-color:#deded8;border-radius:14px}
 .toaster{}.toast{border-color:#deded8;border-radius:14px;box-shadow:0 18px 45px rgba(0,0,0,.12)}
 .foot{color:#888}.modal-card{border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.provider-card{border:1px solid #e6e6df;border-radius:22px;background:linear-gradient(135deg,#fff,#f7f6ff);box-shadow:0 12px 28px rgba(37,32,90,.05)}.provider-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.provider-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7770c9;font-weight:800}.provider-head h3{margin:2px 0 0;font:700 22px/1.15 'Space Grotesk',sans-serif;letter-spacing:-.02em}.provider-badge{padding:8px 11px;border-radius:999px;background:#f0efe8;color:#777;font-size:11px;font-weight:700;white-space:nowrap}.provider-badge.ok{background:#e7f8f1;color:#0b8f63}.provider-badge.warn{background:#fff4df;color:#9b6a00}.provider-badge.err{background:#ffeceb;color:#b94a43}@media(max-width:700px){.provider-head{flex-direction:column}.provider-badge{align-self:flex-start}}
 .momentum-card{margin:14px 0 16px;padding:20px 22px;border:1px solid #e6e6df;border-radius:22px;background:linear-gradient(135deg,#fffefa,#f6f4ff);box-shadow:0 12px 30px rgba(37,32,90,.06)}.trend-card{margin:0 0 16px;padding:18px 20px;border:1px solid #e6e6df;border-radius:22px;background:#fff;box-shadow:none}.trend-table-wrap{margin-top:12px;overflow:auto}.trend-table{width:100%;border-collapse:collapse;font-size:12px}.trend-table th{padding:9px 10px;text-align:right;color:#8d8d8d;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #ecece7;background:#fafaf7}.trend-table th.left{text-align:left}.trend-table td{padding:9px 10px;text-align:right;border-bottom:1px solid #f0f0ec}.trend-table td.left{text-align:left;font-weight:700;color:#222}.trend-table tr:last-child td{border-bottom:none}.trend-up{color:#0b8f63;font-weight:700}.trend-down{color:#d34840;font-weight:700}.trend-flat{color:#7d7d7d;font-weight:600}@media(max-width:700px){.trend-table{min-width:520px}}
 .momentum-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.momentum-head h3{margin:2px 0 4px;font:700 22px/1.15 'Space Grotesk',sans-serif;letter-spacing:-.02em}.momentum-sub{color:#7a7a86;font-size:12px}.momentum-badge{padding:8px 11px;border-radius:999px;background:#eeebff;color:#5b5bf6;font-weight:700;font-size:11px;white-space:nowrap}.momentum-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.momentum-item{background:#fff;border:1px solid #ece9e3;border-radius:16px;padding:13px 14px}.momentum-item .mi-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.momentum-item b{font:700 14px 'Space Grotesk',sans-serif}.momentum-item .mi-change{font:700 15px 'Space Grotesk',sans-serif;color:#0b8f63}.momentum-item .mi-meta{margin-top:5px;color:#7a7a86;font-size:11px}.momentum-empty{padding:12px 2px;color:#777;font-size:12px}.compact-setting{min-width:110px}.compact-setting label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#9a9aa4;margin-bottom:5px;font-weight:700}.compact-setting input{width:110px}@media(max-width:700px){.momentum-list{grid-template-columns:1fr}.momentum-head{flex-direction:column}.compact-setting{flex:1 1 40%}.compact-setting input{width:100%}}
 @media(max-width:900px){.wrap{padding:0 20px 90px}.hero{grid-template-columns:1fr;padding:36px 30px}.hero-side{align-items:flex-start;text-align:left;gap:16px}.stats-row{grid-template-columns:repeat(2,1fr)}.dashboard-update{grid-template-columns:1fr 1fr}.update-status{grid-column:1 / -1;grid-row:1}}
@@ -312,10 +313,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
 
   <div class="topbar">
     <div class="brand-mark"><div class="dot">₹</div><span>WealthLedger</span></div>
-    <div class="theme-toggle">
-      <button id="btnLight" class="active">☀ Light</button>
-      <button id="btnDark">☾ Dark</button>
-    </div>
+    <div class="theme-toggle" aria-hidden="true"><button id="btnLight" class="active">☀ Light</button><button id="btnDark">☾ Dark</button></div>
   </div>
 
   <div class="app-nav" id="appNav">
@@ -543,10 +541,35 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   <div class="status-text" id="portfolioStatus" style="margin:-8px 0 16px;"></div>
 
 
+  <div id="angelAnchor" class="section-anchor"></div>
+  <div class="section-title-row"><h2><span class="num">03</span>Angel One SmartAPI</h2></div>
+  <div class="card provider-card">
+    <div class="provider-head">
+      <div>
+        <div class="provider-kicker">PRIMARY MARKET DATA</div>
+        <h3>Angel One current prices &amp; history</h3>
+        <p class="card-hint" style="margin:4px 0 0;">WealthLedger can use a small secure Worker as the bridge to Angel One. Your Angel credentials stay in the Worker — never in this public page. Google Sheets remains available as a fallback.</p>
+      </div>
+      <span class="provider-badge" id="angelStatusBadge">Not connected</span>
+    </div>
+    <div class="inline-row" style="margin-top:14px;">
+      <input class="text-input" id="angelApiUrl" style="flex:1; min-width:260px;" placeholder="https://your-worker.your-subdomain.workers.dev" autocomplete="off">
+      <select class="sel" id="angelExchange" style="width:120px;"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
+      <button class="btn-small" id="angelTestBtn">Test connection</button>
+    </div>
+    <div class="status-text" id="angelStatusText"></div>
+    <div class="mapbox" style="margin-top:12px;">
+      <b>One-time Worker setup</b>
+      <div style="margin-top:8px;line-height:1.7;">
+        Deploy the <code>angel-worker</code> folder from this package to Cloudflare Workers, add the four Angel secrets there, then paste the Worker URL above. The page only calls read-only market-data endpoints. No Angel login, PIN, TOTP, API key, or order API is exposed here.
+      </div>
+    </div>
+  </div>
+
   <div id="dataConnectionsAnchor" class="section-anchor"></div>
-  <div class="section-title-row"><h2><span class="num">03</span>Data connections</h2></div>
+  <div class="section-title-row"><h2><span class="num">04</span>Fallback data connection</h2></div>
   <div class="card">
-    <p class="card-hint">GOOGLEFINANCE runs on Google's own servers. Connect a viewable sheet here once, then use <b>Refresh prices &amp; calculate</b> from the Overview tab whenever you want a new valuation.</p>
+    <p class="card-hint">Google Sheets stays here as a fallback. You do not need to change your existing sheet just to use Angel One. Leave this connected if you want a second price source or a backup when SmartAPI history is temporarily unavailable.</p>
     <div class="mapbox" style="margin-top:0;">
       <b>One-time setup</b>
       <div style="margin-top:8px; line-height:1.7;">
@@ -563,9 +586,9 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   </div>
 
   <div id="priceHistoryAnchor" class="section-anchor"></div>
-  <div class="section-title-row"><h2><span class="num">04</span>Price history &amp; alerts</h2></div>
+  <div class="section-title-row"><h2><span class="num">05</span>Price history &amp; alerts</h2></div>
   <div class="card">
-    <p class="card-hint">WealthLedger now reads price history directly from the same Google Sheet you already use for current prices. Keep at least 10 trading days for each stock. No second sheet or second connection is required.</p>
+    <p class="card-hint">Angel One history is used first when connected. Your existing Date / Close rows in Google Sheets are still supported as a fallback; no second sheet is required.</p>
     <div class="mapbox" style="margin-top:0;">
       <b>Sheet layout expected</b>
       <div style="margin-top:8px; line-height:1.7;">
@@ -590,7 +613,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   <section id="viewActivity" class="view-panel hidden">
   <div id="activityTopAnchor" class="section-anchor"></div>
   <div id="transactionsAnchor" class="section-anchor"></div>
-  <div class="section-title-row"><h2><span class="num">04</span>Transactions &amp; realized profit</h2></div>
+  <div class="section-title-row"><h2><span class="num">06</span>Transactions &amp; realized profit</h2></div>
   <div id="addTransactionAnchor" class="section-anchor"></div>
   <div class="card">
     <p class="card-hint">Log a buy or sell by hand — sells are matched FIFO against earlier buys of the same instrument to work out realized profit. This is independent of the holdings table above.</p>
@@ -666,7 +689,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <div class="foot">Absolute return uses invested and current value exactly as entered. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. This page can't call market-data providers directly — that's blocked by their own cross-origin policy — so the Google Sheets refresh loads your sheet the way public embeds do, which needs the sheet link-shared as viewable. The realized profit report tracks whatever buy/sell entries you log manually, matched FIFO per instrument, independent of the holdings table.</div>
+  <div class="foot">Absolute return uses invested and current value exactly as entered. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. Market data can be refreshed through the secure Angel One Worker bridge; Google Sheets remains supported as a browser-friendly fallback and needs the sheet link-shared as viewable. The realized profit report tracks whatever buy/sell entries you log manually, matched FIFO per instrument, independent of the holdings table.</div>
 
 </div>
 
@@ -704,7 +727,11 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     tableSort: {key:null, dir:1},
     priceHistory: new Map(),
     momentumAlerts: [],
-    priceHistoryUrl: ''
+    priceHistoryUrl: '',
+    angelApiUrl: localStorage.getItem('wealthledger-angel-api-url-v1') || 'https://wealthledger-angel-bridge.jagasworld.workers.dev',
+    angelExchange: localStorage.getItem('wealthledger-angel-exchange-v1') || 'NSE',
+    angelTokenMap: (()=>{ try { return JSON.parse(localStorage.getItem('wealthledger-angel-tokens-v1') || '{}') || {}; } catch(e){ return {}; } })(),
+    angelLastSource: ''
   };
 
   // ---------- autosave (survives closing the tab / restarting the PC, when
@@ -774,6 +801,9 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   }
   $('valDate').value = new Date().toISOString().slice(0,10);
   $('txDate').value = new Date().toISOString().slice(0,10);
+  if($('angelApiUrl')) $('angelApiUrl').value = state.angelApiUrl;
+  if($('angelExchange')) $('angelExchange').value = state.angelExchange;
+  renderAngelStatus();
   try{
     const savedAlerts = JSON.parse(localStorage.getItem('wealthledger-price-alerts-v1') || '{}');
     ['1d','3d','7d','14d','30d'].forEach(k=>{ const el=$('alert'+k); if(savedAlerts[k]!=null && el) el.value = savedAlerts[k]; });
@@ -1260,11 +1290,11 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     manage: {
       kicker:'PORTFOLIO SETTINGS',
       title:'Keep your data in your hands.',
-      text:'Back up your portfolio, restore it on another device, manage portfolios, and keep your Google Sheets price connection ready.',
-      primary:'Backup &amp; restore', secondary:'Price alerts',
-      badge:'BACKUP · PORTFOLIOS · DATA', mini:'Nothing leaves your browser unless you choose to share it.',
-      primaryAction:()=>scrollToSection('backupAnchor'),
-      secondaryAction:()=>scrollToSection('priceHistoryAnchor')
+      text:'Back up your portfolio, manage portfolios, and keep Angel One ready as the primary market-data source with Google Sheets as your fallback.',
+      primary:'Angel One setup', secondary:'Backup &amp; restore',
+      badge:'BACKUP · PORTFOLIOS · DATA', mini:'Holdings stay local; market data is fetched on demand.',
+      primaryAction:()=>scrollToSection('angelAnchor'),
+      secondaryAction:()=>scrollToSection('backupAnchor')
     }
   };
 
@@ -1628,6 +1658,118 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     card.style.display='block';
   }
 
+  // ================= ANGEL ONE MARKET DATA =================
+  function angelUrl(){ return String(state.angelApiUrl||'').trim().replace(/\/+$/,''); }
+  function uniqueHoldSymbols(){ return Array.from(new Set(state.holdRows.map(r=>String(r.symbol||'').trim()).filter(Boolean))); }
+  function persistAngelSettings(){
+    state.angelApiUrl = $('angelApiUrl')?.value.trim() || '';
+    state.angelExchange = ($('angelExchange')?.value || 'NSE').toUpperCase();
+    localStorage.setItem('wealthledger-angel-api-url-v1', state.angelApiUrl);
+    localStorage.setItem('wealthledger-angel-exchange-v1', state.angelExchange);
+    localStorage.setItem('wealthledger-angel-tokens-v1', JSON.stringify(state.angelTokenMap || {}));
+  }
+  function renderAngelStatus(kind='neutral', text=''){
+    const badge=$('angelStatusBadge'), status=$('angelStatusText');
+    if(!badge) return;
+    const configured=!!angelUrl();
+    badge.className='provider-badge' + (kind==='ok'?' ok':kind==='warn'?' warn':kind==='err'?' err':'');
+    badge.textContent=kind==='ok'?'Connected':kind==='warn'?'Fallback ready':kind==='err'?'Connection error':configured?'Configured':'Not connected';
+    if(status) status.textContent=text || (configured ? `Worker configured for ${state.angelExchange}. Click Test connection or use Refresh prices & calculate on Overview.` : 'Paste the Cloudflare Worker URL here. Google Sheets stays available below as a fallback.');
+  }
+  function angelSaveMappings(mappings){
+    (mappings||[]).forEach(m=>{
+      const k=symKey(m.symbol||m.tradingsymbol);
+      if(k && m.token) state.angelTokenMap[k]=String(m.token);
+    });
+    persistAngelSettings();
+  }
+  async function angelGet(path){
+    const base=angelUrl();
+    if(!base) throw new Error('Angel One Worker URL is not configured in Settings.');
+    const res=await fetch(base+path,{cache:'no-store'});
+    let body=null;
+    try{ body=await res.json(); }catch(e){ throw new Error(`Angel One Worker returned HTTP ${res.status}.`); }
+    if(!res.ok || body?.ok===false) throw new Error(body?.error || `Angel One Worker returned HTTP ${res.status}.`);
+    return body;
+  }
+  async function testAngelConnection(){
+    persistAngelSettings();
+    if(!angelUrl()){ renderAngelStatus('warn','Add the Worker URL first.'); return false; }
+    const btn=$('angelTestBtn'); if(btn) btn.disabled=true;
+    renderAngelStatus('neutral','Testing the secure Angel One bridge…');
+    try{
+      const body=await angelGet('/api/health');
+      renderAngelStatus('ok',body?.session==='active'?'Angel One session is active.':'Angel One bridge is reachable.');
+      return true;
+    }catch(err){
+      renderAngelStatus('err',err?.message||'Angel One connection failed.');
+      return false;
+    }finally{ if(btn) btn.disabled=false; }
+  }
+  async function fetchAngelPrices(){
+    const symbols=uniqueHoldSymbols();
+    if(!symbols.length) return 0;
+    persistAngelSettings();
+    if(!angelUrl()) throw new Error('Angel One Worker URL is not configured in Settings.');
+    const allKnown=symbols.every(s=>!!state.angelTokenMap[symKey(s)]);
+    const batches=allKnown ? [symbols] : Array.from({length:Math.ceil(symbols.length/10)},(_,i)=>symbols.slice(i*10,(i+1)*10));
+    let updated=0;
+    for(let i=0;i<batches.length;i++){
+      const batch=batches[i];
+      const q=new URLSearchParams({exchange:state.angelExchange,symbols:batch.join(','),tokens:JSON.stringify(Object.fromEntries(batch.map(s=>[symKey(s),state.angelTokenMap[symKey(s)]]).filter(([,v])=>v)))});
+      const body=await angelGet('/api/quotes?'+q.toString());
+      angelSaveMappings(body.mappings||[]);
+      const byToken={};
+      (body.data||[]).forEach(x=>{ if(x.token) byToken[String(x.token)]=x; });
+      batch.forEach(symbol=>{
+        const k=symKey(symbol), token=state.angelTokenMap[k], hit=token ? byToken[String(token)] : null;
+        const fallback=(body.data||[]).find(x=>symKey(x.symbol)===k);
+        const row=hit||fallback;
+        if(row && Number.isFinite(Number(row.price)) && Number(row.price)>0){
+          const affected=state.holdRows.filter(r=>symKey(r.symbol)===k);
+          affected.forEach(r=>{ r.currentPrice=Number(row.price); });
+          updated += affected.length;
+        }
+      });
+      if(batches.length>1) renderAngelStatus('neutral',`Angel One price lookup: batch ${i+1} of ${batches.length}…`);
+    }
+    state.angelLastSource='Angel One';
+    renderHoldTable();
+    scheduleAutosave();
+    renderAngelStatus('ok',`Angel One updated ${updated} holding row${updated===1?'':'s'} using ${state.angelExchange}.`);
+    return updated;
+  }
+  async function fetchAngelHistory(){
+    const symbols=uniqueHoldSymbols();
+    if(!symbols.length) return 0;
+    persistAngelSettings();
+    if(!angelUrl()) throw new Error('Angel One Worker URL is not configured in Settings.');
+    const old=new Map(state.priceHistory||[]);
+    const result=new Map();
+    let completed=0, failures=0;
+    for(let idx=0; idx<symbols.length; idx++){
+      const symbol=symbols[idx], k=symKey(symbol), token=state.angelTokenMap[k]||'';
+      try{
+        const q=new URLSearchParams({exchange:state.angelExchange,symbol,days:'60'}); if(token) q.set('token',token);
+        const body=await angelGet('/api/history?'+q.toString());
+        if(body.token){ state.angelTokenMap[k]=String(body.token); }
+        if(Array.isArray(body.data) && body.data.length) result.set(k,body.data);
+        if(Array.isArray(body.data) && body.data.length) completed++; else failures++;
+      }catch(err){ failures++; if(old.has(k) && old.get(k)?.length) result.set(k,old.get(k)); }
+      await new Promise(r=>setTimeout(r,380));
+    }
+    if(result.size===0) throw new Error('Angel One returned no usable daily history; using Google Sheets history instead.');
+    state.priceHistory=result;
+    persistAngelSettings();
+    renderMomentumAlerts();
+    renderMomentumTrends(state.holdRows);
+    $('historyStatus').textContent=`Angel One history loaded for ${completed} stock${completed===1?'':'s'}${failures?` (${failures} unavailable; existing history kept where possible)`:''}.`;
+    return Array.from(result.values()).reduce((n,v)=>n+v.length,0);
+  }
+  $('angelTestBtn')?.addEventListener('click', testAngelConnection);
+  $('angelApiUrl')?.addEventListener('change',()=>{persistAngelSettings();renderAngelStatus();});
+  $('angelExchange')?.addEventListener('change',()=>{persistAngelSettings();renderAngelStatus();});
+
   // ================= GOOGLE SHEETS PRICE REFRESH =================
   const PRICE_GROUPS = { symbol: ['symbol','ticker','scrip','instrument'], price: ['price','ltp','last'] };
 
@@ -1840,17 +1982,33 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
 
   $('refreshCalcBtn').addEventListener('click',async()=>{
     const btn=$('refreshCalcBtn'), status=$('combinedStatus');
-    btn.disabled=true; btn.textContent='↻ Updating…'; status.textContent='Refreshing prices from Google Sheets…';
+    btn.disabled=true; btn.textContent='↻ Updating…'; status.textContent='Refreshing market data…';
+    let updated=0, source='';
     try{
-      const updated=await fetchSheetPrices();
-      await fetchHistoryPrices(state.lastSheetAoa);
-      runCalculation();
-      renderMomentumAlerts();
+      persistAngelSettings();
+      if(angelUrl()){
+        status.textContent='Refreshing prices from Angel One…';
+        try{ updated=await fetchAngelPrices(); source='Angel One'; }
+        catch(err){ renderAngelStatus('warn',`Angel One unavailable — using Google Sheets fallback. ${err?.message||''}`); source='Google Sheets'; updated=await fetchSheetPrices(); }
+        status.textContent=`Loading recent history from ${source}…`;
+        try{ if(source==='Angel One') await fetchAngelHistory(); else await fetchHistoryPrices(state.lastSheetAoa); }
+        catch(err){
+          if(source==='Angel One'){
+            try{ await fetchHistoryPrices(state.lastSheetAoa); }catch(_){ /* keep whatever history is already loaded */ }
+          }
+        }
+      } else {
+        status.textContent='Refreshing prices from Google Sheets…';
+        updated=await fetchSheetPrices();
+        await fetchHistoryPrices(state.lastSheetAoa);
+        source='Google Sheets';
+      }
+      runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows);
       const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-      status.textContent=`Updated ${updated} price${updated===1?'':'s'} and recalculated at ${now}.`;
+      status.textContent=`Updated ${updated} price${updated===1?'':'s'} from ${source} and recalculated at ${now}.`;
     }catch(err){
-      runCalculation();
-      status.textContent=`Calculated using existing prices. Price refresh: ${err&&err.message?err.message:'unavailable'}`;
+      runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows);
+      status.textContent=`Calculated using existing prices. Refresh unavailable: ${err&&err.message?err.message:'unavailable'}`;
     }finally{btn.disabled=false;btn.textContent='↻ Refresh prices & calculate';}
   });
 
