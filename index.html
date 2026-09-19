@@ -616,7 +616,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   <div class="section-title-row"><h2><span class="num">06</span>Transactions &amp; realized profit</h2></div>
   <div id="addTransactionAnchor" class="section-anchor"></div>
   <div class="card">
-    <p class="card-hint">Log a buy or sell by hand — sells are matched FIFO against earlier buys of the same instrument to work out realized profit. This is independent of the holdings table above.</p>
+    <p class="card-hint">Log a buy or sell by hand. A <b>Buy</b> is automatically added to Holdings, while a <b>Sell</b> reduces the matching holding lots FIFO and is included in realized profit. You can still edit the holdings ledger directly below.</p>
     <div class="quickadd-grid quickadd-grid-tx">
       <div class="f"><label>Instrument</label><input id="txInstrument" placeholder="e.g. INFY" list="txInstrumentList"><datalist id="txInstrumentList"></datalist></div>
       <div class="f"><label>Portfolio</label><select id="txPortfolio" class="sel"></select></div>
@@ -2092,6 +2092,68 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     $('txInstrumentList').innerHTML = names.map(n=>`<option value="${escapeAttr(n)}">`).join('');
   }
 
+  function syncBuyToHoldings(tx){
+    const hold={
+      id:'h'+(state.holdIdSeq++),
+      portfolio:tx.portfolio || state.portfolios[0],
+      symbol:tx.instrument,
+      broker:tx.broker || 'Z',
+      recommendedBy:tx.recommendedBy || '',
+      tradeDate:tx.date.toISOString().slice(0,10),
+      qty:tx.qty,
+      investedPrice:tx.price,
+      expenses:null,
+      dividend:null,
+      currentPrice:tx.price
+    };
+    state.holdRows.push(hold);
+    tx.linkedHoldingId=hold.id;
+    tx.linkedToHolding=true;
+    return hold;
+  }
+
+  function syncSellToHoldings(tx){
+    const wanted= symKey(tx.instrument);
+    let remaining=tx.qty;
+    const lots=state.holdRows
+      .filter(r=>r.portfolio===tx.portfolio && symKey(r.symbol)===wanted && Number(r.qty)>0)
+      .sort((a,b)=>{
+        const ad=a.tradeDate ? new Date(a.tradeDate+'T00:00:00').getTime() : Infinity;
+        const bd=b.tradeDate ? new Date(b.tradeDate+'T00:00:00').getTime() : Infinity;
+        return ad-bd || String(a.id).localeCompare(String(b.id));
+      });
+
+    const allocations=[];
+    for(const lot of lots){
+      if(remaining<=1e-9) break;
+      const available=Number(lot.qty)||0;
+      const take=Math.min(available,remaining);
+      if(take>0){
+        lot.qty=available-take;
+        allocations.push({holdId:lot.id,qty:take});
+        remaining-=take;
+      }
+    }
+    tx.linkedSellAllocations=allocations;
+    tx.unmatchedQty=remaining>1e-9?remaining:0;
+    tx.linkedToHolding=allocations.length>0;
+    return {matched:tx.qty-remaining, unmatched:remaining};
+  }
+
+  function undoSyncedTransaction(tx){
+    if(tx.type==='buy' && tx.linkedHoldingId){
+      state.holdRows = state.holdRows.filter(r=>r.id!==tx.linkedHoldingId);
+      return;
+    }
+    if(tx.type==='sell' && Array.isArray(tx.linkedSellAllocations)){
+      const byId=new Map(tx.linkedSellAllocations.map(x=>[x.holdId,x.qty]));
+      state.holdRows.forEach(r=>{
+        const add=byId.get(r.id);
+        if(add) r.qty=(Number(r.qty)||0)+add;
+      });
+    }
+  }
+
   $('txAdd').addEventListener('click', ()=>{
     const instrument = $('txInstrument').value.trim();
     const broker = $('txBroker').value;
@@ -2103,11 +2165,36 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       $('txStatus').textContent = 'Fill in instrument, date, qty and price.';
       return;
     }
-    state.manualTxns.push({id:'t'+(state.txnIdSeq++), portfolio: $('txPortfolio').value || state.portfolios[0], instrument, broker, recommendedBy:$('txReco').value, type, date:new Date(dateVal+'T00:00:00'), qty, price});
+
+    const tx={
+      id:'t'+(state.txnIdSeq++),
+      portfolio:$('txPortfolio').value || state.portfolios[0],
+      instrument,
+      broker,
+      recommendedBy:$('txReco').value,
+      type,
+      date:new Date(dateVal+'T00:00:00'),
+      qty,
+      price
+    };
+
+    if(type==='buy'){
+      syncBuyToHoldings(tx);
+      state.manualTxns.push(tx);
+      $('txStatus').textContent = `Buy logged — ${fmtQty(qty)} ${instrument} added to Holdings.`;
+    }else{
+      const sync=syncSellToHoldings(tx);
+      state.manualTxns.push(tx);
+      $('txStatus').textContent = sync.unmatched>1e-9
+        ? `Sell logged — ${fmtQty(sync.matched)} matched to Holdings; ${fmtQty(sync.unmatched)} unmatched.`
+        : `Sell logged — ${fmtQty(qty)} ${instrument} removed from Holdings FIFO.`;
+    }
+
     $('txInstrument').value=''; $('txQty').value=''; $('txPrice').value='';
-    $('txStatus').textContent = 'Transaction logged.';
+    renderHoldTable();
     renderTxnTable();
     renderRealizedReport();
+    if(state.lastResults) runCalculation();
   });
 
   function renderTxnTable(){
@@ -2126,9 +2213,13 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       </tr>`;
     }).join('');
     document.querySelectorAll('.rmTxn').forEach(btn=> btn.addEventListener('click', ()=>{
+      const tx=state.manualTxns.find(x=>x.id===btn.dataset.id);
+      if(tx){ undoSyncedTransaction(tx); }
       state.manualTxns = state.manualTxns.filter(x=>x.id!==btn.dataset.id);
+      renderHoldTable();
       renderTxnTable();
       renderRealizedReport();
+      if(state.lastResults) runCalculation();
     }));
     document.getElementById('txnTableEl').style.display = state.manualTxns.length>0 ? 'table' : 'none';
     refreshTxnDatalist();
@@ -2239,6 +2330,10 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     state.manualTxns.forEach(t=>{
       if(state.recoPortfolioFilter!==null && t.portfolio!==state.recoPortfolioFilter) return;
       if(!txnPredicate(t)) return;
+      // Synchronized manual buys are already represented by the matching holding
+      // lot above. Exclude the duplicate buy cash flow, but keep sells so realized
+      // proceeds still enter XIRR for partially/fully sold positions.
+      if(t.type==='buy' && t.linkedToHolding) return;
       const amt = t.qty*t.price;
       cfs.push({date: t.date, amount: t.type==='buy' ? -amt : amt});
     });
