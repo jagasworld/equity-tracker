@@ -1,6 +1,6 @@
 {
-  "name": "WealthLedger — Portfolio Tracker",
-  "short_name": "WealthLedger",
+  "name": "Equity - WealthLedger — Portfolio Tracker",
+  "short_name": "Equity - WealthLedger",
   "description": "A personal equity portfolio dashboard with XIRR, realized and unrealized P&L, broker and recommendation tracking.",
   "start_url": "./index.html",
   "scope": "./",

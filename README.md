@@ -1,10 +1,16 @@
-# WealthLedger v9
+Equity - WealthLedger v22
 
-Updated portfolio dashboard with current-price refresh plus optional historical-price alerts.
+This release keeps the reference-style UI and fixes / adds:
+- Reports and Help are now real navigation sections rather than dead tabs.
+- The “Go to Portfolio” growth CTA now opens the Portfolio view.
+- Live market ticker now fetches NIFTY 50, SENSEX and BANK NIFTY through the Angel One Worker.
+- Portfolio refresh also refreshes the market ticker.
+- Report summary cards mirror the live Net P&L, XIRR and realized P&L.
+- Help includes workflow guidance and troubleshooting shortcuts.
+- Existing holdings, transactions, FIFO, XIRR, Google Sheets fallback, backup/restore, Angel One mapping, alerts and PWA behavior are retained.
 
-## Price history sheet
-Create a viewable Google Sheets tab with columns: Date, Symbol, Price. Keep at least 10 trading days of daily observations.
+GitHub Pages:
+Upload all website files at this folder to the repository root.
 
-In Settings → Price history & alerts, paste the link to that tab (include its gid). Refreshing the portfolio loads current prices, loads history, calculates 1/3/7/14/30 trading-day percentage moves, and shows alerts when configured thresholds are crossed.
-
-The app remains browser-local and uses the existing Google Sheets viewer integration; it does not write back to the spreadsheet.
+Cloudflare Worker:
+Deploy the worker.js from the separate v22 Worker package to the existing wealthledger-angel-bridge Worker. Keep your existing four encrypted secrets.

@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WealthLedger — Private Equity Dashboard</title>
+<title>Equity - WealthLedger — Private Equity Dashboard</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5B5BF6">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-180-apple.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="WealthLedger">
+<meta name="apple-mobile-web-app-title" content="Equity - WealthLedger">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
@@ -36,7 +36,7 @@ html,body{margin:0;padding:0;}
 body{background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; font-size:14px; transition:background .2s ease, color .2s ease;}
 .wrap{max-width:1180px; margin:0 auto; padding:0 20px 90px;}
 
-.topbar{display:flex; align-items:center; justify-content:space-between; padding:22px 0 18px;}
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:15px 0 12px;}
 .brand-mark{display:flex; align-items:center; gap:10px;}
 .brand-mark .dot{width:30px;height:30px;border-radius:9px; background:linear-gradient(135deg, var(--brand), #C4A6FF); display:flex;align-items:center;justify-content:center; color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14px;}
 .brand-mark span{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16.5px; letter-spacing:-0.01em;}
@@ -73,6 +73,14 @@ body{background:var(--bg); color:var(--text); font-family:'Inter',-apple-system,
 .btn-small.danger{background:transparent; color:var(--loss); border:1px solid var(--loss);}
 .btn-small.danger:hover{background:var(--loss-soft); filter:none;}
 .status-text{font-size:11.5px; color:var(--text-faint); margin-top:8px;}
+
+.txn-actions{display:flex; gap:6px; justify-content:flex-end;}
+.btn-icon{border:1px solid var(--border); background:var(--surface-2); color:var(--text-soft); border-radius:7px; padding:5px 7px; font-size:11px; cursor:pointer;}
+.btn-icon:hover{background:var(--surface); color:var(--text);}
+.btn-icon.danger{color:var(--loss); border-color:var(--loss);}
+.btn-icon.danger:hover{background:var(--loss-soft);}
+.mapping-table{min-width:560px;}
+.mapping-empty{padding:10px 0; color:var(--text-faint); font-size:11.5px;}
 
 select.sel{font-family:'Inter',sans-serif; font-size:12.5px; padding:8px 10px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); color:var(--text);}
 select.sel:focus{outline:none; border-color:var(--brand);}
@@ -306,36 +314,573 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
 @media(max-width:700px){.wrap{padding:0 12px 70px}.topbar{padding:12px 0 9px}.app-nav{max-width:100%;overflow-x:auto}.hero{padding:28px 22px;border-radius:24px}.hero h1{font-size:43px}.hero p{font-size:13px}.dashboard-update{grid-template-columns:1fr}.update-status{grid-column:auto;grid-row:auto}.refresh-btn{width:100%}.stats-row{grid-template-columns:1fr 1fr}.resultstable{min-width:900px}}
 @media(max-width:460px){.stats-row{grid-template-columns:1fr}.hero h1{font-size:37px}.hero-actions{flex-direction:column}.hero-primary,.hero-secondary{width:100%}}
 
+
+
+/* ===== WealthLedger premium compact redesign ===== */
+:root{
+  --wl-ink:#12131a;
+  --wl-purple:#6a5cff;
+  --wl-violet:#907cff;
+  --wl-cyan:#48c6ff;
+  --wl-soft:#f5f5fa;
+  --wl-line:#e4e5ed;
+}
+
+body{
+  background:
+    radial-gradient(circle at 90% 0%, rgba(111,92,255,.08), transparent 24%),
+    linear-gradient(180deg,#f7f7fa 0%,#f2f3f7 100%) !important;
+}
+
+.wrap{
+  max-width:1200px !important;
+  padding-bottom:80px !important;
+}
+
+.topbar{
+  padding:14px 0 12px !important;
+}
+
+.brand-mark .dot{
+  width:32px !important;
+  height:32px !important;
+  border-radius:10px !important;
+  background:linear-gradient(135deg,#6255ff,#8d7dff) !important;
+  box-shadow:0 8px 18px rgba(98,85,255,.22) !important;
+}
+
+.app-nav{
+  margin:0 0 16px !important;
+  background:rgba(255,255,255,.82) !important;
+  border:1px solid rgba(219,221,231,.95) !important;
+  border-radius:14px !important;
+  box-shadow:0 8px 24px rgba(31,34,46,.05) !important;
+  backdrop-filter:blur(12px);
+}
+
+.nav-btn{
+  padding:8px 13px !important;
+  border-radius:10px !important;
+  font-size:11.5px !important;
+}
+.nav-btn.active{
+  background:#171820 !important;
+  color:#fff !important;
+  box-shadow:0 4px 12px rgba(23,24,32,.16) !important;
+}
+
+/* Compact-but-bold hero */
+.hero{
+  margin:0 0 18px !important;
+  min-height:174px !important;
+  padding:25px 28px !important;
+  border:1px solid #20212a !important;
+  border-radius:24px !important;
+  background:
+    radial-gradient(circle at 92% 16%, rgba(102,86,255,.62), transparent 21%),
+    radial-gradient(circle at 78% 92%, rgba(72,198,255,.18), transparent 27%),
+    linear-gradient(135deg,#101117 0%,#151621 62%,#1b1c28 100%) !important;
+  color:#fff !important;
+  box-shadow:0 18px 42px rgba(14,16,25,.16) !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 230px !important;
+  gap:26px !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  position:relative !important;
+}
+
+.hero:before{
+  content:"" !important;
+  position:absolute !important;
+  inset:auto auto -92px 44% !important;
+  width:290px !important;
+  height:290px !important;
+  border-radius:50% !important;
+  border:1px solid rgba(255,255,255,.055) !important;
+  box-shadow:
+    0 0 0 28px rgba(255,255,255,.018),
+    0 0 0 56px rgba(255,255,255,.012) !important;
+  pointer-events:none !important;
+  display:block !important;
+}
+
+.hero:after{
+  content:"" !important;
+  position:absolute !important;
+  right:-75px !important;
+  top:-92px !important;
+  width:250px !important;
+  height:250px !important;
+  border-radius:50% !important;
+  background:radial-gradient(circle,rgba(145,125,255,.28),transparent 68%) !important;
+  pointer-events:none !important;
+  display:block !important;
+}
+
+.hero-copy,.hero-side{
+  position:relative !important;
+  z-index:2 !important;
+}
+
+.hero-kicker{
+  color:#afa6ff !important;
+  font-size:9px !important;
+  font-weight:800 !important;
+  letter-spacing:.17em !important;
+  margin-bottom:7px !important;
+}
+
+.hero h1{
+  color:#fff !important;
+  font-size:clamp(28px,3.3vw,43px) !important;
+  line-height:1 !important;
+  letter-spacing:-.045em !important;
+  margin:0 0 8px !important;
+  max-width:760px !important;
+}
+
+.hero p{
+  color:#bfc2cc !important;
+  font-size:12.2px !important;
+  line-height:1.5 !important;
+  max-width:670px !important;
+  margin:0 !important;
+}
+
+.hero-actions{
+  display:flex !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+  margin-top:14px !important;
+}
+
+.hero-primary,.hero-secondary{
+  padding:9px 14px !important;
+  border-radius:10px !important;
+  font-size:10.8px !important;
+  font-weight:700 !important;
+  box-shadow:none !important;
+}
+
+.hero-primary{
+  background:#fff !important;
+  color:#14151b !important;
+}
+.hero-primary:hover{
+  background:#f0efff !important;
+  transform:translateY(-1px);
+}
+.hero-secondary{
+  background:rgba(255,255,255,.07) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.13) !important;
+}
+.hero-secondary:hover{
+  background:rgba(255,255,255,.12) !important;
+  transform:translateY(-1px);
+}
+
+.hero-side{
+  min-width:0 !important;
+  height:100% !important;
+  padding:14px !important;
+  border-radius:16px !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.045)) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:space-between !important;
+  align-items:flex-start !important;
+  text-align:left !important;
+  backdrop-filter:blur(12px) !important;
+}
+
+.hero-badge{
+  background:rgba(106,92,255,.18) !important;
+  color:#dcd8ff !important;
+  border:1px solid rgba(149,136,255,.24) !important;
+  padding:6px 9px !important;
+  border-radius:999px !important;
+  font-size:8.5px !important;
+  letter-spacing:.08em !important;
+}
+
+.hero-mini{
+  color:#aeb2bd !important;
+  font-size:10px !important;
+  line-height:1.45 !important;
+  max-width:190px !important;
+}
+.hero-side:after{
+  content:"LIVE  •  ANGEL ONE + SHEET" !important;
+  display:block !important;
+  margin-top:auto !important;
+  padding-top:10px !important;
+  font-size:8px !important;
+  font-weight:700 !important;
+  letter-spacing:.09em !important;
+  color:#8fe8c4 !important;
+}
+
+.section-title-row{
+  margin:24px 0 10px !important;
+}
+.section-title-row h2{
+  font-size:18px !important;
+  letter-spacing:-.015em !important;
+}
+.portfolio-primary-title h2{
+  font-size:24px !important;
+}
+
+.dashboard-update{
+  padding:7px !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.9) !important;
+  border-color:#e4e5ed !important;
+  box-shadow:0 8px 25px rgba(24,25,35,.055) !important;
+}
+
+.stat{
+  border-radius:16px !important;
+  background:rgba(255,255,255,.92) !important;
+  border-color:#e2e4ed !important;
+  box-shadow:0 7px 22px rgba(24,25,35,.045) !important;
+}
+.stat.brand{
+  background:linear-gradient(145deg,#14151b,#24243b) !important;
+  color:#fff !important;
+  border-color:#24253a !important;
+}
+.stat.brand .k{color:#aeb0c2 !important;}
+
+.card{
+  border-radius:16px !important;
+  box-shadow:0 8px 25px rgba(24,25,35,.045) !important;
+}
+
+.resultstable thead th,
+.txn-table thead th,
+.holdings-table thead th{
+  background:#f5f6fa !important;
+}
+
+.resultstable tbody tr:hover,
+.txn-table tbody tr:hover,
+.holdings-table tbody tr:hover{
+  background:#fafaff !important;
+}
+
+.refresh-btn{
+  border-radius:10px !important;
+  box-shadow:0 7px 18px rgba(106,92,255,.18) !important;
+}
+
+@media(max-width:900px){
+  .hero{
+    min-height:0 !important;
+    grid-template-columns:1fr !important;
+    padding:22px !important;
+  }
+  .hero-side{
+    min-height:108px !important;
+  }
+}
+
+@media(max-width:700px){
+  .hero{
+    border-radius:20px !important;
+    padding:20px !important;
+  }
+  .hero h1{font-size:29px !important;}
+  .hero p{font-size:11.5px !important;}
+  .hero-actions{margin-top:12px !important;}
+  .hero-primary,.hero-secondary{padding:9px 12px !important;}
+  .hero-side{min-height:95px !important;}
+  .portfolio-primary-title h2{font-size:21px !important;}
+}
+
+@media(max-width:460px){
+  .hero h1{font-size:26px !important;}
+  .hero-actions{flex-direction:column !important;}
+  .hero-primary,.hero-secondary{width:100% !important;}
+}
+
+
+/* ===== Animated GIF accents ===== */
+.hero-copy{position:relative;z-index:3;}
+.hero-side{position:relative;z-index:3;}
+.hero-chart{
+  position:absolute;
+  right:290px;
+  bottom:-2px;
+  width:300px;
+  height:132px;
+  opacity:.34;
+  z-index:1;
+  pointer-events:none;
+  filter:saturate(1.08);
+}
+.hero-chart img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  border-radius:16px;
+  mix-blend-mode:screen;
+}
+.hero-live-gif{
+  width:54px;
+  height:54px;
+  object-fit:cover;
+  border-radius:16px;
+  opacity:.92;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+@media(max-width:1100px){
+  .hero-chart{right:240px;width:270px;height:120px;opacity:.26;}
+}
+@media(max-width:900px){
+  .hero-chart{right:16px;bottom:8px;width:230px;height:100px;opacity:.18;}
+  .hero-live-gif{width:46px;height:46px;}
+}
+@media(max-width:600px){
+  .hero-chart{display:none;}
+}
+
+
+
+/* ===== WealthLedger v15 — premium dashboard refresh ===== */
+:root{--wl-ink:#15151a;--wl-muted:#6d6d78;--wl-line:#e7e6ec;--wl-purple:#7657ff;--wl-lilac:#f1edff;--wl-bg:#f6f5fb}
+html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{font-family:Inter,system-ui,sans-serif;letter-spacing:-.01em}.wrap{max-width:1320px;padding:0 28px 100px}
+.topbar{position:sticky!important;top:0;z-index:100;padding:15px 18px!important;margin:0 -10px;background:rgba(246,245,251,.88)!important;border-bottom:1px solid rgba(113,96,169,.10)!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.brand-mark{gap:12px}.brand-mark .dot{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,#6e55ff,#9f82ff)!important;box-shadow:0 9px 25px rgba(118,87,255,.28);font-size:16px}.brand-mark span{font-size:18px;font-weight:700;color:#16151b}
+.app-nav{margin:14px auto 24px!important;padding:5px!important;background:#fff!important;border:1px solid rgba(104,88,160,.14)!important;border-radius:18px!important;box-shadow:0 8px 25px rgba(34,25,78,.06)!important}.nav-btn{padding:9px 20px!important;border-radius:13px!important;color:#777581!important;font-weight:700!important}.nav-btn:hover{background:#f3f0ff!important;color:#342b59!important}.nav-btn.active{background:#19181f!important;color:#fff!important;box-shadow:0 10px 22px rgba(20,18,28,.16)!important}
+.hero{margin:0 0 25px!important;padding:34px 36px!important;border:1px solid rgba(112,94,173,.16)!important;border-radius:28px!important;background:linear-gradient(122deg,#17161d 0%,#191823 48%,#272047 100%)!important;box-shadow:0 24px 70px rgba(28,20,66,.18)!important;color:#fff;display:grid!important;grid-template-columns:minmax(0,1.4fr) 390px!important;gap:34px!important;align-items:stretch!important;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:auto -120px -210px auto;width:590px;height:590px;border-radius:50%;background:radial-gradient(circle at 50% 45%,rgba(126,92,255,.46),rgba(126,92,255,.15) 34%,transparent 67%);filter:blur(2px);pointer-events:none}.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 76% 30%,rgba(140,112,255,.12),transparent 26%),linear-gradient(90deg,transparent,rgba(255,255,255,.035));pointer-events:none}
+.hero-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;min-width:0;max-width:730px}.hero-kicker{color:#a996ff!important;font-size:10px!important;font-weight:800!important;letter-spacing:.18em!important;margin-bottom:15px!important}.hero h1{font-size:clamp(43px,5.2vw,72px)!important;line-height:.95!important;letter-spacing:-.06em!important;max-width:760px!important;color:#fff!important;margin:0 0 17px!important}.hero p{font-size:15px!important;line-height:1.68!important;color:#bbb9c4!important;max-width:650px!important}.hero-actions{margin-top:25px!important;gap:9px!important}.hero-primary,.hero-secondary{padding:12px 18px!important;border-radius:13px!important;font-size:12px!important}.hero-primary{background:#fff!important;color:#18171d!important;box-shadow:0 12px 24px rgba(0,0,0,.15)!important}.hero-primary:hover{transform:translateY(-2px)!important;box-shadow:0 15px 30px rgba(0,0,0,.22)!important}.hero-secondary{background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.15)!important;color:#f5f4f8!important}.hero-secondary:hover{background:rgba(255,255,255,.12)!important}
+.hero-meta{display:flex;align-items:center;gap:13px;margin-top:18px;flex-wrap:wrap}.hero-live-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:rgba(123,93,255,.14);border:1px solid rgba(158,134,255,.23);color:#dfd7ff;font-size:10.5px;font-weight:700}.hero-live-pill i{width:7px;height:7px;border-radius:50%;background:#63e7b2;box-shadow:0 0 0 4px rgba(99,231,178,.12);animation:wlPulse 2s ease-in-out infinite}.hero-meta-text{font-size:10.5px;color:#85828e}@keyframes wlPulse{50%{transform:scale(1.35);opacity:.55}}
+.hero-cockpit{position:relative;z-index:2;align-self:stretch;padding:18px;border-radius:22px;background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.055));border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px rgba(255,255,255,.09),0 18px 45px rgba(0,0,0,.14);display:flex;flex-direction:column;justify-content:space-between;min-height:260px;overflow:hidden}.hero-cockpit:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;right:-65px;top:-65px;background:radial-gradient(circle,rgba(154,127,255,.35),transparent 68%);pointer-events:none}.cockpit-top,.cockpit-grid,.cockpit-foot{position:relative;z-index:2}.cockpit-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.cockpit-label{font-size:9px;letter-spacing:.16em;color:#9e99aa;font-weight:800}.hero-badge{padding:7px 10px!important;border-radius:999px!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.11)!important;color:#dbd8e1!important;font-size:9px!important;letter-spacing:.05em!important}
+.cockpit-main{margin-top:25px}.cockpit-caption{font-size:10px;color:#9d99a8;margin-bottom:6px}.cockpit-value{font:700 clamp(30px,3.3vw,46px)/1 'Space Grotesk',sans-serif;letter-spacing:-.05em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cockpit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.cockpit-grid>div{padding:11px 12px;border-radius:14px;background:rgba(8,8,12,.18);border:1px solid rgba(255,255,255,.07)}.cockpit-grid span{display:block;font-size:9.5px;color:#8f8b98;margin-bottom:4px}.cockpit-grid strong{font:700 15px/1.1 'IBM Plex Mono',monospace;color:#ece9f7}.cockpit-grid strong.gain{color:#72edbc}.cockpit-grid strong.loss{color:#ff8b84}
+.cockpit-visual{position:relative;height:61px;margin-top:16px;border-bottom:1px solid rgba(255,255,255,.08);overflow:hidden;background:linear-gradient(180deg,rgba(113,89,255,.03),transparent)}.cockpit-bars{position:absolute;inset:8px 0 0;display:flex;align-items:flex-end;gap:7px}.cockpit-bars i{display:block;flex:1;border-radius:999px 999px 3px 3px;background:linear-gradient(180deg,#9b82ff,#5c47d1);opacity:.45;animation:wlBars 2.8s ease-in-out infinite}.cockpit-bars i:nth-child(1){height:24%}.cockpit-bars i:nth-child(2){height:30%}.cockpit-bars i:nth-child(3){height:34%}.cockpit-bars i:nth-child(4){height:28%}.cockpit-bars i:nth-child(5){height:42%}.cockpit-bars i:nth-child(6){height:38%}.cockpit-bars i:nth-child(7){height:48%}.cockpit-bars i:nth-child(8){height:43%}.cockpit-bars i:nth-child(9){height:55%}.cockpit-bars i:nth-child(10){height:63%}.cockpit-bars i:nth-child(11){height:72%}.cockpit-bars i:nth-child(12){height:83%}.cockpit-bars i:nth-child(2){animation-delay:.12s}.cockpit-bars i:nth-child(4){animation-delay:.25s}.cockpit-bars i:nth-child(7){animation-delay:.38s}.cockpit-bars i:nth-child(10){animation-delay:.5s}.cockpit-bars i:nth-child(12){animation-delay:.65s}.cockpit-line{position:absolute;left:0;right:0;bottom:12px;height:34px;background:linear-gradient(180deg,transparent,rgba(154,126,255,.12));clip-path:polygon(0 90%,10% 84%,17% 88%,25% 66%,35% 73%,44% 42%,54% 55%,63% 32%,71% 44%,80% 22%,88% 29%,100% 3%,100% 100%,0 100%)}@keyframes wlBars{50%{transform:scaleY(.78);transform-origin:bottom}}
+.cockpit-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}.cockpit-live{display:flex;align-items:center;gap:7px;font-size:10px;color:#c7c3cf}.cockpit-live img{width:20px;height:20px;border-radius:6px;object-fit:cover}.pulse-dot{width:7px;height:7px;border-radius:50%;background:#60e0af;box-shadow:0 0 0 4px rgba(96,224,175,.08)}.hero-mini{font-size:10px!important;color:#84808f!important;text-align:right;line-height:1.4!important;max-width:145px!important}
+.section-title-row{margin:30px 0 12px!important}.section-title-row h2{font-size:19px!important;letter-spacing:-.03em!important}.section-eyebrow{font-size:9px!important;letter-spacing:.16em!important;color:#8b78d5!important;font-weight:800!important;text-transform:uppercase}.live-dot{font-size:10px!important;color:#767481!important}.dashboard-update{padding:14px!important;border-radius:17px!important;background:#fff!important;box-shadow:0 12px 34px rgba(31,23,67,.055)!important;border:1px solid rgba(105,88,158,.12)!important}.update-date,.update-status{padding:12px 13px!important}.refresh-btn{border-radius:13px!important;background:#1a1920!important;box-shadow:0 10px 20px rgba(25,24,31,.15)!important}.refresh-btn:hover{transform:translateY(-1px)!important}
+.stats-row{gap:12px!important;margin:0 0 13px!important}.stat{background:#fff!important;border:1px solid rgba(103,85,162,.11)!important;border-radius:18px!important;padding:18px!important;box-shadow:0 10px 30px rgba(31,23,67,.04)!important;min-height:95px}.stat .k{font-size:9.5px!important;letter-spacing:.10em!important;text-transform:uppercase;color:#878490!important}.stat .v{font-family:'Space Grotesk',sans-serif!important;font-size:25px!important;letter-spacing:-.045em!important;margin-top:8px!important}.stat.brand{background:linear-gradient(145deg,#f1edff,#fbfaff)!important;border-color:#ded5ff!important}.stat.brand .v{color:#6c51ee!important}.card,.provider-card,.momentum-card,.trend-card,.allocation-card{border:1px solid rgba(100,83,153,.11)!important;background:#fff!important;border-radius:19px!important;box-shadow:0 12px 32px rgba(32,23,67,.045)!important}.card-hint{color:#8b8792!important}.card-icon{background:#f0edff!important;color:#6c51ee!important;border:1px solid #e0d9ff}.tabs{background:#f4f2f8!important;border:1px solid #e6e2ef!important;border-radius:14px!important}.tabbtn{border-radius:10px!important}.tabbtn.active{background:#1b1a20!important;color:#fff!important}.filterbar{background:#fff!important;border:1px solid rgba(100,83,153,.11)!important;border-radius:16px!important;box-shadow:0 12px 30px rgba(32,23,67,.04)!important}.chip{border-color:#e3dfeb!important;background:#faf9fc!important}.chip.active{background:#1c1b22!important;color:#fff!important;border-color:#1c1b22!important}.tablewrap{border-radius:16px!important;border:1px solid rgba(100,83,153,.11)!important;box-shadow:0 10px 28px rgba(32,23,67,.04)!important;overflow:auto;background:#fff}.resultstable thead th{background:#faf9fc!important;border-bottom:1px solid #ece9f1!important}.resultstable tbody td{border-bottom:1px solid #f0edf4!important}.resultstable tbody tr:hover{background:#faf9fd!important}.text-input,select.sel,.holdings-table input,.holdings-table select,.txn-form input,.txn-form select{background:#fbfaff!important;border-color:#e4e0eb!important}.text-input:focus,select.sel:focus,.holdings-table input:focus,.holdings-table select:focus{border-color:#8a72ed!important;box-shadow:0 0 0 3px rgba(118,87,255,.10)!important}.btn-small{background:#1b1a20!important;border-radius:11px!important}.btn-small.ghost{background:#fff!important;color:#3d3b44!important;border-color:#ded9e7!important}.btn-small.danger{background:#fff!important;border-color:#efc4c1!important}.btn-small:hover{filter:none!important;transform:translateY(-1px)}
+.visual-strip{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,1.4fr) 72px;gap:16px;align-items:stretch;margin:15px 0 10px;padding:17px;border-radius:20px;background:linear-gradient(135deg,#1b1922,#221e37);color:#fff;box-shadow:0 18px 45px rgba(31,23,67,.12);overflow:hidden;position:relative}.visual-strip:after{content:"";position:absolute;right:-80px;top:-110px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(124,93,255,.30),transparent 67%)}.visual-copy,.visual-media{position:relative;z-index:2}.visual-copy{padding:8px 4px;display:flex;flex-direction:column;justify-content:center}.visual-copy h3{font:700 22px/1.05 'Space Grotesk',sans-serif;letter-spacing:-.04em;margin:6px 0 8px}.visual-copy p{font-size:11.5px;line-height:1.5;color:#aaa7b2;max-width:340px;margin:0}.visual-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.visual-tags span{font-size:9px;color:#d9d5e1;border:1px solid rgba(255,255,255,.10);padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.04)}.visual-media{border-radius:14px;background:#121117;border:1px solid rgba(255,255,255,.07);overflow:hidden;min-height:120px;display:flex;align-items:center;justify-content:center}.visual-media img{width:100%;height:100%;min-height:120px;object-fit:cover;display:block;opacity:.9}.visual-media-live{min-width:60px}.visual-media-live img{width:100%;height:100%;object-fit:cover}.visual-media.media-failed{background:linear-gradient(135deg,#211b39,#14131a)}.visual-media-live.media-failed{background:radial-gradient(circle,rgba(113,85,255,.40),#17151e 68%)}
+#viewManage .backup-bar{padding:16px 18px!important}.backup-left{gap:12px!important}.provider-head h3{font:700 22px/1.05 'Space Grotesk',sans-serif!important;letter-spacing:-.035em!important}.provider-badge{border-radius:999px!important;padding:7px 10px!important}.mapbox{background:#faf9fd!important;border-color:#e8e3ef!important;border-radius:13px!important}
+@media(max-width:980px){.hero{grid-template-columns:1fr!important}.hero-cockpit{max-width:520px;width:100%;justify-self:start}.visual-strip{grid-template-columns:1fr 1.4fr 64px}}@media(max-width:700px){.wrap{padding:0 12px 80px}.topbar{margin:0 -4px!important;padding:12px 10px!important}.app-nav{width:100%;overflow:auto;justify-content:flex-start}.nav-btn{white-space:nowrap;padding:9px 15px!important}.hero{padding:26px 21px!important;border-radius:22px!important}.hero h1{font-size:40px!important}.hero p{font-size:13px!important}.hero-cockpit{min-height:230px}.cockpit-value{font-size:34px}.visual-strip{grid-template-columns:1fr;gap:10px;padding:14px}.visual-media{min-height:145px}.visual-media-live{display:none}.stats-row{grid-template-columns:1fr 1fr!important}.stat{min-height:84px;padding:14px!important}.stat .v{font-size:21px!important}}@media(max-width:460px){.hero h1{font-size:34px!important}.hero-actions{flex-direction:column}.hero-primary,.hero-secondary{width:100%}.hero-meta{gap:8px}.stats-row{grid-template-columns:1fr!important}.cockpit-grid{grid-template-columns:1fr 1fr}.visual-copy h3{font-size:20px}}
+
+
+/* ===== v17 reference-inspired fintech home ===== */
+.wl-header{height:76px;display:flex;align-items:center;gap:24px;position:sticky;top:0;z-index:120;margin:0 -28px;padding:0 30px;background:rgba(255,255,255,.92);border-bottom:1px solid #ececf3;backdrop-filter:blur(18px);box-shadow:0 2px 18px rgba(28,27,55,.035)}
+.wl-brand{display:flex;align-items:center;gap:11px;min-width:290px}.wl-brand strong{display:block;font:700 22px/1 'Space Grotesk',sans-serif;letter-spacing:-.035em;color:#11121a}.wl-brand small{display:block;margin-top:5px;color:#85869a;font-size:8px;letter-spacing:.17em;font-weight:800}.wl-logo{width:40px;height:40px;display:flex;align-items:flex-end;gap:3px;padding:6px 7px;border-radius:11px;background:#f0edff}.wl-logo span{display:block;width:5px;border-radius:3px 3px 1px 1px;background:linear-gradient(180deg,#7458ff,#4b35df)}.wl-logo span:nth-child(1){height:12px}.wl-logo span:nth-child(2){height:18px}.wl-logo span:nth-child(3){height:24px}.wl-logo span:nth-child(4){height:29px}
+.wl-mainnav{display:flex;align-items:center;gap:3px;flex:1}.wl-mainnav .nav-btn{background:transparent!important;border:0!important;color:#5f6070!important;box-shadow:none!important;padding:10px 13px!important;border-radius:10px!important;font-size:12px!important;font-weight:600!important;white-space:nowrap}.wl-mainnav .nav-btn.active{color:#5037e8!important;background:transparent!important;position:relative}.wl-mainnav .nav-btn.active:after{content:"";position:absolute;left:14px;right:14px;bottom:1px;height:2px;border-radius:2px;background:#5d43f2}.wl-mainnav .nav-btn:hover{background:#f5f3ff!important;color:#3e2bb5!important}.wl-mainnav .nav-static{cursor:default}.wl-header-tools{display:flex;align-items:center;gap:10px;white-space:nowrap}.tool-btn{width:31px;height:31px;border:0;background:transparent;color:#505263;font-size:22px;cursor:pointer}.wl-avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#eeebff;color:#6045ed;font-weight:800;font-size:11px}.wl-user-name{font-size:12px;color:#292a34}.wl-chevron{color:#7d7e8d;font-size:15px}.wl-live{margin-left:8px;display:grid;grid-template-columns:9px auto;column-gap:7px;align-items:center;padding:8px 12px;border-radius:13px;background:#e9fbf2;color:#168b5d}.wl-live i{width:9px;height:9px;border-radius:50%;background:#18a76c;box-shadow:0 0 0 4px #d9f7e8;grid-row:1 / span 2}.wl-live b{font-size:10px;line-height:1}.wl-live small{font-size:9px;color:#5c8e77;line-height:1.2}.wl-theme{display:none}
+.hero-reference{min-height:438px!important;margin:0 0 20px!important;padding:42px 38px!important;border:0!important;border-radius:0 0 28px 28px!important;background:radial-gradient(circle at 72% 18%,rgba(124,103,255,.08),transparent 25%),linear-gradient(120deg,#fff 0%,#fbfbff 55%,#f1efff 100%)!important;color:#11121a!important;box-shadow:none!important;display:grid!important;grid-template-columns:minmax(430px,1fr) minmax(480px,1.05fr)!important;gap:42px!important;align-items:center!important;overflow:visible!important}.hero-reference:before{display:none!important}.hero-reference:after{content:""!important;position:absolute!important;right:-80px!important;top:0!important;width:420px!important;height:420px!important;background:radial-gradient(circle,rgba(118,91,255,.11),transparent 67%)!important;display:block!important}.hero-reference .hero-copy{max-width:620px!important;z-index:3!important}.hero-reference .hero-kicker{display:inline-block!important;padding:7px 12px!important;border-radius:999px!important;background:#efecff!important;color:#5e43f0!important;font-size:9px!important;letter-spacing:.12em!important;margin-bottom:17px!important}.hero-reference .hero h1{font-size:clamp(45px,5.4vw,72px)!important;line-height:.94!important;letter-spacing:-.06em!important;color:#101117!important;margin:0 0 18px!important}.hero-reference .hero h1 span,.hero-reference .hero h1 em{display:block!important;font-style:normal!important}.hero-reference .hero h1 em{color:#5638ed!important}.hero-reference .hero p{font-size:16px!important;line-height:1.52!important;color:#596078!important;max-width:590px!important}.hero-reference .hero-actions{margin-top:25px!important;gap:12px!important}.hero-reference .hero-primary,.hero-reference .hero-secondary{height:52px!important;padding:0 26px!important;border-radius:13px!important;font-size:13px!important;font-weight:800!important}.hero-reference .hero-primary{background:linear-gradient(135deg,#5537f3,#6d4dff)!important;color:#fff!important;box-shadow:0 12px 28px rgba(90,62,237,.25)!important}.hero-reference .hero-primary span{font-size:18px;margin-left:12px}.hero-reference .hero-secondary{background:#fff!important;color:#4d38dd!important;border:1px solid #d8d5e9!important;box-shadow:none!important}.hero-reference .hero-trust{display:flex;gap:23px;flex-wrap:wrap;margin-top:24px;color:#6c6e7e;font-size:10.5px}.hero-reference .hero-trust span:first-letter{color:#7357ef}.hero-reference .hero-trust span{display:flex;align-items:center;gap:7px}.hero-reference .hero-trust span::first-letter{color:#7157ed}.hero-dashboard-card{position:relative;z-index:4;background:#fff;border:1px solid #dedee9;border-radius:20px;padding:22px 24px 16px;box-shadow:0 24px 65px rgba(45,34,104,.13);min-height:350px}.hdc-head{display:flex;justify-content:space-between;align-items:center;color:#606276;font-size:12px;font-weight:700}.hdc-range{border:1px solid #e4e4ed;background:#fff;border-radius:9px;padding:8px 10px;color:#5f6170;font-size:10px}.hdc-value-row{display:flex;align-items:center;gap:24px;margin-top:14px}.hdc-value-row strong{font:700 38px/1 'Space Grotesk',sans-serif;letter-spacing:-.05em;color:#11131a}.hdc-value-row div{display:flex;flex-direction:column}.hdc-value-row div b{font:700 20px 'Space Grotesk',sans-serif;color:#0b9a67}.hdc-value-row div small{font-size:10px;color:#77798a;margin-top:3px}.hdc-chart{height:160px;margin-top:14px;position:relative;overflow:hidden;border-bottom:1px solid #ebebf2}.chart-grid{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between}.chart-grid i{display:block;border-top:1px dashed #ececf3}.chart-line{position:absolute;left:0;right:0;bottom:20px;height:100px;background:linear-gradient(165deg,transparent 0 4%,#6c4df3 4.5% 5.5%,transparent 6% 14%,#6c4df3 14.5% 15.5%,transparent 16% 24%,#6c4df3 24.5% 25.5%,transparent 26% 35%,#6c4df3 35.5% 36.5%,transparent 37% 47%,#6c4df3 47.5% 48.5%,transparent 49% 58%,#6c4df3 58.5% 59.5%,transparent 60% 70%,#6c4df3 70.5% 71.5%,transparent 72% 81%,#6c4df3 81.5% 82.5%,transparent 83% 100%);clip-path:polygon(0 88%,8% 77%,15% 83%,23% 61%,31% 69%,40% 50%,48% 55%,57% 36%,65% 42%,73% 28%,81% 34%,90% 15%,100% 3%,100% 8%,90% 21%,81% 40%,73% 34%,65% 48%,57% 42%,48% 61%,40% 56%,31% 75%,23% 67%,15% 89%,8% 83%,0 94%);background:#6748f2;filter:drop-shadow(0 3px 2px rgba(103,72,242,.2))}.chart-fill{position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(180deg,rgba(103,72,242,.18),rgba(103,72,242,0));clip-path:polygon(0 80%,8% 69%,15% 75%,23% 53%,31% 61%,40% 42%,48% 47%,57% 28%,65% 34%,73% 20%,81% 26%,90% 7%,100% 0,100% 100%,0 100%)}.chart-point{position:absolute;right:3%;top:16%;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#fff;box-shadow:0 8px 20px rgba(51,39,112,.12);font-size:12px;font-weight:800;color:#161722}.hdc-foot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:13px}.hdc-foot div{padding:9px 10px;border:1px solid #eeeef4;border-radius:11px}.hdc-foot small{display:block;color:#8b8c9a;font-size:8.5px;text-transform:uppercase;letter-spacing:.08em}.hdc-foot b{display:block;margin-top:4px;font-size:12px;color:#262833}.hdc-foot b.gain{color:#0b9a67}.live-text{color:#0b9a67!important}.hero-holdings-badge{position:absolute;right:-68px;top:78px;z-index:5;width:120px;padding:17px 14px;border:1px solid #e2e2eb;border-radius:17px;background:#fff;box-shadow:0 18px 38px rgba(37,28,91,.10);text-align:center}.hero-holdings-badge strong{display:block;font:700 24px 'Space Grotesk',sans-serif}.hero-holdings-badge span{display:block;font-size:10px;color:#717384;margin-top:3px}.hero-holdings-badge b{display:block;color:#0b9a67;font-size:11px;margin-top:18px}.hero-holdings-badge b i{font-style:normal;font-weight:600}.hero-holdings-badge small{display:block;color:#898b99;font-size:9px;margin-top:4px}
+.wl-feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 0 28px}.wl-feature{min-height:105px;border:1px solid #e3e3ec;border-radius:17px;background:#fff;padding:18px 20px;display:grid;grid-template-columns:52px minmax(0,1fr) 20px;gap:13px;align-items:center;text-align:left;cursor:pointer;box-shadow:0 8px 25px rgba(33,29,67,.045);transition:transform .18s,box-shadow .18s,border-color .18s}.wl-feature:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(33,29,67,.08);border-color:#d4cef4}.wl-feature>b,.wl-feature span b{font:700 16px 'Space Grotesk',sans-serif;color:#161720}.wl-feature span small{display:block;margin-top:5px;color:#77798a;font-size:10.5px;line-height:1.45}.wl-feature>strong{font-size:18px;color:#55576a}.feature-icon{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font-size:23px;font-weight:800}.feature-icon.purple{background:#eeeaff;color:#6446ed}.feature-icon.green{background:#e4faef;color:#0ca26b}.feature-icon.amber{background:#fff2cf;color:#e5a600}.feature-icon.red{background:#ffebea;color:#e34b43}.feature-icon.violet{background:#eeebff;color:#684bf0}
+.view-panel{scroll-margin-top:90px}.portfolio-primary-title{margin-top:6px!important}.portfolio-primary-title h2{font-size:23px!important}.section-title-row .num{color:#aaaabd}.stats-row.show{margin-top:12px}.dashboard-update{margin-top:8px}.foot{margin-top:40px}.hero-meta{display:none}.hero-cockpit{display:none}.hero-live-pill{display:none}
+@media(max-width:1200px){.wl-header{margin:0 -20px;padding:0 20px}.wl-brand{min-width:240px}.wl-user-name,.wl-chevron{display:none}.hero-reference{grid-template-columns:minmax(390px,1fr) minmax(430px,1fr);gap:26px}.hero-holdings-badge{right:-25px}.wrap{padding-left:20px!important;padding-right:20px!important}.wl-feature-grid{gap:11px}}
+@media(max-width:980px){.wl-header{height:auto;min-height:70px;flex-wrap:wrap;padding:12px 18px}.wl-mainnav{order:3;width:100%;overflow:auto}.wl-header-tools{margin-left:auto}.hero-reference{grid-template-columns:1fr;padding:34px 28px!important}.hero-dashboard-card{max-width:700px;width:100%}.hero-holdings-badge{right:18px;top:auto;bottom:30px}.wl-feature-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.wl-header{margin:0 -12px;padding:11px 12px}.wl-brand strong{font-size:18px}.wl-brand small{font-size:7px}.wl-logo{width:34px;height:34px}.wl-header-tools .tool-btn,.wl-live{display:none}.wl-mainnav{gap:0}.wl-mainnav .nav-btn{padding:8px 11px!important;font-size:11px!important}.hero-reference{margin-left:-12px!important;margin-right:-12px!important;padding:28px 20px!important;border-radius:0 0 24px 24px!important}.hero-reference .hero h1{font-size:43px!important}.hero-reference .hero p{font-size:13px!important}.hero-dashboard-card{padding:18px;min-height:300px}.hdc-value-row strong{font-size:31px}.hdc-chart{height:125px}.hero-holdings-badge{display:none}.wl-feature-grid{grid-template-columns:1fr;gap:10px}.wl-feature{min-height:88px}.hero-reference .hero-trust{gap:12px}.hero-reference .hero-trust span{font-size:9.5px}}
+
+/* v18 reference-faithful UI */
+.wl-header{background:rgba(255,255,255,.97)!important;box-shadow:0 10px 30px rgba(35,29,84,.04)!important}.wl-header-tools{margin-left:auto!important}.wl-header-tools .tool-btn,.wl-header-tools .wl-avatar,.wl-header-tools .wl-user-name,.wl-header-tools .wl-chevron{display:none!important}.wl-live{margin-left:0!important}
+.hero-actions{gap:0!important}.hero-actions .hero-secondary{display:none!important}.hero-primary{box-shadow:0 12px 28px rgba(90,62,237,.22)!important}
+.wl-growth-banner{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,.75fr) 240px;align-items:center;gap:28px;margin:2px 0 0;padding:34px 42px 30px;border:1px solid #ebe8fb;border-radius:26px;background:linear-gradient(102deg,#f3efff 0%,#fbfbff 60%,#fff 100%);box-shadow:0 14px 34px rgba(49,39,111,.055)}.wl-growth-banner:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 75% 40%,rgba(108,75,240,.08),transparent 28%),radial-gradient(circle at 100% 60%,rgba(158,126,255,.12),transparent 24%);pointer-events:none}.growth-copy,.growth-metrics,.growth-plant{position:relative;z-index:2}.growth-kicker{font-size:10px;letter-spacing:.13em;color:#6a4df2;font-weight:800;margin-bottom:9px}.growth-copy h2{margin:0 0 8px;font:700 clamp(25px,2.5vw,36px)/1.1 'Space Grotesk',sans-serif;letter-spacing:-.035em;color:#151622}.growth-copy p{margin:0;color:#727487;font-size:13px}.growth-btn{margin-top:18px;border:0;border-radius:11px;background:linear-gradient(135deg,#5939f3,#7154ff);color:#fff;padding:11px 19px;font:800 12px 'Inter',sans-serif;box-shadow:0 10px 22px rgba(89,57,243,.22);cursor:pointer}.growth-btn span{font-size:17px;margin-left:8px}.growth-metrics{display:grid;grid-template-columns:repeat(3,1fr);align-items:center}.growth-metric{text-align:center;padding:0 12px;border-left:1px solid #e4e1ef}.growth-metric:first-child{border-left:0}.gm-icon{display:block;font-size:27px;line-height:1;color:#6b4df0;margin-bottom:10px}.growth-metric strong{display:block;font:700 23px/1.1 'Space Grotesk',sans-serif;color:#1b1c27}.growth-metric small{display:block;margin-top:7px;color:#77798a;font-size:9.5px;line-height:1.35}.growth-plant{height:180px;display:flex;align-items:flex-end;justify-content:center}.plant-pot{width:112px;height:88px;border-radius:8px 8px 20px 20px;background:linear-gradient(145deg,#f0e4d1,#d8c2a4);box-shadow:0 16px 28px rgba(62,48,31,.16),inset 0 2px rgba(255,255,255,.35);position:relative;transform:translateY(6px)}.plant-pot:before{content:"";position:absolute;left:7px;right:7px;top:-7px;height:16px;border-radius:50%;background:#6b513d}.plant-pot span{display:block;text-align:center;font:600 13px/1.1 Georgia,serif;color:#5b4637;transform:rotate(-4deg);margin-top:28px}.plant-leaf{position:absolute;width:62px;height:118px;border-radius:70% 30% 60% 40%;background:linear-gradient(160deg,#2f9c67,#1f6f49);transform-origin:bottom center;filter:drop-shadow(0 9px 10px rgba(29,92,61,.13));bottom:73px;left:50%}.plant-leaf:after{content:"";position:absolute;left:50%;top:8px;bottom:10px;width:2px;background:rgba(255,255,255,.22);transform:rotate(8deg)}.plant-leaf.l1{transform:translateX(-58px) rotate(-34deg) scale(.78)}.plant-leaf.l2{transform:translateX(-20px) rotate(-15deg) scale(.92);height:135px}.plant-leaf.l3{transform:translateX(5px) rotate(9deg) scale(1.02);height:140px}.plant-leaf.l4{transform:translateX(26px) rotate(24deg) scale(.82);height:122px}.plant-leaf.l5{transform:translateX(44px) rotate(43deg) scale(.68);height:105px}
+.wl-market-ticker{display:flex;align-items:center;gap:19px;padding:11px 8px 0;color:#626477;font-size:10px}.wl-market-ticker>div{display:flex;align-items:center;gap:10px;white-space:nowrap}.wl-market-ticker b{font-size:10.5px;color:#242533}.wl-market-ticker span{color:#535566}.wl-market-ticker em{font-style:normal;font-weight:700}.ticker-up{color:#1aa36a!important}.ticker-down{color:#e34d45!important}.ticker-sep{height:18px;border-left:1px solid #dcdde6}.ticker-meta{margin-left:auto}.ticker-meta span{color:#858797}.ticker-meta button{border:0;background:transparent;color:#5b3ef0;font-weight:800;cursor:pointer;padding:3px 0}
+@media(max-width:1050px){.wl-growth-banner{grid-template-columns:1fr 1fr}.growth-plant{display:none}.wl-market-ticker{overflow:auto}.ticker-meta{margin-left:0}}
+@media(max-width:760px){.hero-reference{min-height:auto!important}.wl-growth-banner{grid-template-columns:1fr;padding:28px 22px}.growth-metrics{margin-top:12px}.growth-metric{padding:0 8px}.wl-market-ticker{gap:12px;padding-bottom:6px}.ticker-meta{display:none}}
+</style>
+
+<style id="v22-visual-fix">
+/* ===== v22 visual alignment and reference-hero fixes ===== */
+.filterbar.show{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:9px 14px 9px 16px !important;
+  margin:0 0 9px !important;
+  min-height:46px !important;
+  width:100% !important;
+}
+.filterbar .flabel{
+  flex:0 0 176px !important;
+  width:176px !important;
+  margin:0 2px 0 0 !important;
+  white-space:nowrap !important;
+  line-height:1.2 !important;
+  color:#747182 !important;
+  font-size:10px !important;
+  text-transform:uppercase !important;
+  letter-spacing:.12em !important;
+  font-weight:800 !important;
+}
+.filterbar .chip{
+  flex:none !important;
+  padding:8px 13px !important;
+  min-height:32px !important;
+}
+
+/* The reference hero is the hero itself; do not require a nested .hero element. */
+.hero-reference h1{
+  font-size:clamp(45px,5.4vw,72px) !important;
+  line-height:.94 !important;
+  letter-spacing:-.06em !important;
+  color:#101117 !important;
+  margin:0 0 18px !important;
+  max-width:760px !important;
+}
+.hero-reference h1 span,
+.hero-reference h1 em{
+  display:block !important;
+  font-style:normal !important;
+}
+.hero-reference h1 em{color:#5638ed !important;}
+.hero-reference p{
+  font-size:16px !important;
+  line-height:1.52 !important;
+  color:#596078 !important;
+  max-width:590px !important;
+  margin:0 !important;
+}
+.hero-reference .hero-actions{
+  margin-top:25px !important;
+  gap:12px !important;
+}
+.hero-reference .hero-primary,
+.hero-reference .hero-secondary{
+  height:52px !important;
+  padding:0 26px !important;
+  border-radius:13px !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+}
+.hero-reference .hero-primary{
+  background:linear-gradient(135deg,#5537f3,#6d4dff) !important;
+  color:#fff !important;
+  box-shadow:0 12px 28px rgba(90,62,237,.25) !important;
+}
+.hero-reference .hero-primary span{font-size:18px !important;margin-left:12px !important;}
+.hero-reference .hero-secondary{
+  background:#fff !important;
+  color:#4d38dd !important;
+  border:1px solid #d8d5e9 !important;
+  box-shadow:none !important;
+}
+.hero-reference .hero-trust{
+  display:flex !important;
+  gap:23px !important;
+  flex-wrap:wrap !important;
+  margin-top:24px !important;
+  color:#6c6e7e !important;
+  font-size:10.5px !important;
+}
+.hero-reference .hero-trust span{display:flex !important;align-items:center !important;gap:7px !important;}
+
+@media(max-width:900px){
+  .filterbar.show{align-items:flex-start !important;}
+  .filterbar .flabel{flex-basis:150px !important;width:150px !important;}
+}
+@media(max-width:700px){
+  .filterbar.show{padding:10px 12px !important;gap:7px !important;}
+  .filterbar .flabel{flex:0 0 100% !important;width:100% !important;margin:0 0 2px !important;}
+  .hero-reference h1{font-size:43px !important;line-height:.96 !important;}
+  .hero-reference p{font-size:13px !important;}
+}
+@media(max-width:460px){
+  .hero-reference h1{font-size:34px !important;}
+}
 </style>
 </head>
 <body data-theme="light" class="wl-v7-light">
 <div class="wrap">
 
-  <div class="topbar">
-    <div class="brand-mark"><div class="dot">₹</div><span>WealthLedger</span></div>
-    <div class="theme-toggle" aria-hidden="true"><button id="btnLight" class="active">☀ Light</button><button id="btnDark">☾ Dark</button></div>
-  </div>
+  <header class="wl-header">
+    <div class="wl-brand">
+      <div class="wl-logo" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div><strong>Equity - WealthLedger</strong><small>TRACK · INVEST · GROW</small></div>
+    </div>
+    <nav class="wl-mainnav" id="appNav" aria-label="Primary navigation">
+      <button class="nav-btn active" data-view="dashboard">Home</button>
+      <button class="nav-btn" data-view="dashboard" data-scroll="tableWrap">Portfolio</button>
+      <button class="nav-btn" data-view="activity" data-scroll="addTransactionAnchor">Transactions</button>
+      <button class="nav-btn" data-view="reports">Reports</button>
+      <button class="nav-btn" data-view="manage">Settings</button>
+      <button class="nav-btn" data-view="help">Help</button>
+    </nav>
+    <div class="wl-header-tools">
+      <div class="wl-live"><i></i><b>Live Market</b><small>NSE · BSE</small></div>
+      <div class="theme-toggle wl-theme" aria-label="Theme"><button id="btnLight" class="active">☀</button><button id="btnDark">☾</button></div>
+    </div>
+  </header>
 
-  <div class="app-nav" id="appNav">
-    <button class="nav-btn active" data-view="dashboard">Overview</button>
-    <button class="nav-btn" data-view="activity">Activity</button>
-    <button class="nav-btn" data-view="manage">Settings</button>
-  </div>
-
-  <div class="hero" id="pageHero">
+  <div class="hero hero-reference" id="pageHero">
     <div class="hero-copy">
-      <div class="hero-kicker" id="heroKicker">YOUR PRIVATE INVESTMENT DASHBOARD</div>
-      <h1 id="heroTitle">Know what your money is doing.</h1>
-      <p id="heroText">Track every equity position, compare returns, and refresh your portfolio in one place — without sending your holdings to a server.</p>
+      <div class="hero-kicker" id="heroKicker">YOUR INVESTMENT COMMAND CENTRE</div>
+      <h1 id="heroTitle"><span>Build wealth.</span><em>Track every move.</em></h1>
+      <p id="heroText">Track your equity portfolio, manage transactions, get live prices from Angel One, view performance, set alerts and keep your history safe — all in one place.</p>
       <div class="hero-actions">
-        <button class="hero-primary" id="heroPrimaryBtn">Refresh portfolio</button>
-        <button class="hero-secondary" id="heroSecondaryBtn">View holdings</button>
+        <button class="hero-primary" id="heroPrimaryBtn">Go to Portfolio <span>→</span></button>
+      </div>
+      <div class="hero-trust">
+        <span>✓ <b>Live market data</b></span>
+        <span>✓ <b>Your data, your control</b></span>
+        <span>✓ <b>Simple. Secure. Powerful.</b></span>
       </div>
     </div>
-    <div class="hero-side">
-      <div class="hero-badge" id="heroBadge">PRIVATE · LOCAL-FIRST · PWA</div>
-      <div class="hero-mini" id="heroMini">Your data stays in your browser.</div>
+
+    <div class="hero-dashboard-card">
+      <div class="hdc-head"><span>Portfolio Value</span><span class="hdc-range">1Y⌄</span></div>
+      <div class="hdc-value-row"><strong id="heroCurrentValue">—</strong><div><b id="heroXirr">—</b><small>Total Return</small></div></div>
+      <div class="hdc-chart" aria-hidden="true">
+        <div class="chart-grid"><i></i><i></i><i></i></div>
+        <div class="chart-line"></div><div class="chart-fill"></div><span class="chart-point">₹</span>
+      </div>
+      <div class="hdc-foot">
+        <div><small>Net P&amp;L</small><b id="heroPnl">—</b></div>
+        <div><small>Portfolio XIRR</small><b id="heroXirrMini">—</b></div>
+        <div><small>Status</small><b class="live-text">Live</b></div>
+      </div>
     </div>
+    <div class="hero-holdings-badge"><strong id="heroHoldingCount">—</strong><span>Holdings</span><b>↑ <i>Live</i></b><small>Market connected</small></div>
+  </div>
+
+  <div class="wl-feature-grid" aria-label="WealthLedger features">
+    <button class="wl-feature" data-goto="tableWrap"><span class="feature-icon purple">▥</span><span><b>Portfolio</b><small>View your holdings, performance, allocation and gains/losses.</small></span><strong>→</strong></button>
+    <button class="wl-feature" data-goto="addTransactionAnchor"><span class="feature-icon green">☷</span><span><b>Transactions</b><small>Add, edit and manage your buy/sell transactions.</small></span><strong>→</strong></button>
+    <button class="wl-feature" data-goto="priceHistoryAnchor"><span class="feature-icon amber">●</span><span><b>Market Alerts</b><small>Set price alerts and monitor recent movement.</small></span><strong>→</strong></button>
+    <button class="wl-feature" data-goto="angelAnchor"><span class="feature-icon red">A</span><span><b>Angel One Live Prices</b><small>Get current prices through Angel One SmartAPI.</small></span><strong>→</strong></button>
+    <button class="wl-feature" data-goto="priceHistoryAnchor"><span class="feature-icon green">▤</span><span><b>Google Sheets History</b><small>Use your existing sheet for historical prices and fallback data.</small></span><strong>→</strong></button>
+    <button class="wl-feature" data-goto="backupAnchor"><span class="feature-icon violet">☁</span><span><b>Backup &amp; Restore</b><small>Keep your portfolio safe with export and restore tools.</small></span><strong>→</strong></button>
+  </div>
+
+  <section class="wl-growth-banner" id="growthBanner" aria-label="WealthLedger growth message">
+    <div class="growth-copy">
+      <div class="growth-kicker">INVEST BETTER. LIVE BRIGHTER.</div>
+      <h2>Not just a tracker — a clearer financial future.</h2>
+      <p>Simple tools. Deeper insights. Built for long-term investors.</p>
+      <button class="growth-btn" id="growthBtn">Go to Portfolio <span>→</span></button>
+    </div>
+    <div class="growth-metrics">
+      <div class="growth-metric"><span class="gm-icon">♧</span><strong>1</strong><small>Investor<br>(You)</small></div>
+      <div class="growth-metric"><span class="gm-icon">ϟ</span><strong>100%</strong><small>Your Data<br>Stays With You</small></div>
+      <div class="growth-metric"><span class="gm-icon">♢</span><strong>Always</strong><small>Learning<br>&amp; Improving</small></div>
+    </div>
+    <div class="growth-plant" aria-hidden="true">
+      <div class="plant-leaf l1"></div><div class="plant-leaf l2"></div><div class="plant-leaf l3"></div><div class="plant-leaf l4"></div><div class="plant-leaf l5"></div>
+      <div class="plant-pot"><span>Good<br>Investments<br>Better<br>Tomorrows</span></div>
+    </div>
+  </section>
+
+  <div class="wl-market-ticker" aria-label="Market today">
+    <div><b>Market Today</b></div>
+    <div><b>NIFTY 50</b><span id="tickerNifty">—</span><em id="tickerNiftyMove" class="ticker-up">▲ —</em></div>
+    <i class="ticker-sep"></i>
+    <div><b>SENSEX</b><span id="tickerSensex">—</span><em id="tickerSensexMove" class="ticker-up">▲ —</em></div>
+    <i class="ticker-sep"></i>
+    <div><b>BANK NIFTY</b><span id="tickerBankNifty">—</span><em id="tickerBankNiftyMove" class="ticker-up">▲ —</em></div>
+    <div class="ticker-meta"><span id="tickerUpdated">Live market connected</span><button id="tickerRefresh">↻ Refresh</button></div>
   </div>
 
   <section id="viewDashboard" class="view-panel">
@@ -354,6 +899,17 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
     <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
     <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
+  </div>
+
+  <div class="visual-strip" aria-label="Portfolio visuals">
+    <div class="visual-copy">
+      <div class="section-eyebrow">Portfolio pulse</div>
+      <h3>See the story behind the numbers.</h3>
+      <p>Daily movement, live quotes and your own historical context in one calm workspace.</p>
+      <div class="visual-tags"><span>Angel One</span><span>Google Sheets fallback</span><span>Local data</span></div>
+    </div>
+    <div class="visual-media"><img src="wealthledger-growth.gif" alt="Animated portfolio growth illustration" onerror="this.closest('.visual-media').classList.add('media-failed')"></div>
+    <div class="visual-media visual-media-live"><img src="wealthledger-live.gif" alt="Animated live market pulse" onerror="this.closest('.visual-media-live').classList.add('media-failed')"></div>
   </div>
 
   <div class="momentum-card" id="momentumCard" style="display:none;">
@@ -548,7 +1104,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       <div>
         <div class="provider-kicker">PRIMARY MARKET DATA</div>
         <h3>Angel One current prices &amp; history</h3>
-        <p class="card-hint" style="margin:4px 0 0;">WealthLedger can use a small secure Worker as the bridge to Angel One. Your Angel credentials stay in the Worker — never in this public page. Google Sheets remains available as a fallback.</p>
+        <p class="card-hint" style="margin:4px 0 0;">Equity - WealthLedger can use a small secure Worker as the bridge to Angel One. Your Angel credentials stay in the Worker — never in this public page. Google Sheets remains available as a fallback.</p>
       </div>
       <span class="provider-badge" id="angelStatusBadge">Not connected</span>
     </div>
@@ -562,6 +1118,24 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       <b>One-time Worker setup</b>
       <div style="margin-top:8px;line-height:1.7;">
         Deploy the <code>angel-worker</code> folder from this package to Cloudflare Workers, add the four Angel secrets there, then paste the Worker URL above. The page only calls read-only market-data endpoints. No Angel login, PIN, TOTP, API key, or order API is exposed here.
+      </div>
+    <div class="mapbox" style="margin-top:12px;">
+      <b>Stock symbol mappings</b>
+      <div style="margin-top:8px;line-height:1.7;">
+        Use this when your simple Equity - WealthLedger symbol is different from Angel One's exchange symbol. The mapping uses the Angel <b>symbol token</b>, so the display name can stay simple. Example: <code>JYOTI</code> → <code>BSE</code> → <code>504076</code>.
+      </div>
+      <div class="inline-row" style="margin-top:10px;">
+        <input class="text-input" id="angelMapSymbol" placeholder="Equity - WealthLedger symbol e.g. JYOTI" style="flex:1;min-width:220px;">
+        <select class="sel" id="angelMapExchange" style="width:120px;"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
+        <input class="text-input" id="angelMapToken" placeholder="Angel token e.g. 504076" style="width:190px;">
+        <button class="btn-small" id="angelMapAdd">+ Save mapping</button>
+      </div>
+      <div class="status-text" id="angelMapStatus"></div>
+      <div class="tscroll" style="margin-top:10px;">
+        <table class="txn-table mapping-table">
+          <thead><tr><th class="left">Symbol</th><th class="left">Exchange</th><th class="left">Angel token</th><th></th></tr></thead>
+          <tbody id="angelMapBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -617,6 +1191,9 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   <div id="addTransactionAnchor" class="section-anchor"></div>
   <div class="card">
     <p class="card-hint">Log a buy or sell by hand. A <b>Buy</b> is automatically added to Holdings, while a <b>Sell</b> reduces the matching holding lots FIFO and is included in realized profit. You can still edit the holdings ledger directly below.</p>
+    <div class="mapbox" style="margin-top:0;">
+      You can use your own short symbol in <b>Instrument</b>. For a stock whose Angel One symbol differs, add an exchange/token mapping in Settings → Angel One SmartAPI. For example, <code>JYOTI</code> can map to <code>BSE</code> token <code>504076</code> while the portfolio continues to display <code>JYOTI</code>.
+    </div>
     <div class="quickadd-grid quickadd-grid-tx">
       <div class="f"><label>Instrument</label><input id="txInstrument" placeholder="e.g. INFY" list="txInstrumentList"><datalist id="txInstrumentList"></datalist></div>
       <div class="f"><label>Portfolio</label><select id="txPortfolio" class="sel"></select></div>
@@ -626,7 +1203,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       <div class="f"><label>Date</label><input id="txDate" type="date"></div>
       <div class="f"><label>Qty</label><input id="txQty" type="number" step="any" placeholder="0"></div>
       <div class="f"><label>Price (₹)</label><input id="txPrice" type="number" step="any" placeholder="0"></div>
-      <div class="f"><button class="btn-small" id="txAdd">+ Add</button></div>
+      <div class="f"><div class="inline-row"><button class="btn-small" id="txAdd">+ Add</button><button class="btn-small ghost" id="txCancelEdit" style="display:none;">Cancel edit</button></div></div>
     </div>
     <div class="status-text" id="txStatus"></div>
     <div class="tscroll" style="margin-top:14px;">
@@ -687,9 +1264,64 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
 
   </section>
 
+  <section id="viewReports" class="view-panel hidden">
+    <div class="section-title-row">
+      <div><div class="section-eyebrow">Reports</div><h2>Portfolio reports</h2></div>
+      <div class="live-dot"><span></span> From your current data</div>
+    </div>
+    <div class="stats-row show stats-row-3col">
+      <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="reportNetPnl">—</div></div>
+      <div class="stat"><div class="k">Portfolio XIRR</div><div class="v brand" id="reportXirr">—</div></div>
+      <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="reportRealized">—</div></div>
+    </div>
+    <div class="insights-grid">
+      <div class="card insight-card">
+        <div class="card-head"><div class="card-icon">◆</div><b>Realized profit &amp; loss</b></div>
+        <p class="card-hint">Review booked gains and losses from your sell transactions. This uses the same FIFO calculation as the detailed report.</p>
+        <button class="btn-small" id="openRealizedReportBtn">Open realized report →</button>
+      </div>
+      <div class="card insight-card">
+        <div class="card-head"><div class="card-icon">▥</div><b>Portfolio allocation</b></div>
+        <p class="card-hint">See where your current portfolio value sits across your holdings and portfolios.</p>
+        <button class="btn-small" id="openAllocationReportBtn">Open portfolio view →</button>
+      </div>
+      <div class="card insight-card">
+        <div class="card-head"><div class="card-icon">↗</div><b>Recommendation performance</b></div>
+        <p class="card-hint">Compare realized and unrealized results by recommender using the existing XIRR analysis.</p>
+        <button class="btn-small" id="openRecoReportBtn">Open recommendation report →</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <div class="card-head"><div class="card-icon">✓</div><b>What this tab is for</b></div>
+      <p class="card-hint">Reports is the place for analysis rather than data entry: realized P&amp;L, XIRR, portfolio allocation and recommendation-level performance all use the same data you maintain in Holdings and Transactions.</p>
+    </div>
+  </section>
+
+  <section id="viewHelp" class="view-panel hidden">
+    <div id="helpTopAnchor" class="section-anchor"></div>
+    <div class="section-title-row">
+      <div><div class="section-eyebrow">Help</div><h2>How WealthLedger works</h2></div>
+      <div class="live-dot"><span></span> Local-first</div>
+    </div>
+    <div class="insights-grid">
+      <div class="card insight-card"><div class="card-head"><div class="card-icon">1</div><b>Enter your transactions</b></div><p class="card-hint">Add a Buy in Transactions. WealthLedger synchronizes it into Holdings and rebuilds FIFO automatically. Sells reduce holdings and feed the realized report.</p></div>
+      <div class="card insight-card"><div class="card-head"><div class="card-icon">2</div><b>Refresh market data</b></div><p class="card-hint">Use Refresh prices &amp; calculate to fetch current prices from Angel One. When Angel One is unavailable, Google Sheets remains the fallback.</p><button class="btn-small" id="helpRefreshBtn">Go to portfolio refresh →</button></div>
+      <div class="card insight-card"><div class="card-head"><div class="card-icon">3</div><b>Back up your data</b></div><p class="card-hint">Download a JSON backup before changing browsers or devices. Restore that file on the other copy.</p><button class="btn-small" id="helpBackupBtn">Open backup &amp; restore →</button></div>
+      <div class="card insight-card"><div class="card-head"><div class="card-icon">?</div><b>Angel One connection</b></div><p class="card-hint">The public page never stores your Angel credentials. The Cloudflare Worker holds the secrets and exposes only the read-only market-data bridge.</p><button class="btn-small" id="helpAngelBtn">Open Angel One setup →</button></div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <div class="card-head"><div class="card-icon">⚙</div><b>Common troubleshooting</b></div>
+      <div class="card-hint" style="line-height:1.8;">
+        <b>Angel One says connection error:</b> test <code>/api/health</code> on your Worker first. If it reports an active session, use the production site rather than opening the HTML as a <code>file://</code> URL.
+        <br><b>Prices are blank:</b> check the Worker URL in Settings, then run Refresh prices &amp; calculate.
+        <br><b>A newly added Buy is missing:</b> check Transactions for the saved Buy, then return to Portfolio; the holding is rebuilt from the transaction history.
+      </div>
+    </div>
+  </section>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <div class="foot">Absolute return uses invested and current value exactly as entered. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. Market data can be refreshed through the secure Angel One Worker bridge; Google Sheets remains supported as a browser-friendly fallback and needs the sheet link-shared as viewable. The realized profit report tracks whatever buy/sell entries you log manually, matched FIFO per instrument, independent of the holdings table.</div>
+  <div class="foot">Absolute return uses invested and current value exactly as entered. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. Market data can be refreshed through the secure Angel One Worker bridge; Google Sheets remains supported as a browser-friendly fallback and needs the sheet link-shared as viewable. Reports uses the same local Holdings and Transactions data for realized P&L, XIRR, allocation and recommendation analysis. Help explains the main workflows and troubleshooting steps.</div>
 
 </div>
 
@@ -738,7 +1370,15 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       }
       return saved || 'AUTO';
     })(),
-    angelTokenMap: (()=>{ try { return JSON.parse(localStorage.getItem('wealthledger-angel-tokens-v1') || '{}') || {}; } catch(e){ return {}; } })(),
+    angelTokenMap: (()=>{ 
+      try {
+        const saved=JSON.parse(localStorage.getItem('wealthledger-angel-tokens-v1') || '{}') || {};
+        if(!saved['BSE:JYOTI']) saved['BSE:JYOTI']='504076';
+        return saved;
+      } catch(e){
+        return {'BSE:JYOTI':'504076'};
+      }
+    })(),
     angelLastSource: ''
   };
 
@@ -812,6 +1452,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   if($('angelApiUrl')) $('angelApiUrl').value = state.angelApiUrl;
   if($('angelExchange')) $('angelExchange').value = state.angelExchange;
   renderAngelStatus();
+  renderAngelMappings();
   try{
     const savedAlerts = JSON.parse(localStorage.getItem('wealthledger-price-alerts-v1') || '{}');
     ['1d','3d','7d','14d','30d'].forEach(k=>{ const el=$('alert'+k); if(savedAlerts[k]!=null && el) el.value = savedAlerts[k]; });
@@ -985,6 +1626,16 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     return (curVal!=null && invested!=null) ? (curVal - invested + (row.dividend||0)) : null;
   }
 
+  function syncHeroHoldingCountFromState(){
+    const el=$('heroHoldingCount');
+    if(!el) return;
+    const keys=new Set();
+    state.holdRows.forEach(r=>{
+      if(Number(r.qty)>0 && String(r.symbol||'').trim()) keys.add(symKey(r.symbol));
+    });
+    el.textContent=String(keys.size);
+  }
+
   function renderHoldTable(){
     const tbody = $('holdBody');
     tbody.innerHTML = state.holdRows.map(r=>{
@@ -1040,6 +1691,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       });
     });
     updateSellSelectedButton();
+    syncHeroHoldingCountFromState();
     renderRealizedReport();
     scheduleAutosave();
   }
@@ -1266,6 +1918,40 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     if(added>0) $('hpArea').value = '';
   });
 
+  // ================= LIVE MARKET TICKER =================
+  async function refreshMarketTicker(){
+    const url=angelUrl();
+    if(!url){
+      const u=$('tickerUpdated'); if(u) u.textContent='Connect Angel One in Settings';
+      return false;
+    }
+    try{
+      const body=await angelGet('/api/indices');
+      const items=Array.isArray(body?.data)?body.data:[];
+      const byKey={}; items.forEach(x=>{ if(x?.key) byKey[x.key]=x; });
+      const bind=(key,valueId,moveId)=>{
+        const row=byKey[key];
+        const value=$(valueId),move=$(moveId);
+        if(!row){ if(value) value.textContent='—'; if(move) move.textContent='▲ —'; return; }
+        if(value) value.textContent=Number.isFinite(Number(row.price)) ? Number(row.price).toLocaleString('en-IN',{maximumFractionDigits:2}) : '—';
+        const pct=Number(row.percentChange), net=Number(row.change);
+        const up=Number.isFinite(pct)?pct>=0:(Number.isFinite(net)?net>=0:true);
+        const pctText=Number.isFinite(pct) ? `${up?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%` : (Number.isFinite(net)?`${up?'▲':'▼'} ${Math.abs(net).toFixed(2)}`:'▲ —');
+        if(move){move.textContent=pctText;move.classList.toggle('ticker-up',up);move.classList.toggle('ticker-down',!up);}
+      };
+      bind('NIFTY50','tickerNifty','tickerNiftyMove');
+      bind('SENSEX','tickerSensex','tickerSensexMove');
+      bind('BANKNIFTY','tickerBankNifty','tickerBankNiftyMove');
+      const u=$('tickerUpdated'); if(u) u.textContent=`Live · ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+      return true;
+    }catch(err){
+      const u=$('tickerUpdated'); if(u) u.textContent='Market feed unavailable';
+      return false;
+    }
+  }
+
+  window.wlRefreshMarketTicker=refreshMarketTicker;
+
   // ================= CALCULATE =================
   $('calcBtn').addEventListener('click', runCalculation);
   document.querySelectorAll('#appNav .nav-btn').forEach(btn=>{
@@ -1278,48 +1964,80 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
 
   const heroViews = {
     dashboard: {
-      kicker:'YOUR PRIVATE INVESTMENT DASHBOARD',
-      title:'Know what your money is doing.',
-      text:'Track every equity position, compare returns, and refresh your portfolio in one place — without sending your holdings to a server.',
-      primary:'Refresh portfolio', secondary:'View holdings',
+      kicker:'YOUR INVESTMENT COMMAND CENTRE',
+      title:'Build wealth. Track every move.',
+      text:'Track your equity portfolio, manage transactions, get live prices from Angel One, view performance, set alerts and keep your history safe — all in one place.',
+      primary:'Go to Portfolio',
       badge:'PRIVATE · LOCAL-FIRST · PWA', mini:'Your data stays in your browser.',
-      primaryAction:()=>{ const btn=$('refreshCalcBtn'); if(btn) btn.click(); },
-      secondaryAction:()=>scrollToSection('tableWrap')
+      primaryAction:()=>scrollToSection('tableWrap')
     },
     activity: {
       kicker:'ACTIVITY & REALIZED PERFORMANCE',
       title:'Track every move.',
       text:'Log buys and sells, review FIFO realized profit, and see how each recommendation is performing over time.',
-      primary:'Add transaction', secondary:'View realized P&amp;L',
+      primary:'Add transaction',
       badge:'TRANSACTIONS · FIFO · REALIZED', mini:'Your trading history stays in this browser.',
-      primaryAction:()=>scrollToSection('addTransactionAnchor'),
-      secondaryAction:()=>scrollToSection('realizedAnchor')
+      primaryAction:()=>scrollToSection('addTransactionAnchor')
     },
     manage: {
       kicker:'PORTFOLIO SETTINGS',
       title:'Keep your data in your hands.',
       text:'Back up your portfolio, manage portfolios, and keep Angel One ready as the primary market-data source with Google Sheets as your fallback.',
-      primary:'Angel One setup', secondary:'Backup &amp; restore',
+      primary:'Angel One setup',
       badge:'BACKUP · PORTFOLIOS · DATA', mini:'Holdings stay local; market data is fetched on demand.',
-      primaryAction:()=>scrollToSection('angelAnchor'),
-      secondaryAction:()=>scrollToSection('backupAnchor')
+      primaryAction:()=>scrollToSection('angelAnchor')
+    },
+    reports: {
+      kicker:'REPORTS & PERFORMANCE',
+      title:'See what your portfolio is doing.',
+      text:'Review realized profit, XIRR, allocation and recommendation-level performance using the same holdings and transaction data.',
+      primary:'Open realized report',
+      badge:'P&L · XIRR · INSIGHTS', mini:'Reports are calculated from your local portfolio data.',
+      primaryAction:()=>document.getElementById('openRealizedReportBtn')?.click()
+    },
+    help: {
+      kicker:'HELP & GUIDANCE',
+      title:'Know what to do next.',
+      text:'Use this guide to understand transactions, market refresh, backups and the Angel One connection.',
+      primary:'Open Angel One setup',
+      badge:'GUIDE · TROUBLESHOOTING', mini:'No credentials are stored in the public page.',
+      primaryAction:()=>scrollToSection('helpAngelBtn')
     }
   };
 
   function updateHeroForView(view){
     const cfg=heroViews[view] || heroViews.dashboard;
-    $('heroKicker').textContent=cfg.kicker;
-    $('heroTitle').textContent=cfg.title;
-    $('heroText').textContent=cfg.text;
-    $('heroBadge').textContent=cfg.badge;
-    $('heroMini').textContent=cfg.mini;
-    $('heroPrimaryBtn').innerHTML=cfg.primary;
-    $('heroSecondaryBtn').innerHTML=cfg.secondary;
-    $('heroPrimaryBtn').onclick=cfg.primaryAction;
-    $('heroSecondaryBtn').onclick=cfg.secondaryAction;
+    const kicker=$('heroKicker');
+    const title=$('heroTitle');
+    const text=$('heroText');
+    const badge=$('heroBadge');
+    const mini=$('heroMini');
+    const primary=$('heroPrimaryBtn');
+    if(kicker) kicker.textContent=cfg.kicker;
+    if(title){
+      if(view==='dashboard') title.innerHTML='<span>Build wealth.</span><em>Track every move.</em>';
+      else title.textContent=cfg.title;
+    }
+    if(text) text.textContent=cfg.text;
+    if(badge) badge.textContent=cfg.badge;
+    if(mini) mini.textContent=cfg.mini;
+    if(primary){
+      primary.innerHTML=cfg.primary + ' <span>→</span>';
+      primary.onclick=cfg.primaryAction;
+    }
   }
 
   updateHeroForView('dashboard');
+  function syncReportSummary(){
+    const n=$('sumPnl')?.textContent || '—';
+    const x=$('sumXirr')?.textContent || '—';
+    const r=$('realTotal')?.textContent || '—';
+    if($('reportNetPnl')) $('reportNetPnl').textContent=n;
+    if($('reportXirr')) $('reportXirr').textContent=x;
+    if($('reportRealized')) $('reportRealized').textContent=r;
+  }
+  ['sumPnl','sumXirr','realTotal'].forEach(id=>{ const el=$(id); if(el) new MutationObserver(syncReportSummary).observe(el,{childList:true,characterData:true,subtree:true}); });
+  syncReportSummary();
 
 
   function mergeHoldRows(rows, valDate){
@@ -1476,6 +2194,9 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     const pnlEl = $('sumPnl'); pnlEl.textContent = fmtINR(sum.totalPnl); pnlEl.className = 'v ' + (sum.totalPnl>=0?'gain':'loss');
     const absEl = $('sumAbs'); absEl.textContent = fmtPct(sum.absReturn); absEl.className = 'v ' + (sum.absReturn>=0?'gain':'loss');
     $('sumXirr').textContent = sum.portXirr!==null ? fmtPct(sum.portXirr*100) : 'n/a';
+    if($('heroCurrentValue')) $('heroCurrentValue').textContent = fmtINR(sum.totalCurVal);
+    if($('heroPnl')) { $('heroPnl').textContent = fmtINR(sum.totalPnl); $('heroPnl').className = sum.totalPnl >= 0 ? 'gain' : 'loss'; }
+    if($('heroXirr')) { $('heroXirr').textContent = sum.portXirr!==null ? fmtPct(sum.portXirr*100) : 'n/a'; $('heroXirr').className = sum.portXirr===null ? '' : (sum.portXirr >= 0 ? 'gain' : 'loss'); }
   }
 
   function chipsHtml(list, colorFn){
@@ -1667,10 +2388,18 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   }
 
   // ================= ANGEL ONE MARKET DATA =================
-  function angelUrl(){ return String(state.angelApiUrl||'').trim().replace(/\/+$/,''); }
+  function normalizeAngelBaseUrl(v){
+    let s=String(v||'').trim().replace(/\/+$/,'');
+    // Accept a worker root URL as well as a pasted /api or /api/health URL.
+    s=s.replace(/\/api\/(?:health|quotes|history)$/i,'');
+    s=s.replace(/\/api$/i,'');
+    return s.replace(/\/+$/,'');
+  }
+  function angelUrl(){ return normalizeAngelBaseUrl(state.angelApiUrl); }
   function uniqueHoldSymbols(){ return Array.from(new Set(state.holdRows.map(r=>String(r.symbol||'').trim()).filter(Boolean))); }
   function persistAngelSettings(){
-    state.angelApiUrl = $('angelApiUrl')?.value.trim() || '';
+    state.angelApiUrl = normalizeAngelBaseUrl($('angelApiUrl')?.value || '');
+    if($('angelApiUrl')) $('angelApiUrl').value = state.angelApiUrl;
     state.angelExchange = ($('angelExchange')?.value || 'NSE').toUpperCase();
     localStorage.setItem('wealthledger-angel-api-url-v1', state.angelApiUrl);
     localStorage.setItem('wealthledger-angel-exchange-v1', state.angelExchange);
@@ -1703,13 +2432,116 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
   async function angelGet(path){
     const base=angelUrl();
     if(!base) throw new Error('Angel One Worker URL is not configured in Settings.');
-    const res=await fetch(base+path,{cache:'no-store'});
+    let res;
+    try{
+      res=await fetch(base+path,{cache:'no-store',method:'GET',mode:'cors',headers:{'Accept':'application/json'}});
+    }catch(e){
+      const local = location.protocol==='file:' || location.hostname==='localhost' || location.hostname==='127.0.0.1';
+      throw new Error(local
+        ? 'Could not reach the Angel One Worker from this local page. Use the fixed Cloudflare Worker version included with this release, which allows local testing.'
+        : 'Could not reach the Angel One Worker. Check the Worker URL and CORS settings, then try Test connection again.');
+    }
     let body=null;
     try{ body=await res.json(); }catch(e){ throw new Error(`Angel One Worker returned HTTP ${res.status}.`); }
     if(!res.ok || body?.ok===false) throw new Error(body?.error || `Angel One Worker returned HTTP ${res.status}.`);
     return body;
   }
-  async function testAngelConnection(){
+
+  function renderAngelMappings(){
+    const body=$('angelMapBody');
+    if(!body) return;
+    const entries=Object.entries(state.angelTokenMap||{})
+      .filter(([k,v])=>k.includes(':') && v)
+      .sort((a,b)=>a[0].localeCompare(b[0]));
+    if(!entries.length){
+      body.innerHTML='<tr><td colspan="4" class="mapping-empty">No manual mappings yet.</td></tr>';
+      return;
+    }
+    body.innerHTML=entries.map(([key,token])=>{
+      const [exchange,symbol]=key.split(':');
+      return `<tr>
+        <td class="left">${escapeAttr(symbol)}</td>
+        <td class="left">${escapeAttr(exchange)}</td>
+        <td class="left">${escapeAttr(String(token))}</td>
+        <td><div class="txn-actions">
+          <button class="btn-icon" data-edit-map="${escapeAttr(key)}" title="Edit mapping">✎</button>
+          <button class="btn-icon danger" data-delete-map="${escapeAttr(key)}" title="Delete mapping">✕</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function saveAngelMappingFromForm(){
+    const symbol=symKey($('angelMapSymbol')?.value||'');
+    const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
+    const token=String($('angelMapToken')?.value||'').trim();
+
+    if(!symbol || !token){
+      $('angelMapStatus').textContent='Enter a symbol and Angel token.';
+      return;
+    }
+
+    state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    persistAngelSettings();
+    renderAngelMappings();
+    $('angelMapStatus').textContent=`Saved mapping: ${symbol} → ${exchange} → ${token}.`;
+    $('angelMapSymbol').value='';
+    $('angelMapToken').value='';
+  }
+
+  $('angelMapAdd')?.addEventListener('click',saveAngelMappingFromForm);
+
+  $('angelMapBody')?.addEventListener('click',e=>{
+    const editKey=e.target.getAttribute('data-edit-map');
+    const deleteKey=e.target.getAttribute('data-delete-map');
+
+    if(deleteKey){
+      // Keep the preconfigured JYOTI mapping available unless the user explicitly
+      // replaces it with another token. Deleting any other mapping is immediate.
+      delete state.angelTokenMap[deleteKey];
+      persistAngelSettings();
+      renderAngelMappings();
+      $('angelMapStatus').textContent=`Removed mapping ${deleteKey}.`;
+      return;
+    }
+
+    if(editKey){
+      const [exchange,symbol]=editKey.split(':');
+      $('angelMapExchange').value=exchange;
+      $('angelMapSymbol').value=symbol;
+      $('angelMapToken').value=state.angelTokenMap[editKey]||'';
+      $('angelMapSymbol').focus();
+      $('angelMapStatus').textContent=`Editing ${symbol} (${exchange}). Saving will replace the token.`;
+
+      // Remove the old key only after the new mapping is saved; use a transient
+      // marker so save can replace the existing key cleanly.
+      state._editingAngelMapKey=editKey;
+    }
+  });
+
+  const originalSaveAngelMappingFromForm = saveAngelMappingFromForm;
+  // Wrap the save handler so editing a mapping replaces the old key.
+  $('angelMapAdd')?.removeEventListener('click',saveAngelMappingFromForm);
+  $('angelMapAdd')?.addEventListener('click',()=>{
+    const oldKey=state._editingAngelMapKey||'';
+    const symbol=symKey($('angelMapSymbol')?.value||'');
+    const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
+    const token=String($('angelMapToken')?.value||'').trim();
+    if(!symbol || !token){
+      $('angelMapStatus').textContent='Enter a symbol and Angel token.';
+      return;
+    }
+    if(oldKey && oldKey!==`${exchange}:${symbol}`) delete state.angelTokenMap[oldKey];
+    state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    delete state._editingAngelMapKey;
+    persistAngelSettings();
+    renderAngelMappings();
+    $('angelMapStatus').textContent=`Saved mapping: ${symbol} → ${exchange} → ${token}.`;
+    $('angelMapSymbol').value='';
+    $('angelMapToken').value='';
+  });
+
+    async function testAngelConnection(){
     persistAngelSettings();
     if(!angelUrl()){ renderAngelStatus('warn','Add the Worker URL first.'); return false; }
     const btn=$('angelTestBtn'); if(btn) btn.disabled=true;
@@ -1755,12 +2587,25 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
 
       const rows=body.data||[];
       const bySymbol={};
-      rows.forEach(x=>{ bySymbol[symKey(x.symbol||x.tradingSymbol)]=x; });
+      const byToken={};
+      const tokenToAlias={};
+      tokenEntries.forEach(([alias,token])=>{ tokenToAlias[String(token)]=alias; });
+      rows.forEach(x=>{
+        const returnedKey=symKey(x.symbol||x.tradingSymbol);
+        if(returnedKey) bySymbol[returnedKey]=x;
+        const token=String(x.token||x.symbolToken||'');
+        if(token){
+          byToken[token]=x;
+          const alias=tokenToAlias[token];
+          if(alias) bySymbol[alias]=x;
+        }
+      });
 
       let batchUpdated=0;
       batch.forEach(symbol=>{
         const k=symKey(symbol);
-        const row=bySymbol[k];
+        const token=state.angelTokenMap[`${exchange}:${k}`] || (!autoMode ? state.angelTokenMap[k] : '');
+        const row=bySymbol[k] || (token ? byToken[String(token)] : null);
         if(row && Number.isFinite(Number(row.price)) && Number(row.price)>0){
           const affected=state.holdRows.filter(r=>symKey(r.symbol)===k);
           affected.forEach(r=>{ r.currentPrice=Number(row.price); });
@@ -2078,6 +2923,7 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
         source='Google Sheets';
       }
       runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows);
+      await (window.wlRefreshMarketTicker ? window.wlRefreshMarketTicker() : Promise.resolve(false));
       const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
       status.textContent=`Updated ${updated} price${updated===1?'':'s'} from ${source} and recalculated at ${now}.`;
     }catch(err){
@@ -2104,7 +2950,8 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       investedPrice:tx.price,
       expenses:null,
       dividend:null,
-      currentPrice:tx.price
+      currentPrice:tx.price,
+      sourceTransactionId:tx.id
     };
     state.holdRows.push(hold);
     tx.linkedHoldingId=hold.id;
@@ -2154,6 +3001,59 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     }
   }
 
+
+  let txEditingId=null;
+
+  function clearTransactionForm(){
+    txEditingId=null;
+    $('txInstrument').value='';
+    $('txQty').value='';
+    $('txPrice').value='';
+    $('txDate').value=new Date().toISOString().slice(0,10);
+    $('txAdd').textContent='+ Add';
+    $('txCancelEdit').style.display='none';
+    $('txStatus').textContent='';
+  }
+
+  function rebuildTransactionSync(){
+    // Undo every transaction in reverse order, then replay the complete
+    // transaction ledger chronologically. This keeps FIFO allocations correct
+    // when a transaction is edited/deleted, including date or symbol changes.
+    const reverse=state.manualTxns.slice().sort((a,b)=>b.date-a.date);
+    reverse.forEach(tx=>undoSyncedTransaction(tx));
+
+    state.manualTxns.forEach(tx=>{
+      delete tx.linkedHoldingId;
+      delete tx.linkedSellAllocations;
+      delete tx.unmatchedQty;
+      tx.linkedToHolding=false;
+    });
+
+    const forward=state.manualTxns.slice().sort((a,b)=>a.date-b.date || String(a.id).localeCompare(String(b.id)));
+    forward.forEach(tx=>{
+      if(tx.type==='buy') syncBuyToHoldings(tx);
+      else syncSellToHoldings(tx);
+    });
+  }
+
+  function startTransactionEdit(tx){
+    txEditingId=tx.id;
+    $('txInstrument').value=tx.instrument||'';
+    $('txPortfolio').value=tx.portfolio||state.portfolios[0];
+    $('txBroker').value=tx.broker||'';
+    $('txReco').value=tx.recommendedBy||'';
+    $('txType').value=tx.type||'buy';
+    $('txDate').value=new Date(tx.date).toISOString().slice(0,10);
+    $('txQty').value=tx.qty;
+    $('txPrice').value=tx.price;
+    $('txAdd').textContent='Save changes';
+    $('txCancelEdit').style.display='';
+    $('txStatus').textContent=`Editing ${tx.instrument} transaction.`;
+    window.scrollTo({top:$('transactionsAnchor')?.offsetTop||0,behavior:'smooth'});
+  }
+
+  $('txCancelEdit').addEventListener('click',clearTransactionForm);
+
   $('txAdd').addEventListener('click', ()=>{
     const instrument = $('txInstrument').value.trim();
     const broker = $('txBroker').value;
@@ -2166,31 +3066,45 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       return;
     }
 
-    const tx={
-      id:'t'+(state.txnIdSeq++),
-      portfolio:$('txPortfolio').value || state.portfolios[0],
-      instrument,
-      broker,
-      recommendedBy:$('txReco').value,
-      type,
-      date:new Date(dateVal+'T00:00:00'),
-      qty,
-      price
-    };
+    if(txEditingId){
+      const tx=state.manualTxns.find(x=>x.id===txEditingId);
+      if(!tx) return clearTransactionForm();
 
-    if(type==='buy'){
-      syncBuyToHoldings(tx);
-      state.manualTxns.push(tx);
-      $('txStatus').textContent = `Buy logged — ${fmtQty(qty)} ${instrument} added to Holdings.`;
+      tx.instrument=instrument;
+      tx.portfolio=$('txPortfolio').value || state.portfolios[0];
+      tx.broker=broker;
+      tx.recommendedBy=$('txReco').value;
+      tx.type=type;
+      tx.date=new Date(dateVal+'T00:00:00');
+      tx.qty=qty;
+      tx.price=price;
+
+      rebuildTransactionSync();
+      clearTransactionForm();
+      runCalculation();
+      $('txStatus').textContent=`Saved changes to ${instrument} ${type} transaction.`;
     }else{
-      const sync=syncSellToHoldings(tx);
+      const tx={
+        id:'t'+(state.txnIdSeq++),
+        portfolio:$('txPortfolio').value || state.portfolios[0],
+        instrument,
+        broker,
+        recommendedBy:$('txReco').value,
+        type,
+        date:new Date(dateVal+'T00:00:00'),
+        qty,
+        price
+      };
+
       state.manualTxns.push(tx);
-      $('txStatus').textContent = sync.unmatched>1e-9
-        ? `Sell logged — ${fmtQty(sync.matched)} matched to Holdings; ${fmtQty(sync.unmatched)} unmatched.`
-        : `Sell logged — ${fmtQty(qty)} ${instrument} removed from Holdings FIFO.`;
+      rebuildTransactionSync();
+      clearTransactionForm();
+      runCalculation();
+      $('txStatus').textContent = type==='buy'
+        ? `Buy logged — ${fmtQty(qty)} ${instrument} added to Holdings and recalculated.`
+        : `Sell logged — ${fmtQty(qty)} ${instrument} processed FIFO and recalculated.`;
     }
 
-    $('txInstrument').value=''; $('txQty').value=''; $('txPrice').value='';
     renderHoldTable();
     renderTxnTable();
     renderRealizedReport();
@@ -2209,18 +3123,38 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
         <td>${fmtQty(t.qty)}</td>
         <td>${fmtINR(t.price)}</td>
         <td>${fmtINR(value)}</td>
-        <td><button class="rmRow rmTxn" data-id="${t.id}" title="Remove">✕</button></td>
+        <td><div class="txn-actions">
+          <button class="btn-icon" data-edit-txn="${t.id}" title="Edit transaction">✎</button>
+          <button class="btn-icon danger" data-delete-txn="${t.id}" title="Delete transaction">✕</button>
+        </div></td>
       </tr>`;
     }).join('');
-    document.querySelectorAll('.rmTxn').forEach(btn=> btn.addEventListener('click', ()=>{
-      const tx=state.manualTxns.find(x=>x.id===btn.dataset.id);
-      if(tx){ undoSyncedTransaction(tx); }
-      state.manualTxns = state.manualTxns.filter(x=>x.id!==btn.dataset.id);
-      renderHoldTable();
-      renderTxnTable();
-      renderRealizedReport();
-      if(state.lastResults) runCalculation();
-    }));
+
+    $('txnBody').onclick=async(e)=>{
+      const editId=e.target.getAttribute('data-edit-txn');
+      const deleteId=e.target.getAttribute('data-delete-txn');
+
+      if(editId){
+        const tx=state.manualTxns.find(x=>x.id===editId);
+        if(tx) startTransactionEdit(tx);
+        return;
+      }
+
+      if(deleteId){
+        const tx=state.manualTxns.find(x=>x.id===deleteId);
+        if(!tx) return;
+        const ok=confirm(`Delete this ${tx.type} transaction for ${tx.instrument}? The linked Holdings/FIFO result will also be recalculated.`);
+        if(!ok) return;
+        if(txEditingId===deleteId) clearTransactionForm();
+        state.manualTxns=state.manualTxns.filter(x=>x.id!==deleteId);
+        rebuildTransactionSync();
+        renderHoldTable();
+        renderTxnTable();
+        renderRealizedReport();
+        if(state.lastResults) runCalculation();
+      }
+    };
+
     document.getElementById('txnTableEl').style.display = state.manualTxns.length>0 ? 'table' : 'none';
     refreshTxnDatalist();
     scheduleAutosave();
@@ -2672,6 +3606,9 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
     document.querySelectorAll('.view-panel').forEach(panel=>panel.classList.toggle('hidden', panel.id!=='view'+view.charAt(0).toUpperCase()+view.slice(1)));
     updateHeroForView(view);
     window.scrollTo({top:0,behavior:'smooth'});
+    const nav=document.querySelector(`#appNav .nav-btn[data-view="${view}"]`);
+    const targetId=nav?.dataset?.scroll;
+    if(targetId) setTimeout(()=>scrollToSection(targetId),90);
   }
 
   $('wipeBtn').addEventListener('click', ()=>{
@@ -2846,6 +3783,78 @@ select.sel,.text-input,.holdform-grid input,.quickadd-grid input{background:#fff
       navigator.serviceWorker.register('sw.js').catch(()=>{ /* not hosted with sw.js available — ignore */ });
     });
   }
+</script>
+
+<script>
+(function(){
+  function goto(id){
+    var el=document.getElementById(id);
+    if(!el) return;
+    if(id==='angelAnchor'||id==='backupAnchor'||id==='priceHistoryAnchor'){
+      var settings=document.querySelector('#appNav .nav-btn[data-view="manage"]'); if(settings) settings.click();
+    } else if(id==='addTransactionAnchor'){
+      var tx=document.querySelector('#appNav .nav-btn[data-view="activity"]'); if(tx) tx.click();
+    } else {
+      var home=document.querySelector('#appNav .nav-btn[data-view="dashboard"]'); if(home) home.click();
+    }
+    setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'});},80);
+  }
+  document.querySelectorAll('.wl-feature[data-goto]').forEach(function(b){b.addEventListener('click',function(){goto(b.dataset.goto);});});
+  document.querySelectorAll('#appNav .nav-btn.nav-static').forEach(function(b){b.addEventListener('click',function(){
+    if(b.textContent.trim()==='Reports') goto('realizedAnchor');
+    if(b.textContent.trim()==='Help') goto('settingsTopAnchor');
+  });});
+  // Mirror the live XIRR into the compact dashboard card when calculation finishes.
+  var x=document.getElementById('heroXirr'), mini=document.getElementById('heroXirrMini');
+  if(x&&mini){new MutationObserver(function(){mini.textContent=x.textContent;mini.className='gain';}).observe(x,{childList:true,characterData:true,subtree:true});}
+  // Count currently visible holding rows from the rendered ledger.
+  var count=document.getElementById('heroHoldingCount'), body=document.getElementById('tbody');
+  function syncCount(){if(count&&body) count.textContent=body.querySelectorAll('tr').length||'0';}
+  if(body){new MutationObserver(syncCount).observe(body,{childList:true,subtree:true});syncCount();}
+})();
+</script>
+<script>
+(function(){
+  var gb=document.getElementById('growthBtn');
+  if(gb) gb.addEventListener('click',function(){
+    var btn=document.querySelector('#appNav .nav-btn[data-view="dashboard"]');
+    if(btn) btn.click();
+    setTimeout(function(){ var el=document.getElementById('tableWrap'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },100);
+  });
+  var tr=document.getElementById('tickerRefresh');
+  if(tr) tr.addEventListener('click',async function(){
+    tr.disabled=true;
+    var u=document.getElementById('tickerUpdated'); if(u) u.textContent='Refreshing market…';
+    await refreshMarketTicker();
+    tr.disabled=false;
+  });
+  document.getElementById('openRealizedReportBtn')?.addEventListener('click',function(){
+    var btn=document.querySelector('#appNav .nav-btn[data-view="activity"]'); if(btn) btn.click();
+    setTimeout(function(){document.getElementById('realizedAnchor')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
+  });
+  document.getElementById('openAllocationReportBtn')?.addEventListener('click',function(){
+    var btn=document.querySelector('#appNav .nav-btn[data-view="dashboard"]'); if(btn) btn.click();
+    setTimeout(function(){document.getElementById('statsRow')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
+  });
+  document.getElementById('openRecoReportBtn')?.addEventListener('click',function(){
+    var btn=document.querySelector('#appNav .nav-btn[data-view="activity"]'); if(btn) btn.click();
+    setTimeout(function(){document.getElementById('recoStockCard')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
+  });
+  document.getElementById('helpRefreshBtn')?.addEventListener('click',function(){
+    var btn=document.querySelector('#appNav .nav-btn[data-view="dashboard"]'); if(btn) btn.click();
+    setTimeout(function(){document.getElementById('refreshCalcBtn')?.scrollIntoView({behavior:'smooth',block:'center'});},120);
+  });
+  document.getElementById('helpBackupBtn')?.addEventListener('click',function(){
+    var btn=document.querySelector('#appNav .nav-btn[data-view="manage"]'); if(btn) btn.click();
+    setTimeout(function(){document.getElementById('backupAnchor')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
+  });
+  document.getElementById('helpAngelBtn')?.addEventListener('click',function(){
+    var btn=document.querySelector('#appNav .nav-btn[data-view="manage"]'); if(btn) btn.click();
+    setTimeout(function(){document.getElementById('angelAnchor')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
+  });
+  // Refresh dashboard market indicators whenever the page is opened.
+  setTimeout(function(){ if(window.wlRefreshMarketTicker) window.wlRefreshMarketTicker(); },250);
+})();
 </script>
 </body>
 </html>
