@@ -791,6 +791,21 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
 @media(max-width:460px){
   .hero-reference h1{font-size:34px !important;}
 }
+/* ===== v23 alignment, sorting and stable refresh fixes ===== */
+.filterbar.show{display:grid !important;grid-template-columns:190px minmax(0,1fr) !important;align-items:center !important;gap:0 !important;padding:10px 16px !important;margin:0 0 10px !important;min-height:48px !important;}
+.filterbar .flabel{width:auto !important;flex:none !important;margin:0 !important;padding-right:18px !important;white-space:nowrap !important;}
+.filterbar .filter-chips{display:flex !important;align-items:center !important;flex-wrap:wrap !important;gap:8px !important;min-width:0 !important;}
+.filterbar .chip{margin:0 !important;}
+.sort-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%;}
+.sort-label{font-size:10px;text-transform:uppercase;letter-spacing:.11em;font-weight:800;color:#777483;white-space:nowrap;}
+.sort-select,.sort-dir{height:32px;border:1px solid #e2deea;border-radius:9px;background:#fbfaff;color:#3c3a46;font:700 11px 'Inter',sans-serif;padding:0 10px;cursor:pointer;}
+.sort-dir{background:#fff;color:#5f43e7;min-width:76px;}
+.sort-dir:hover,.sort-select:hover{border-color:#baaef3;background:#f8f5ff;}
+.reco-sort{cursor:pointer;user-select:none;}
+.reco-sort:hover{background:#f5f2ff !important;color:#1b1b24;}
+@media(max-width:900px){.filterbar.show{grid-template-columns:165px minmax(0,1fr) !important;}.filterbar .flabel{padding-right:12px !important;}}
+@media(max-width:700px){.filterbar.show{grid-template-columns:1fr !important;padding:11px 13px !important;gap:7px !important;}.filterbar .flabel{padding-right:0 !important;}.filterbar .filter-chips{width:100%;}.sort-controls{align-items:stretch;}.sort-select{flex:1;min-width:150px;}}
+
 </style>
 </head>
 <body data-theme="light" class="wl-v7-light">
@@ -937,7 +952,26 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
   <div class="filterbar" id="filterBarReco"></div>
 
   <div class="tablewrap" id="tableWrap">
-    <div class="table-toolbar"><span class="hint">Click any column heading to sort ↑ / ↓</span><span class="hint" id="tableCount"></span></div>
+    <div class="table-toolbar">
+      <div class="sort-controls">
+        <span class="sort-label">Sort by</span>
+        <select id="tableSortSelect" class="sort-select" aria-label="Sort holdings by">
+          <option value="">Default order</option>
+          <option value="instrument">Instrument</option>
+          <option value="firstDate">First trade</option>
+          <option value="qty">Shares</option>
+          <option value="investedPrice">Invested / share</option>
+          <option value="currentPrice">Current / share</option>
+          <option value="invested">Invested</option>
+          <option value="curVal">Current value</option>
+          <option value="pnl">P&amp;L</option>
+          <option value="absReturn">Absolute return</option>
+          <option value="xirr">XIRR</option>
+        </select>
+        <button type="button" id="tableSortDir" class="sort-dir" title="Toggle sort direction">↑ Asc</button>
+        <span class="hint" id="tableCount"></span>
+      </div>
+    </div>
     <div class="tscroll">
     <table class="resultstable">
       <thead><tr>
@@ -1250,13 +1284,26 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
   <div class="card" id="recoStockCard" style="display:none;">
     <div class="card-head"><div class="card-icon">◆</div><b>XIRR by stock, by recommendation</b></div>
     <p class="card-hint">Every stock recommended by each person, grouped together — current holdings and booked (realized) profit/loss both included, plus a blended total per recommender. A stock shows here even after it's fully sold, tagged "sold out", so the booked result isn't lost.</p>
-    <div class="inline-row" style="margin-bottom:10px;">
+    <div class="inline-row" style="margin-bottom:10px; flex-wrap:wrap; gap:8px;">
       <label class="broker-label" style="margin:0; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Show:</label>
       <select class="sel" id="recoStockFilter"><option value="__all__">All recommenders</option></select>
+      <span class="sort-label">Sort by</span>
+      <select class="sel" id="recoSortSelect" aria-label="Sort recommendation report by">
+        <option value="reco">Recommended by</option>
+        <option value="symbol">Stock</option>
+        <option value="qty">Shares left</option>
+        <option value="invested">Invested</option>
+        <option value="curVal">Current value</option>
+        <option value="unrealizedPnl">Unrealized P&amp;L</option>
+        <option value="realizedPnl">Realized P&amp;L</option>
+        <option value="totalPnl">Total P&amp;L</option>
+        <option value="xirrVal">XIRR</option>
+      </select>
+      <button type="button" id="recoSortDir" class="sort-dir" title="Toggle sort direction">↑ Asc</button>
     </div>
     <div class="tscroll">
       <table class="resultstable" style="min-width:820px;">
-        <thead><tr><th class="left">Recommended by</th><th class="left">Stock</th><th>Shares</th><th>Invested</th><th>Current val</th><th>Unrealized P&amp;L</th><th>Realized P&amp;L</th><th>Total P&amp;L</th><th>XIRR</th></tr></thead>
+        <thead><tr><th class="left reco-sort" data-reco-sort="reco">Recommended by<span class="sort-arrow"></span></th><th class="left reco-sort" data-reco-sort="symbol">Stock<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="qty">Shares left<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="invested">Invested<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="curVal">Current val<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="unrealizedPnl">Unrealized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="realizedPnl">Realized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="totalPnl">Total P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="xirrVal">XIRR<span class="sort-arrow"></span></th></tr></thead>
         <tbody id="recoStockBody"></tbody>
       </table>
     </div>
@@ -1357,6 +1404,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     hiddenRecos: new Set(),
     selectedHoldIds: new Set(),
     tableSort: {key:null, dir:1},
+    recoSort: {key:'reco', dir:1},
     priceHistory: new Map(),
     momentumAlerts: [],
     priceHistoryUrl: '',
@@ -2121,13 +2169,14 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     const label = kind==='broker' ? 'Filter by broker:' : kind==='reco' ? 'Filter by recommendation:' : 'Filter by portfolio:';
     const colorFn = kind==='broker' ? brokerColor : kind==='reco' ? recoColor : portfolioColor;
     const stateKey = kind==='broker' ? 'activeBrokers' : kind==='reco' ? 'activeRecos' : 'activePortfolios';
-    let html = `<span class="flabel">${label}</span><button class="chip allchip active" data-v="__all__">All</button>`;
+    let html = `<span class="flabel">${label}</span><div class="filter-chips"><button class="chip allchip active" data-v="__all__">All</button>`;
     items.forEach(v=>{
-      html += `<button class="chip" data-v="${v}"><span class="swatch" style="background:${colorFn(v)}"></span>${v}</button>`;
+      html += `<button class="chip" data-v="${escapeAttr(v)}"><span class="swatch" style="background:${colorFn(v)}"></span>${escapeAttr(v)}</button>`;
     });
+    html += '</div>';
     bar.innerHTML = html;
     bar.classList.add('show');
-    bar.querySelectorAll('.chip').forEach(chip=>{
+    bar.querySelectorAll('.filter-chips .chip').forEach(chip=>{
       chip.addEventListener('click', ()=>{
         const v = chip.dataset.v;
         const key = stateKey;
@@ -2149,7 +2198,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
   }
   function renderFilterChipStates(bar, items, key){
     const all = state[key] === null;
-    bar.querySelectorAll('.chip').forEach(chip=>{
+    bar.querySelectorAll('.filter-chips .chip').forEach(chip=>{
       const v = chip.dataset.v;
       if(v==='__all__') chip.classList.toggle('active', all);
       else chip.classList.toggle('active', all || state[key].has(v));
@@ -2232,6 +2281,41 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
       if(!arrow) return;
       arrow.textContent=th.dataset.sort===state.tableSort.key ? (state.tableSort.dir===1?'↑':'↓') : '';
     });
+    if($('tableSortSelect')) $('tableSortSelect').value=state.tableSort.key||'';
+    if($('tableSortDir')) $('tableSortDir').textContent=state.tableSort.dir===1?'↑ Asc':'↓ Desc';
+  }
+  function preserveViewportAround(anchorId, fn){
+    const anchor=$(anchorId);
+    const before=anchor ? anchor.getBoundingClientRect().top : null;
+    fn();
+    requestAnimationFrame(()=>{
+      const after=anchor ? anchor.getBoundingClientRect().top : null;
+      if(before!==null && after!==null){
+        const delta=after-before;
+        if(Math.abs(delta)>1) window.scrollBy(0,delta);
+      }
+    });
+  }
+  function setupSortControls(){
+    $('tableSortSelect')?.addEventListener('change',()=>{
+      const key=$('tableSortSelect').value;
+      if(!key){ state.tableSort={key:null,dir:1}; }
+      else { state.tableSort={key,dir:1}; }
+      if(state.lastResults) applyFilterAndRender();
+    });
+    $('tableSortDir')?.addEventListener('click',()=>{
+      if(!state.tableSort.key) return;
+      state.tableSort.dir*=-1;
+      if(state.lastResults) applyFilterAndRender();
+    });
+    document.querySelectorAll('#tableWrap .sortable').forEach(th=>{
+      th.addEventListener('click',()=>{
+        const key=th.dataset.sort;
+        if(state.tableSort.key===key) state.tableSort.dir*=-1;
+        else {state.tableSort.key=key;state.tableSort.dir=1;}
+        if(state.lastResults) applyFilterAndRender();
+      });
+    });
   }
   function renderAllocation(visible){
     const card=$('allocationCard'), list=$('allocationList');
@@ -2286,14 +2370,8 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     renderInsights(sorted);
     renderAllocation(sorted);
   }
-  document.querySelectorAll('#tableWrap .sortable').forEach(th=>{
-    th.addEventListener('click',()=>{
-      const key=th.dataset.sort;
-      if(state.tableSort.key===key) state.tableSort.dir*=-1;
-      else {state.tableSort.key=key;state.tableSort.dir=1;}
-      if(state.lastResults) applyFilterAndRender();
-    });
-  });
+
+  setupSortControls();
 
   function alertThresholds(){
     return {
@@ -2922,12 +3000,12 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
         await fetchHistoryPrices(state.lastSheetAoa);
         source='Google Sheets';
       }
-      runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows);
+      preserveViewportAround('tableWrap',()=>{ runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows); });
       await (window.wlRefreshMarketTicker ? window.wlRefreshMarketTicker() : Promise.resolve(false));
       const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
       status.textContent=`Updated ${updated} price${updated===1?'':'s'} from ${source} and recalculated at ${now}.`;
     }catch(err){
-      runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows);
+      preserveViewportAround('tableWrap',()=>{ runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows); });
       status.textContent=`Calculated using existing prices. Refresh unavailable: ${err&&err.message?err.message:'unavailable'}`;
     }finally{btn.disabled=false;btn.textContent='↻ Refresh prices & calculate';}
   });
@@ -3433,6 +3511,35 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
   }
 
   $('recoStockFilter').addEventListener('change', renderRecoStockTable);
+  $('recoSortSelect')?.addEventListener('change',()=>{ state.recoSort.key=$('recoSortSelect').value||'reco'; state.recoSort.dir=1; renderRecoStockTable(); });
+  $('recoSortDir')?.addEventListener('click',()=>{ state.recoSort.dir*=-1; renderRecoStockTable(); });
+  function sortRecoRows(rows){
+    const {key,dir}=state.recoSort;
+    return rows.slice().sort((a,b)=>{
+      let av=a[key], bv=b[key];
+      if(key==='reco'||key==='symbol') return String(av||'').localeCompare(String(bv||''),undefined,{numeric:true,sensitivity:'base'})*dir;
+      av=(av==null||Number.isNaN(Number(av)))?-Infinity:Number(av);
+      bv=(bv==null||Number.isNaN(Number(bv)))?-Infinity:Number(bv);
+      if(av===bv) return String(a.symbol||'').localeCompare(String(b.symbol||''));
+      return (av<bv?-1:1)*dir;
+    });
+  }
+
+  function renderRecoSortIndicators(){
+    document.querySelectorAll('#recoStockCard .reco-sort').forEach(th=>{
+      const arrow=th.querySelector('.sort-arrow');
+      if(arrow) arrow.textContent=th.dataset.recoSort===state.recoSort.key ? (state.recoSort.dir===1?'↑':'↓') : '';
+    });
+    if($('recoSortSelect')) $('recoSortSelect').value=state.recoSort.key;
+    if($('recoSortDir')) $('recoSortDir').textContent=state.recoSort.dir===1?'↑ Asc':'↓ Desc';
+  }
+  document.querySelectorAll('#recoStockCard .reco-sort').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const key=th.dataset.recoSort;
+      if(state.recoSort.key===key) state.recoSort.dir*=-1; else {state.recoSort.key=key;state.recoSort.dir=1;}
+      renderRecoStockTable();
+    });
+  });
 
   function renderRecoStockTable(){
     const allRows = computeRecoStockXirr();
@@ -3441,7 +3548,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     card.style.display = 'block';
     populateRecoStockFilter(allRows);
     const filterVal = $('recoStockFilter').value || '__all__';
-    const rows = filterVal==='__all__' ? allRows : allRows.filter(r=>r.reco===filterVal);
+    const rows = sortRecoRows(filterVal==='__all__' ? allRows : allRows.filter(r=>r.reco===filterVal));
 
     let lastReco = null;
     let html = rows.map(r=>{
@@ -3486,6 +3593,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     const blendedClass = blendedXirr!=null ? (blendedXirr>=0?'gain':'loss') : '';
     html += `<tr style="font-weight:700;">
       <td class="left" colspan="2">Blended total${rows.length!==allRows.length ? ' (filtered)' : ''}</td>
+      <td>—</td>
       <td>${fmtINR(totalInvested)}</td>
       <td>${fmtINR(totalCurVal)}</td>
       <td class="${totalUnrealized>=0?'gain':'loss'}">${fmtINR(totalUnrealized)}</td>
@@ -3494,6 +3602,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
       <td class="${blendedClass}">${blendedStr}</td>
     </tr>`;
     $('recoStockBody').innerHTML = html;
+    renderRecoSortIndicators();
   }
 
   // ================= BACKUP / RESTORE =================
