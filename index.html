@@ -916,16 +916,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
   </div>
 
-  <div class="visual-strip" aria-label="Portfolio visuals">
-    <div class="visual-copy">
-      <div class="section-eyebrow">Portfolio pulse</div>
-      <h3>See the story behind the numbers.</h3>
-      <p>Daily movement, live quotes and your own historical context in one calm workspace.</p>
-      <div class="visual-tags"><span>Angel One</span><span>Google Sheets fallback</span><span>Local data</span></div>
-    </div>
-    <div class="visual-media"><img src="wealthledger-growth.gif" alt="Animated portfolio growth illustration" onerror="this.closest('.visual-media').classList.add('media-failed')"></div>
-    <div class="visual-media visual-media-live"><img src="wealthledger-live.gif" alt="Animated live market pulse" onerror="this.closest('.visual-media-live').classList.add('media-failed')"></div>
-  </div>
+
 
   <div class="momentum-card" id="momentumCard" style="display:none;">
     <div class="momentum-head">
@@ -1006,6 +997,18 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
   <div class="allocation-card" id="allocationCard" style="display:none;margin-top:14px;">
     <div class="allocation-head"><div><b>Top holdings</b><div class="allocation-sub">By current market value</div></div><span class="allocation-sub" id="allocationTotal">—</span></div>
     <div id="allocationList"></div>
+  </div>
+
+
+  <div class="visual-strip" aria-label="Portfolio visuals">
+    <div class="visual-copy">
+      <div class="section-eyebrow">Portfolio pulse</div>
+      <h3>See the story behind the numbers.</h3>
+      <p>Daily movement, live quotes and your own historical context in one calm workspace.</p>
+      <div class="visual-tags"><span>Angel One</span><span>Google Sheets fallback</span><span>Local data</span></div>
+    </div>
+    <div class="visual-media"><img src="wealthledger-growth.gif" alt="Animated portfolio growth illustration" onerror="this.closest('.visual-media').classList.add('media-failed')"></div>
+    <div class="visual-media visual-media-live"><img src="wealthledger-live.gif" alt="Animated live market pulse" onerror="this.closest('.visual-media-live').classList.add('media-failed')"></div>
   </div>
 
   <div class="section-title-row"><h2><span class="num">02</span>Add / import holdings</h2></div>
@@ -1156,18 +1159,23 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     <div class="mapbox" style="margin-top:12px;">
       <b>Stock symbol mappings</b>
       <div style="margin-top:8px;line-height:1.7;">
-        Use this when your simple Equity - WealthLedger symbol is different from Angel One's exchange symbol. The mapping uses the Angel <b>symbol token</b>, so the display name can stay simple. Example: <code>JYOTI</code> → <code>BSE</code> → <code>504076</code>.
+        Use this when your simple Equity - WealthLedger symbol is different from Angel One's exchange symbol. You can now also choose the <b>Price source</b> per stock: Auto, Angel One only, or Google Sheets only. Example: <code>JYOTI</code> is preset to <b>Google Sheets only</b>, so Angel One will never replace its price with an NSE lookup.
       </div>
       <div class="inline-row" style="margin-top:10px;">
         <input class="text-input" id="angelMapSymbol" placeholder="Equity - WealthLedger symbol e.g. JYOTI" style="flex:1;min-width:220px;">
         <select class="sel" id="angelMapExchange" style="width:120px;"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
         <input class="text-input" id="angelMapToken" placeholder="Angel token e.g. 504076" style="width:190px;">
+        <select class="sel" id="angelMapSource" style="width:170px;">
+          <option value="AUTO">Auto source</option>
+          <option value="ANGEL">Angel One only</option>
+          <option value="SHEET">Google Sheets only</option>
+        </select>
         <button class="btn-small" id="angelMapAdd">+ Save mapping</button>
       </div>
       <div class="status-text" id="angelMapStatus"></div>
       <div class="tscroll" style="margin-top:10px;">
         <table class="txn-table mapping-table">
-          <thead><tr><th class="left">Symbol</th><th class="left">Exchange</th><th class="left">Angel token</th><th></th></tr></thead>
+          <thead><tr><th class="left">Symbol</th><th class="left">Exchange</th><th class="left">Angel token</th><th class="left">Price source</th><th></th></tr></thead>
           <tbody id="angelMapBody"></tbody>
         </table>
       </div>
@@ -1421,11 +1429,22 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     angelTokenMap: (()=>{ 
       try {
         const saved=JSON.parse(localStorage.getItem('wealthledger-angel-tokens-v1') || '{}') || {};
+        // JYOTI is a BSE / Google-Sheets-only instrument in this app.
+        // Remove any stale NSE or bare alias that Angel may have discovered earlier.
+        delete saved['NSE:JYOTI'];
+        delete saved['JYOTI'];
         if(!saved['BSE:JYOTI']) saved['BSE:JYOTI']='504076';
         return saved;
       } catch(e){
         return {'BSE:JYOTI':'504076'};
       }
+    })(),
+    priceSourceMap: (()=>{
+      try{
+        const saved=JSON.parse(localStorage.getItem('wealthledger-price-source-map-v1') || '{}') || {};
+        if(!saved.JYOTI) saved.JYOTI='SHEET';
+        return saved;
+      }catch(e){ return {JYOTI:'SHEET'}; }
     })(),
     angelLastSource: ''
   };
@@ -1446,7 +1465,11 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
       app: 'equity-wealthledger-state', version: 2, savedAt: new Date().toISOString(),
       portfolios: state.portfolios,
       holdRows: state.holdRows,
-      manualTxns: safeTxns
+      manualTxns: safeTxns,
+      angelApiUrl: state.angelApiUrl,
+      angelExchange: state.angelExchange,
+      angelTokenMap: state.angelTokenMap,
+      priceSourceMap: state.priceSourceMap
     };
   }
 
@@ -1501,6 +1524,16 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
       let maxT = 0;
       state.manualTxns.forEach(t=>{ const m = /^t(\d+)$/.exec(t.id); if(m) maxT = Math.max(maxT, +m[1]); });
       state.txnIdSeq = Math.max(state.txnIdSeq, maxT+1);
+      if(data.angelApiUrl) state.angelApiUrl = normalizeAngelBaseUrl(data.angelApiUrl);
+      if(data.angelExchange) state.angelExchange = String(data.angelExchange).toUpperCase();
+      if(data.angelTokenMap && typeof data.angelTokenMap==='object') state.angelTokenMap = {...state.angelTokenMap,...data.angelTokenMap};
+      if(data.priceSourceMap && typeof data.priceSourceMap==='object') state.priceSourceMap = {...state.priceSourceMap,...data.priceSourceMap};
+      // Always enforce the JYOTI rule even when an older backup contained a stale NSE mapping.
+      if(!state.priceSourceMap.JYOTI) state.priceSourceMap.JYOTI='SHEET';
+      delete state.angelTokenMap['NSE:JYOTI'];
+      delete state.angelTokenMap['JYOTI'];
+      state.angelTokenMap['BSE:JYOTI'] = state.angelTokenMap['BSE:JYOTI'] || '504076';
+      try{ localStorage.setItem('wealthledger-angel-api-url-v1', state.angelApiUrl); localStorage.setItem('wealthledger-angel-exchange-v1', state.angelExchange); localStorage.setItem('wealthledger-angel-tokens-v1', JSON.stringify(state.angelTokenMap)); localStorage.setItem('wealthledger-price-source-map-v1', JSON.stringify(state.priceSourceMap)); }catch(e){}
       const el = document.getElementById('autosaveStatus');
       if(el && data.savedAt) el.textContent = 'Restored your last session, autosaved ' + new Date(data.savedAt).toLocaleString('en-IN') + '.';
       // Immediately migrate legacy data into the new durable key.
@@ -1527,6 +1560,13 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
   $('txDate').value = new Date().toISOString().slice(0,10);
   if($('angelApiUrl')) $('angelApiUrl').value = state.angelApiUrl;
   if($('angelExchange')) $('angelExchange').value = state.angelExchange;
+  if($('angelMapSource')) $('angelMapSource').value = 'AUTO';
+  $('angelMapSymbol')?.addEventListener('input',()=>{ if(symKey($('angelMapSymbol').value)==='JYOTI' && $('angelMapSource')) $('angelMapSource').value='SHEET'; });
+  delete state.angelTokenMap['NSE:JYOTI'];
+  delete state.angelTokenMap['JYOTI'];
+  if(!state.angelTokenMap['BSE:JYOTI']) state.angelTokenMap['BSE:JYOTI']='504076';
+  if(!state.priceSourceMap.JYOTI) state.priceSourceMap.JYOTI='SHEET';
+  persistAngelSettings();
   renderAngelStatus();
   renderAngelMappings();
   try{
@@ -2510,6 +2550,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     localStorage.setItem('wealthledger-angel-api-url-v1', state.angelApiUrl);
     localStorage.setItem('wealthledger-angel-exchange-v1', state.angelExchange);
     localStorage.setItem('wealthledger-angel-tokens-v1', JSON.stringify(state.angelTokenMap || {}));
+    localStorage.setItem('wealthledger-price-source-map-v1', JSON.stringify(state.priceSourceMap || {}));
   }
   function renderAngelStatus(kind='neutral', text=''){
     const badge=$('angelStatusBadge'), status=$('angelStatusText');
@@ -2526,7 +2567,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     const ex=String(exchange||state.angelExchange||'NSE').toUpperCase();
     (mappings||[]).forEach(m=>{
       const k=symKey(m.symbol||m.tradingsymbol);
-      if(k && m.token){
+      if(k && m.token && priceSourceFor(k)!=='SHEET'){
         state.angelTokenMap[`${ex}:${k}`]=String(m.token);
         if(state.angelExchange===ex || !state.angelExchange){
           state.angelTokenMap[k]=String(m.token);
@@ -2553,22 +2594,32 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     return body;
   }
 
+  function priceSourceFor(symbol){ return String(state.priceSourceMap?.[symKey(symbol)] || 'AUTO').toUpperCase(); }
+  function priceSourceLabel(source){ return source==='SHEET'?'Google Sheets':source==='ANGEL'?'Angel One':'Auto'; }
   function renderAngelMappings(){
     const body=$('angelMapBody');
     if(!body) return;
-    const entries=Object.entries(state.angelTokenMap||{})
-      .filter(([k,v])=>k.includes(':') && v)
-      .sort((a,b)=>a[0].localeCompare(b[0]));
+    const keys=new Set();
+    Object.entries(state.angelTokenMap||{}).forEach(([k,v])=>{ if(k.includes(':') && v) keys.add(k); });
+    Object.keys(state.priceSourceMap||{}).forEach(symbol=>{ if(symbol) keys.add(`BSE:${symbol}`); });
+    const entries=Array.from(keys).sort((a,b)=>a.localeCompare(b));
     if(!entries.length){
-      body.innerHTML='<tr><td colspan="4" class="mapping-empty">No manual mappings yet.</td></tr>';
+      body.innerHTML='<tr><td colspan="5" class="mapping-empty">No mappings or source rules yet.</td></tr>';
       return;
     }
-    body.innerHTML=entries.map(([key,token])=>{
+    body.innerHTML=entries.map(key=>{
       const [exchange,symbol]=key.split(':');
+      const token=state.angelTokenMap?.[key]||'';
+      const source=priceSourceFor(symbol);
       return `<tr>
         <td class="left">${escapeAttr(symbol)}</td>
         <td class="left">${escapeAttr(exchange)}</td>
-        <td class="left">${escapeAttr(String(token))}</td>
+        <td class="left">${escapeAttr(String(token||'—'))}</td>
+        <td class="left"><select class="sel angel-source-select" data-source-map="${escapeAttr(symbol)}" style="min-width:145px;">
+          <option value="AUTO" ${source==='AUTO'?'selected':''}>Auto</option>
+          <option value="ANGEL" ${source==='ANGEL'?'selected':''}>Angel One only</option>
+          <option value="SHEET" ${source==='SHEET'?'selected':''}>Google Sheets only</option>
+        </select></td>
         <td><div class="txn-actions">
           <button class="btn-icon" data-edit-map="${escapeAttr(key)}" title="Edit mapping">✎</button>
           <button class="btn-icon danger" data-delete-map="${escapeAttr(key)}" title="Delete mapping">✕</button>
@@ -2581,16 +2632,23 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     const symbol=symKey($('angelMapSymbol')?.value||'');
     const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
     const token=String($('angelMapToken')?.value||'').trim();
+    const source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
 
-    if(!symbol || !token){
-      $('angelMapStatus').textContent='Enter a symbol and Angel token.';
+    if(!symbol){
+      $('angelMapStatus').textContent='Enter a symbol first.';
       return;
     }
-
-    state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    if(source!=='SHEET' && !token){
+      $('angelMapStatus').textContent='Enter an Angel token for Angel One or Auto mode.';
+      return;
+    }
+    if(token) state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    state.priceSourceMap[symbol]=source;
+    // JYOTI is always safe as a Google Sheets source unless you explicitly switch it.
+    if(symbol==='JYOTI' && source==='SHEET') { delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI']; state.angelTokenMap['BSE:JYOTI']='504076'; }
     persistAngelSettings();
     renderAngelMappings();
-    $('angelMapStatus').textContent=`Saved mapping: ${symbol} → ${exchange} → ${token}.`;
+    $('angelMapStatus').textContent=`Saved rule: ${symbol} → ${priceSourceLabel(source)}${token?` (${exchange} / ${token})`:''}.`;
     $('angelMapSymbol').value='';
     $('angelMapToken').value='';
   }
@@ -2601,13 +2659,28 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     const editKey=e.target.getAttribute('data-edit-map');
     const deleteKey=e.target.getAttribute('data-delete-map');
 
+    const sourceKey=e.target.getAttribute('data-source-map');
+    if(sourceKey){
+      state.priceSourceMap[symKey(sourceKey)] = String(e.target.value||'AUTO').toUpperCase();
+      if(symKey(sourceKey)==='JYOTI' && state.priceSourceMap.JYOTI==='SHEET'){
+        delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI']; state.angelTokenMap['BSE:JYOTI']='504076';
+      }
+      persistAngelSettings();
+      $('angelMapStatus').textContent=`${sourceKey} will now use ${priceSourceLabel(state.priceSourceMap[symKey(sourceKey)])}.`;
+      renderAngelMappings();
+      return;
+    }
+
     if(deleteKey){
-      // Keep the preconfigured JYOTI mapping available unless the user explicitly
-      // replaces it with another token. Deleting any other mapping is immediate.
       delete state.angelTokenMap[deleteKey];
+      const [,symbol] = deleteKey.split(':');
+      if(symKey(symbol)==='JYOTI'){
+        state.priceSourceMap.JYOTI='SHEET';
+        state.angelTokenMap['BSE:JYOTI']='504076';
+      }
       persistAngelSettings();
       renderAngelMappings();
-      $('angelMapStatus').textContent=`Removed mapping ${deleteKey}.`;
+      $('angelMapStatus').textContent=`Removed mapping ${deleteKey}; source rule retained as ${priceSourceLabel(priceSourceFor(symbol))}.`;
       return;
     }
 
@@ -2616,6 +2689,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
       $('angelMapExchange').value=exchange;
       $('angelMapSymbol').value=symbol;
       $('angelMapToken').value=state.angelTokenMap[editKey]||'';
+      $('angelMapSource').value=priceSourceFor(symbol);
       $('angelMapSymbol').focus();
       $('angelMapStatus').textContent=`Editing ${symbol} (${exchange}). Saving will replace the token.`;
 
@@ -2633,18 +2707,26 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     const symbol=symKey($('angelMapSymbol')?.value||'');
     const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
     const token=String($('angelMapToken')?.value||'').trim();
-    if(!symbol || !token){
-      $('angelMapStatus').textContent='Enter a symbol and Angel token.';
+    const source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
+    if(!symbol){
+      $('angelMapStatus').textContent='Enter a symbol first.';
+      return;
+    }
+    if(source!=='SHEET' && !token){
+      $('angelMapStatus').textContent='Enter an Angel token for Angel One or Auto mode.';
       return;
     }
     if(oldKey && oldKey!==`${exchange}:${symbol}`) delete state.angelTokenMap[oldKey];
-    state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    if(token) state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    state.priceSourceMap[symbol]=source;
+    if(symbol==='JYOTI' && source==='SHEET'){ delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI']; state.angelTokenMap['BSE:JYOTI']='504076'; }
     delete state._editingAngelMapKey;
     persistAngelSettings();
     renderAngelMappings();
-    $('angelMapStatus').textContent=`Saved mapping: ${symbol} → ${exchange} → ${token}.`;
+    $('angelMapStatus').textContent=`Saved mapping: ${symbol} → ${priceSourceLabel(source)}${token?` (${exchange} / ${token})`:''}.`;
     $('angelMapSymbol').value='';
     $('angelMapToken').value='';
+    if($('angelMapSource')) $('angelMapSource').value='AUTO';
   });
 
     async function testAngelConnection(){
@@ -2661,8 +2743,9 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
       return false;
     }finally{ if(btn) btn.disabled=false; }
   }
-  async function fetchAngelPrices(){
-    const symbols=uniqueHoldSymbols();
+  async function fetchAngelPrices(symbolsOverride=null){
+    const requestedSymbols=Array.isArray(symbolsOverride)?symbolsOverride:uniqueHoldSymbols();
+    const symbols=requestedSymbols.filter(symbol=>priceSourceFor(symbol)!=='SHEET');
     if(!symbols.length) return 0;
     persistAngelSettings();
     if(!angelUrl()) throw new Error('Angel One Worker URL is not configured in Settings.');
@@ -2915,7 +2998,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     });
   }
 
-  async function fetchSheetPrices(){
+  async function fetchSheetPrices(onlySymbols=null){
     const raw=$('sheetUrl').value.trim();
     if(!raw) throw new Error('Paste your Google Sheets link in Manage first.');
     $('sheetStatus').textContent='Fetching…';
@@ -2943,10 +3026,13 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
       const price=cm.price?num(r[cm.price]):NaN;
       if(sym && !isNaN(price) && price>0) priceMap[symKey(sym)]=price;
     });
+    const targetSet = Array.isArray(onlySymbols) ? new Set(onlySymbols.map(symKey)) : null;
     let updated=0;
     state.holdRows.forEach(row=>{
       const sym=String(row.symbol||'').trim(); if(!sym) return;
-      const p=priceMap[symKey(sym)];
+      const k=symKey(sym);
+      if(targetSet && !targetSet.has(k)) return;
+      const p=priceMap[k];
       if(p!=null){row.currentPrice=p;updated++;}
     });
     renderHoldTable();
@@ -3026,25 +3112,37 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     catch(err){ $('sheetStatus').textContent=err&&err.message?err.message:"Couldn't reach that sheet."; }
   });
 
+  async function refreshConfiguredPriceSources(){
+    const symbols=uniqueHoldSymbols();
+    const sheetSymbols=symbols.filter(s=>priceSourceFor(s)==='SHEET');
+    const angelSymbols=symbols.filter(s=>priceSourceFor(s)!=='SHEET');
+    let updated=0;
+    let angelError=null;
+    if(angelSymbols.length && angelUrl()) {
+      try{ updated += await fetchAngelPrices(angelSymbols); }
+      catch(err){ angelError=err; renderAngelStatus('warn',`Angel One unavailable — ${err?.message||''}`); }
+    }
+    if(sheetSymbols.length){
+      try{ updated += await fetchSheetPrices(sheetSymbols); }
+      catch(err){ $('sheetStatus').textContent=err?.message||"Couldn't reach that sheet."; if(!angelError) angelError=err; }
+    }
+    if(!angelSymbols.length && !sheetSymbols.length) return {updated,source:'No price rules'};
+    if(angelError && updated===0) throw angelError;
+    return {updated,source:angelSymbols.length && sheetSymbols.length?'Angel One + Google Sheets':angelSymbols.length?'Angel One':'Google Sheets'};
+  }
+
   $('refreshCalcBtn').addEventListener('click',async()=>{
     const btn=$('refreshCalcBtn'), status=$('combinedStatus');
     btn.disabled=true; btn.textContent='↻ Updating…'; status.textContent='Refreshing market data…';
     let updated=0, source='';
     try{
       persistAngelSettings();
-      if(angelUrl()){
-        status.textContent='Refreshing prices from Angel One…';
-        try{ updated=await fetchAngelPrices(); source='Angel One'; }
-        catch(err){ renderAngelStatus('warn',`Angel One unavailable — using Google Sheets fallback. ${err?.message||''}`); source='Google Sheets'; updated=await fetchSheetPrices(); }
-        status.textContent='Loading recent history from Google Sheets…';
-        try{ await fetchHistoryPrices(state.lastSheetAoa); }
-        catch(err){ /* keep whatever history is already loaded */ }
-      } else {
-        status.textContent='Refreshing prices from Google Sheets…';
-        updated=await fetchSheetPrices();
-        await fetchHistoryPrices(state.lastSheetAoa);
-        source='Google Sheets';
-      }
+      status.textContent='Refreshing configured price sources…';
+      const result=await refreshConfiguredPriceSources();
+      updated=result.updated; source=result.source;
+      status.textContent='Loading recent history from Google Sheets…';
+      try{ await fetchHistoryPrices(state.lastSheetAoa); }
+      catch(err){ /* keep whatever history is already loaded */ }
       preserveViewportAround('tableWrap',()=>{ runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows); });
       await (window.wlRefreshMarketTicker ? window.wlRefreshMarketTicker() : Promise.resolve(false));
       const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -3913,10 +4011,10 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
     try{ runCalculation(); }catch(e){}
     setTimeout(async()=>{
       try{
-        await fetchAngelPrices();
+        await refreshConfiguredPriceSources();
         runCalculation();
       }catch(err){
-        // Keep the persisted prices visible when Angel One is temporarily unavailable.
+        // Keep the persisted prices visible when a configured source is temporarily unavailable.
         try{ runCalculation(); }catch(e){}
       }
     }, 180);
