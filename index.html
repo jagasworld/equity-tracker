@@ -691,6 +691,24 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
 .wl-market-ticker{display:flex;align-items:center;gap:19px;padding:11px 8px 0;color:#626477;font-size:10px}.wl-market-ticker>div{display:flex;align-items:center;gap:10px;white-space:nowrap}.wl-market-ticker b{font-size:10.5px;color:#242533}.wl-market-ticker span{color:#535566}.wl-market-ticker em{font-style:normal;font-weight:700}.ticker-up{color:#1aa36a!important}.ticker-down{color:#e34d45!important}.ticker-sep{height:18px;border-left:1px solid #dcdde6}.ticker-meta{margin-left:auto}.ticker-meta span{color:#858797}.ticker-meta button{border:0;background:transparent;color:#5b3ef0;font-weight:800;cursor:pointer;padding:3px 0}
 @media(max-width:1050px){.wl-growth-banner{grid-template-columns:1fr 1fr}.growth-plant{display:none}.wl-market-ticker{overflow:auto}.ticker-meta{margin-left:0}}
 @media(max-width:760px){.hero-reference{min-height:auto!important}.wl-growth-banner{grid-template-columns:1fr;padding:28px 22px}.growth-metrics{margin-top:12px}.growth-metric{padding:0 8px}.wl-market-ticker{gap:12px;padding-bottom:6px}.ticker-meta{display:none}}
+
+/* v28 — recommendation commission controls */
+.commission-card{margin:0 0 14px;padding:16px 18px!important;background:linear-gradient(180deg,#fff,#fcfbff)!important;}
+.commission-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px;}
+.commission-head h3{margin:3px 0 5px;font:700 18px/1.1 'Space Grotesk',sans-serif;letter-spacing:-.03em;color:#17161d;}
+.commission-head p{margin:0;max-width:78ch;font-size:11px;line-height:1.6;color:#777480;}
+.commission-pill{padding:7px 10px;border-radius:999px;background:#f1edff;color:#6849ec;border:1px solid #ded5ff;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
+.commission-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;}
+.commission-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #e9e5f0;border-radius:12px;background:#fbfaff;min-width:0;}
+.commission-item label{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;font-weight:700;color:#4e4b57;}
+.commission-item .commission-input{width:92px;min-width:70px;border:1px solid #ddd8ea;border-radius:9px;background:#fff;padding:7px 8px;text-align:right;font:600 11px 'Space Grotesk',sans-serif;color:#24222c;outline:none;}
+.commission-item .commission-input:focus{border-color:#8368ed;box-shadow:0 0 0 3px rgba(118,87,255,.10);}
+.commission-foot{margin-top:9px;font-size:9.5px;color:#8b8792;}
+.xirr-note{margin-top:4px;min-height:14px;font-size:9px;line-height:1.2;color:#7d6bce;font-weight:700;}
+@media (max-width:1100px){.commission-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media (max-width:720px){.commission-head{display:block}.commission-pill{display:inline-block;margin-top:9px}.commission-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.commission-item{padding:8px}.commission-item .commission-input{width:84px;min-width:64px}}
+@media (max-width:430px){.commission-grid{grid-template-columns:1fr}.commission-item .commission-input{width:100px}}
+
 </style>
 
 <style id="v22-visual-fix">
@@ -1168,7 +1186,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     <div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
     <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
     <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
-    <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div></div>
+    <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div><div class="xirr-note" id="sumXirrNote"></div></div>
   </div>
 
 
@@ -1283,7 +1301,6 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         <div class="f"><label>Trade date</label><input id="hfDate" type="date"></div>
         <div class="f"><label>Shares</label><input id="hfQty" type="number" step="any"></div>
         <div class="f"><label>Invested price</label><input id="hfInvestedPrice" type="number" step="any"></div>
-        <div class="f"><label>Expenses</label><input id="hfExpenses" type="number" step="any" placeholder="optional"></div>
         <div class="f"><label>Dividend</label><input id="hfDividend" type="number" step="any" placeholder="optional"></div>
         <div class="f"><button class="btn-small" id="hfAdd">+ Add to ledger</button></div>
       </div>
@@ -1292,7 +1309,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     </div>
 
     <div class="tabpanel" data-panel="paste">
-      <p class="card-hint">Two formats work here. A flat table — one row per lot with a <code>Symbol</code> column, plus whichever of <code>Portfolio</code>, <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Expenses</code>, <code>Dividend</code>, <code>Current price</code> you have (unlabeled rows land in the first portfolio). Or a per-stock trade history — the stock symbol on its own line, followed by a <code>Date / Type / Quantity / Price</code> table, repeated for as many stocks as you like in one paste; only "buy" rows become holdings (log "sell" rows in the Transactions section instead).</p>
+      <p class="card-hint">Two formats work here. A flat table — one row per lot with a <code>Symbol</code> column, plus whichever of <code>Portfolio</code>, <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Dividend</code>, <code>Current price</code> you have (unlabeled rows land in the first portfolio). Legacy <code>Expenses</code> values are still accepted during import and are moved to the matching recommendation commission total. Or a per-stock trade history — the stock symbol on its own line, followed by a <code>Date / Type / Quantity / Price</code> table, repeated for as many stocks as you like in one paste; only "buy" rows become holdings (log "sell" rows in the Transactions section instead).</p>
       <textarea class="pastearea" id="hpArea" placeholder="Paste your holdings table here, header row included..."></textarea>
       <button class="btn-small" id="hpParseBtn" style="margin-top:10px;">+ Add pasted rows to ledger</button>
       <div class="status-text" id="hpStatus"></div>
@@ -1302,6 +1319,18 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   <div class="section-title-row">
     <h2><span class="num">03</span>Holdings</h2>
     <button class="chevron-btn" id="ledgerToggleBtn" title="Collapse this section" aria-expanded="true">▾</button>
+  </div>
+  <div class="card commission-card" id="commissionCard">
+    <div class="commission-head">
+      <div>
+        <div class="section-eyebrow">Recommendation costs</div>
+        <h3>Commissions by Recommended by</h3>
+        <p>Individual stock P&amp;L stays <b>gross</b>. These totals are included only in XIRR when you filter by Recommended by, and in the recommendation report. Because this row stores a total amount only, XIRR treats the commission as a current-date cash cost.</p>
+      </div>
+      <div class="commission-pill">XIRR only</div>
+    </div>
+    <div id="commissionGrid" class="commission-grid"></div>
+    <div class="commission-foot" id="commissionFoot">Enter the total commission paid for each recommendation.</div>
   </div>
   <div class="card">
     <p class="card-hint">Everything you've added lands here — this is the only place values can be edited. Click any cell to change it; Invested, Current value, Price change, % change and Profit recalculate automatically. To sell, check the box on the lot(s) you're selling — one lot or several of the same stock — then click <b>Sell selected</b> below.</p>
@@ -1318,7 +1347,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
               <th class="left">Portfolio</th>
               <th class="left">Symbol</th>
               <th class="left">Broker</th><th class="left">Recommended by</th><th class="left">Trade date</th>
-              <th>Shares</th><th>Invested price</th><th>Expenses</th><th>Invested</th>
+              <th>Shares</th><th>Invested price</th><th>Invested</th>
               <th>Current price</th><th>Current value</th>
               <th>Price change</th><th>% change</th><th>Dividend</th><th>Profit</th><th></th>
             </tr>
@@ -1631,7 +1660,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <div class="foot">Absolute return uses invested and current value exactly as entered. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. Market data can be refreshed through the secure Angel One Worker bridge; Google Sheets remains supported as a browser-friendly fallback and needs the sheet link-shared as viewable. Reports uses the same local Holdings and Transactions data for realized P&L, XIRR, allocation and recommendation analysis. Help explains the main workflows and troubleshooting steps.</div>
+  <div class="foot">Absolute return and each stock's Profit use the gross stock cost (shares × invested price) and current value. Recommendation commissions are kept separate and are included only in XIRR when a Recommended by filter/report is applied. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. Market data can be refreshed through the secure Angel One Worker bridge; Google Sheets remains supported as a browser-friendly fallback and needs the sheet link-shared as viewable. Reports uses the same local Holdings and Transactions data for realized P&L, XIRR, allocation and recommendation analysis. Help explains the main workflows and troubleshooting steps.</div>
 
 </div>
 
@@ -1654,7 +1683,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   const state = {
-    holdRows: [],       // [{id, portfolio, symbol, broker, recommendedBy, tradeDate, qty, investedPrice, invested, currentPrice, curVal, dividend, expenses}]
+    holdRows: [],       // [{id, portfolio, symbol, broker, recommendedBy, tradeDate, qty, investedPrice, currentPrice, dividend}]
+    recoCommissions: {},  // {RecommendedBy: total commission} — excluded from stock P&L, used for XIRR adjustments
     holdIdSeq: 1,
     lastResults: null,
     portfolios: ['My Portfolio'],
@@ -1719,12 +1749,14 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     return {
       app: 'equity-wealthledger-state', version: 2, savedAt: new Date().toISOString(),
       portfolios: state.portfolios,
-      holdRows: state.holdRows,
+      holdRows: state.holdRows.map(r=>{ const {expenses, ...clean} = r || {}; return clean; }),
       manualTxns: safeTxns,
       angelApiUrl: state.angelApiUrl,
       angelExchange: state.angelExchange,
       angelTokenMap: state.angelTokenMap,
-      priceSourceMap: state.priceSourceMap
+      priceSourceMap: state.priceSourceMap,
+      recoCommissions: state.recoCommissions,
+      commissionMigrationVersion: 1
     };
   }
 
@@ -1783,6 +1815,16 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       if(data.angelExchange) state.angelExchange = String(data.angelExchange).toUpperCase();
       if(data.angelTokenMap && typeof data.angelTokenMap==='object') state.angelTokenMap = {...state.angelTokenMap,...data.angelTokenMap};
       if(data.priceSourceMap && typeof data.priceSourceMap==='object') state.priceSourceMap = {...state.priceSourceMap,...data.priceSourceMap};
+      state.recoCommissions = (data.recoCommissions && typeof data.recoCommissions==='object') ? Object.fromEntries(Object.entries(data.recoCommissions).map(([k,v])=>[k,Number(v)||0])) : {};
+      if(data.commissionMigrationVersion !== 1){
+        const moved = migrateLegacyExpenses(state.holdRows);
+        if(moved!==0){
+          try{ window.__wlCommissionMigrationNote = moved; }catch(e){}
+        }
+      } else {
+        // v28+ backups carry commissions separately; legacy expense fields are ignored.
+        state.holdRows.forEach(r=>{ if(r && Object.prototype.hasOwnProperty.call(r,'expenses')) delete r.expenses; });
+      }
       // Always enforce the JYOTI rule even when an older backup contained a stale NSE mapping.
       if(!state.priceSourceMap.JYOTI) state.priceSourceMap.JYOTI='SHEET';
       delete state.angelTokenMap['NSE:JYOTI'];
@@ -1883,6 +1925,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     if(state.recoPortfolioFilter===name) state.recoPortfolioFilter = null;
     refreshPortfolioSelects();
     renderHoldTable();
+    renderCommissionInputs();
     renderTxnTable();
     renderRealizedReport();
     $('portfolioStatus').textContent = `Removed "${name}".`;
@@ -1964,14 +2007,60 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   // (state.holdRows is already initialized above — and may already be populated
   // by loadFromLocalStorage(). Do NOT reset it here.)
 
-  function computeInvested(row){ return (row.qty!=null && row.investedPrice!=null) ? (row.qty*row.investedPrice + (row.expenses||0)) : null; }
+  function normalizeRecoKey(v){ return String(v||'').trim() || 'Unspecified'; }
+  function recoCommission(reco){ const n=Number(state.recoCommissions?.[reco]||0); return Number.isFinite(n) ? n : 0; }
+  function commissionForRecos(recos){
+    if(!recos) return 0;
+    const list = recos instanceof Set ? Array.from(recos) : Array.isArray(recos) ? recos : [recos];
+    return list.reduce((sum,reco)=>sum+recoCommission(normalizeRecoKey(reco)),0);
+  }
+  function migrateLegacyExpenses(rows){
+    let moved = 0;
+    (rows||[]).forEach(r=>{
+      const n = Number(r?.expenses);
+      if(Number.isFinite(n) && n!==0){
+        const key = normalizeRecoKey(r.recommendedBy);
+        state.recoCommissions[key] = recoCommission(key) + n;
+        moved += n;
+      }
+      if(r && Object.prototype.hasOwnProperty.call(r,'expenses')) delete r.expenses;
+    });
+    return moved;
+  }
+  function renderCommissionInputs(){
+    const grid=$('commissionGrid'); if(!grid) return;
+    const names=Array.from(new Set([...RECO_OPTIONS, ...(Object.keys(state.recoCommissions||{}).filter(k=>k!=='Unspecified')), ...(state.recoCommissions?.Unspecified ? ['Unspecified'] : [])]));
+    grid.innerHTML=names.map(name=>{
+      const val=recoCommission(name);
+      return `<div class="commission-item"><label title="${escapeAttr(name)}">${escapeAttr(name)}</label><input class="commission-input" data-reco="${escapeAttr(name)}" type="number" min="0" step="any" value="${val ? val : ''}" placeholder="₹ 0"></div>`;
+    }).join('');
+    grid.querySelectorAll('.commission-input').forEach(inp=>{
+      inp.addEventListener('input',()=>{
+        const key=normalizeRecoKey(inp.dataset.reco);
+        const value=inp.value===''?0:parseFloat(inp.value);
+        state.recoCommissions[key]=(Number.isFinite(value)&&value>=0)?value:0;
+        scheduleAutosave();
+        updateCommissionFoot();
+        applyFilterAndRender();
+        renderRecoSummary();
+      });
+    });
+    updateCommissionFoot();
+  }
+  function updateCommissionFoot(){
+    const foot=$('commissionFoot'); if(!foot) return;
+    const entries=Object.entries(state.recoCommissions||{}).filter(([,v])=>Number(v)>0);
+    const total=entries.reduce((s,[,v])=>s+Number(v),0);
+    foot.textContent=entries.length ? `${entries.length} recommendation${entries.length===1?'':'s'} have commission recorded · Total ₹${total.toLocaleString('en-IN',{maximumFractionDigits:2})}. These costs are applied to XIRR only when the matching recommendation filter/report is used.` : 'Enter the total commission paid for each recommendation.';
+  }
+
+  function computeInvested(row){ return (row.qty!=null && row.investedPrice!=null) ? (row.qty*row.investedPrice) : null; }
   function computeCurVal(row){ return (row.qty!=null && row.currentPrice!=null) ? row.qty*row.currentPrice : null; }
 
   $('hfAdd').addEventListener('click', ()=>{
     const symbol = $('hfSymbol').value.trim();
     const qty = $('hfQty').value === '' ? null : parseFloat($('hfQty').value);
     const investedPrice = $('hfInvestedPrice').value === '' ? null : parseFloat($('hfInvestedPrice').value);
-    const expenses = $('hfExpenses').value === '' ? null : parseFloat($('hfExpenses').value);
     const dividend = $('hfDividend').value === '' ? null : parseFloat($('hfDividend').value);
     if(!symbol || qty==null || isNaN(qty) || qty<=0 || investedPrice==null || isNaN(investedPrice) || investedPrice<=0){
       $('hfStatus').textContent = 'Symbol, shares and invested price are required.';
@@ -1982,12 +2071,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       portfolio: $('hfPortfolio').value || state.portfolios[0],
       symbol,
       broker:$('hfBroker').value, recommendedBy:$('hfReco').value, tradeDate:$('hfDate').value,
-      qty, investedPrice, expenses: (expenses!=null && !isNaN(expenses)) ? expenses : null,
+      qty, investedPrice,
       dividend: (dividend!=null && !isNaN(dividend)) ? dividend : null,
       currentPrice: null
     });
     $('hfSymbol').value='';
-    $('hfQty').value=''; $('hfInvestedPrice').value=''; $('hfExpenses').value=''; $('hfDividend').value='';
+    $('hfQty').value=''; $('hfInvestedPrice').value=''; $('hfDividend').value='';
     $('hfStatus').textContent = `Added ${symbol} to the ledger below — set current price in the ledger or fetch it from Google Sheets.`;
     $('hfSymbol').focus();
     renderHoldTable();
@@ -2025,7 +2114,6 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         <td class="left date-cell"><input class="hIn" data-f="tradeDate" type="date" value="${r.tradeDate||''}"></td>
         <td><input class="hIn" data-f="qty" type="number" step="any" value="${r.qty!=null?r.qty:''}"></td>
         <td><input class="hIn" data-f="investedPrice" type="number" step="any" value="${r.investedPrice!=null?r.investedPrice:''}"></td>
-        <td><input class="hIn" data-f="expenses" type="number" step="any" value="${r.expenses!=null?r.expenses:''}" placeholder="0" title="Brokerage, STT, fees etc. — added to cost basis"></td>
         <td class="readonly-cell investedCell">${invested!=null?fmtINR(invested):'—'}</td>
         <td><input class="hIn" data-f="currentPrice" type="number" step="any" value="${r.currentPrice!=null?r.currentPrice:''}"></td>
         <td class="readonly-cell curValCell">${curVal!=null?fmtINR(curVal):'—'}</td>
@@ -2096,6 +2184,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   renderHoldTable();
+  renderCommissionInputs();
+  if(window.__wlCommissionMigrationNote){
+    const moved=window.__wlCommissionMigrationNote;
+    showToast(`Moved ₹${Number(moved).toLocaleString('en-IN',{maximumFractionDigits:2})} legacy stock expenses into recommendation commissions.`, 'success');
+    delete window.__wlCommissionMigrationNote;
+  }
 
   // ---------- tabs (Add a holding: single entry vs paste) ----------
   document.querySelectorAll('.tabbtn').forEach(btn=>{
@@ -2247,7 +2341,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
           broker: 'Z',
           recommendedBy: '',
           tradeDate: cm.tradeDate ? parseDateCellLoose(r[cm.tradeDate]) : '',
-          qty, investedPrice: price, expenses: null, dividend: null, currentPrice: null
+          qty, investedPrice: price, dividend: null, currentPrice: null
         });
         added++;
       });
@@ -2263,6 +2357,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         const dividendVal = cm.dividend ? num(r[cm.dividend]) : NaN;
         const rawBroker = cm.broker ? String(r[cm.broker]||'').trim().toUpperCase() : '';
         const rawReco = cm.recommendedBy ? String(r[cm.recommendedBy]||'').trim() : '';
+        if(Number.isFinite(expensesVal) && expensesVal!==0){
+          const recoKey=normalizeRecoKey(rawReco);
+          state.recoCommissions[recoKey]=(state.recoCommissions[recoKey]||0)+expensesVal;
+        }
         const rawPortfolio = cm.portfolio ? String(r[cm.portfolio]||'').trim() : '';
         state.holdRows.push({
           id: 'h'+(state.holdIdSeq++),
@@ -2271,7 +2369,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
           broker: BROKER_CODES.includes(rawBroker) ? rawBroker : 'Z',
           recommendedBy: RECO_OPTIONS.includes(rawReco) ? rawReco : '',
           tradeDate: cm.tradeDate ? parseDateCellLoose(r[cm.tradeDate]) : '',
-          qty, investedPrice, expenses: isNaN(expensesVal) ? null : expensesVal,
+          qty, investedPrice,
           dividend: isNaN(dividendVal) ? null : dividendVal,
           currentPrice: isNaN(currentPriceVal) ? null : currentPriceVal
         });
@@ -2550,8 +2648,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     let matchedCurValTotal = 0;
     results.forEach(r=>{ if(r.xirr!==null){ cfsForPortfolio.push(...r.cfs); matchedCurValTotal += r.curValForXirr; } });
     let portXirr = null;
-    if(cfsForPortfolio.length>0 && matchedCurValTotal>0){
-      portXirr = xirr(cfsForPortfolio.concat([{date:valDate, amount:matchedCurValTotal}]));
+    const filteredRecoCommission = state.activeRecos===null ? 0 : commissionForRecos(state.activeRecos);
+    const adjustedPortfolioValue = matchedCurValTotal - filteredRecoCommission;
+    if(cfsForPortfolio.length>0 && adjustedPortfolioValue>0){
+      portXirr = xirr(cfsForPortfolio.concat([{date:valDate, amount:adjustedPortfolioValue}]));
     }
 
     renderStats({totalInvested, totalCurVal, totalPnl, absReturn, portXirr});
@@ -2566,6 +2666,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const pnlEl = $('sumPnl'); pnlEl.textContent = fmtINR(sum.totalPnl); pnlEl.className = 'v ' + (sum.totalPnl>=0?'gain':'loss');
     const absEl = $('sumAbs'); absEl.textContent = fmtPct(sum.absReturn); absEl.className = 'v ' + (sum.absReturn>=0?'gain':'loss');
     $('sumXirr').textContent = sum.portXirr!==null ? fmtPct(sum.portXirr*100) : 'n/a';
+    if($('sumXirrNote')){
+      const c = state.activeRecos===null ? 0 : commissionForRecos(state.activeRecos);
+      $('sumXirrNote').textContent = c>0 ? `Includes ₹${c.toLocaleString('en-IN',{maximumFractionDigits:2})} recommendation commission · applied on valuation date` : (state.activeRecos===null ? 'Gross portfolio XIRR' : 'No commission entered for this recommendation');
+    }
     if($('heroCurrentValue')) $('heroCurrentValue').textContent = fmtINR(sum.totalCurVal);
     if($('heroPnl')) { $('heroPnl').textContent = fmtINR(sum.totalPnl); $('heroPnl').className = sum.totalPnl >= 0 ? 'gain' : 'loss'; }
     if($('heroXirr')) { $('heroXirr').textContent = sum.portXirr!==null ? fmtPct(sum.portXirr*100) : 'n/a'; $('heroXirr').className = sum.portXirr===null ? '' : (sum.portXirr >= 0 ? 'gain' : 'loss'); }
@@ -3725,7 +3829,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderRecoSummary();
   }
 
-  function computeXirrForCashflows(holdPredicate, txnPredicate, valDate){
+  function computeXirrForCashflows(holdPredicate, txnPredicate, valDate, commissionRecos=null){
     const cfs = [];
     let curValSum = 0;
     state.holdRows.forEach(r=>{
@@ -3749,6 +3853,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       cfs.push({date: t.date, amount: t.type==='buy' ? -amt : amt});
     });
     if(curValSum>0) cfs.push({date: valDate, amount: curValSum});
+    const commission = commissionForRecos(commissionRecos);
+    if(commission>0) cfs.push({date: valDate, amount: -commission});
     if(cfs.length<2) return null;
     return xirr(cfs);
   }
@@ -3777,7 +3883,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       xirrVal: computeXirrForCashflows(
         r=> (r.recommendedBy||'Unspecified')===k,
         t=> (t.recommendedBy||'Unspecified')===k,
-        valDate
+        valDate,
+        new Set([k])
       )
     }));
   }
@@ -3803,10 +3910,15 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     }).join('');
     const grandTotal = totalReal + totalUnreal;
     const hiddenSet = state.hiddenRecos;
+    const visibleRecoKeys = new Set([
+      ...state.holdRows.map(r=>normalizeRecoKey(r.recommendedBy)),
+      ...state.manualTxns.map(t=>normalizeRecoKey(t.recommendedBy))
+    ].filter(k=>!hiddenSet.has(k)));
     const totalXirr = computeXirrForCashflows(
       r=> !hiddenSet.has(r.recommendedBy||'Unspecified'),
       t=> !hiddenSet.has(t.recommendedBy||'Unspecified'),
-      valDate
+      valDate,
+      visibleRecoKeys
     );
     const totalXirrStr = totalXirr!=null ? fmtPct(totalXirr*100) : '<span class="muted">n/a</span>';
     const totalXirrClass = totalXirr!=null ? (totalXirr>=0?'gain':'loss') : '';
@@ -3986,7 +4098,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const blendedXirr = computeXirrForCashflows(
       hr => recosShown.has(hr.recommendedBy||'Unspecified'),
       t => recosShown.has(t.recommendedBy||'Unspecified'),
-      valDate
+      valDate,
+      recosShown
     );
     const blendedStr = blendedXirr!=null ? fmtPct(blendedXirr*100) : '<span class="muted">n/a</span>';
     const blendedClass = blendedXirr!=null ? (blendedXirr>=0?'gain':'loss') : '';
@@ -4044,6 +4157,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         if(!data || !Array.isArray(data.holdRows)) throw new Error("That file doesn't look like a backup from this app.");
 
         if(Array.isArray(data.portfolios) && data.portfolios.length) state.portfolios = data.portfolios;
+        state.recoCommissions = (data.recoCommissions && typeof data.recoCommissions==='object') ? Object.fromEntries(Object.entries(data.recoCommissions).map(([k,v])=>[k,Number(v)||0])) : {};
 
         state.holdRows = data.holdRows.map(r=>({
           id: r.id || ('h'+(state.holdIdSeq++)),
@@ -4051,9 +4165,16 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
           symbol: r.symbol||'',
           broker: r.broker||'Z', recommendedBy: r.recommendedBy||'', tradeDate: r.tradeDate||'',
           qty: r.qty!=null?r.qty:null, investedPrice: r.investedPrice!=null?r.investedPrice:null,
-          expenses: r.expenses!=null?r.expenses:null, dividend: r.dividend!=null?r.dividend:null,
+          dividend: r.dividend!=null?r.dividend:null,
           currentPrice: r.currentPrice!=null?r.currentPrice:null
         }));
+        if(data.commissionMigrationVersion !== 1){
+          migrateLegacyExpenses(state.holdRows.map((r,i)=>{
+            const src=data.holdRows?.[i];
+            if(src && src.expenses!=null) r.expenses=src.expenses;
+            return r;
+          }));
+        }
         let maxH = 0;
         state.holdRows.forEach(r=>{ const m = /^h(\d+)$/.exec(r.id); if(m) maxH = Math.max(maxH, +m[1]); });
         state.holdIdSeq = Math.max(state.holdIdSeq, maxH+1);
@@ -4071,6 +4192,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         state.tableSort = {key:null, dir:1};
         refreshPortfolioSelects();
         renderHoldTable();
+        renderCommissionInputs();
         renderTxnTable();
         renderRealizedReport();
         resetCalculatedViews();
@@ -4131,6 +4253,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     if(!ok) return;
     state.holdRows = [];
     state.manualTxns = [];
+    state.recoCommissions = {};
     state.hiddenRecos = new Set();
     state.lastResults = null;
     state.activePortfolios = null;
@@ -4141,7 +4264,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderHoldTable();
     renderTxnTable();
     renderRealizedReport();
-    try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){}
+    try{ localStorage.removeItem(AUTOSAVE_KEY); localStorage.removeItem(AUTOSAVE_KEY_V2); }catch(err){}
     resetCalculatedViews();
     switchView('dashboard');
     $('backupStatus').textContent = 'All holdings and transactions wiped successfully.';
