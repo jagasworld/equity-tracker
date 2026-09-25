@@ -2990,7 +2990,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const body=$('angelMapBody');
     if(!body) return;
     const keys=new Set();
-    Object.entries(state.angelTokenMap||{}).forEach(([k,v])=>{ if(k.includes(':') && v) keys.add(k); });
+    Object.entries(state.angelManualMap||{}).forEach(([k,v])=>{ if(k.includes(':') && v && state.angelTokenMap?.[k]) keys.add(k); });
     Object.keys(state.priceSourceMap||{}).forEach(symbol=>{ if(symbol) keys.add(`BSE:${symbol}`); });
     const entries=Array.from(keys).sort((a,b)=>a.localeCompare(b));
     if(!entries.length){
@@ -3022,7 +3022,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const symbol=symKey($('angelMapSymbol')?.value||'');
     const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
     const token=String($('angelMapToken')?.value||'').trim();
-    const source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
+    let source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
+    if(symbol==='JYOTI') source='SHEET';
 
     if(!symbol){
       $('angelMapStatus').textContent='Enter a symbol first.';
@@ -3056,7 +3057,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
     const sourceKey=e.target.getAttribute('data-source-map');
     if(sourceKey){
-      state.priceSourceMap[symKey(sourceKey)] = String(e.target.value||'AUTO').toUpperCase();
+      state.priceSourceMap[symKey(sourceKey)] = symKey(sourceKey)==='JYOTI' ? 'SHEET' : String(e.target.value||'AUTO').toUpperCase();
       if(symKey(sourceKey)==='JYOTI' && state.priceSourceMap.JYOTI==='SHEET'){
         delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI']; state.angelTokenMap['BSE:JYOTI']='504076';
       }
@@ -3104,7 +3105,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const symbol=symKey($('angelMapSymbol')?.value||'');
     const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
     const token=String($('angelMapToken')?.value||'').trim();
-    const source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
+    let source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
+    if(symbol==='JYOTI') source='SHEET';
     if(!symbol){
       $('angelMapStatus').textContent='Enter a symbol first.';
       return;
@@ -3887,34 +3889,115 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderRecoSummary();
   }
 
-  function computeXirrForCashflows(holdPredicate, txnPredicate, valDate, commissionRecos=null){
-    const cfs = [];
-    let curValSum = 0;
-    state.holdRows.forEach(r=>{
-      if(state.recoPortfolioFilter!==null && r.portfolio!==state.recoPortfolioFilter) return;
-      if(!holdPredicate(r)) return;
-      const investedAmt = computeInvested(r);
-      const curValAmt = computeCurVal(r);
-      if(r.tradeDate && investedAmt!=null && investedAmt>0){
-        cfs.push({date: new Date(r.tradeDate+'T00:00:00'), amount: -investedAmt});
-      }
-      if(curValAmt!=null) curValSum += curValAmt;
-    });
+  function selectedRecoSet(commissionRecos, txnMatches, holdMatches){
+    if(commissionRecos instanceof Set) return new Set(Array.from(commissionRecos).map(normalizeRecoKey));
+    if(Array.isArray(commissionRecos)) return new Set(commissionRecos.map(normalizeRecoKey));
+    const set=new Set();
+    (txnMatches||[]).forEach(t=>set.add(normalizeRecoKey(t.recommendedBy)));
+    (holdMatches||[]).forEach(r=>set.add(normalizeRecoKey(r.recommendedBy)));
+    return set;
+  }
+
+  function buildTransactionAttribution(symbolFilter=null){
+    const groups={};
     state.manualTxns.forEach(t=>{
       if(state.recoPortfolioFilter!==null && t.portfolio!==state.recoPortfolioFilter) return;
-      if(!txnPredicate(t)) return;
-      // Synchronized manual buys are already represented by the matching holding
-      // lot above. Exclude the duplicate buy cash flow, but keep sells so realized
-      // proceeds still enter XIRR for partially/fully sold positions.
-      if(t.type==='buy' && t.linkedToHolding) return;
-      const amt = t.qty*t.price;
-      cfs.push({date: t.date, amount: t.type==='buy' ? -amt : amt});
+      const symbol=symKey(t.instrument);
+      if(!symbol || (symbolFilter && !symbolFilter.has(symbol))) return;
+      const k=(t.portfolio||'')+'|||'+symbol;
+      if(!groups[k]) groups[k]=[];
+      groups[k].push(t);
     });
-    if(curValSum>0) cfs.push({date: valDate, amount: curValSum});
-    const commission = commissionForRecos(commissionRecos);
-    if(commission>0) cfs.push({date: valDate, amount: -commission});
-    if(cfs.length<2) return null;
-    return xirr(cfs);
+
+    const byReco={};
+    function ensure(reco,symbol){
+      const key=normalizeRecoKey(reco)+'|||'+symbol;
+      if(!byReco[key]) byReco[key]={reco:normalizeRecoKey(reco),symbol,realized:0,cashflows:[]};
+      return byReco[key];
+    }
+
+    Object.values(groups).forEach(list=>{
+      const ordered=list.slice().sort((a,b)=>a.date-b.date);
+      const fifo=[];
+      ordered.forEach(t=>{
+        const qty=Number(t.qty)||0, price=Number(t.price)||0;
+        if(!(qty>0 && price>0) || !t.date) return;
+        const symbol=symKey(t.instrument);
+        if(t.type==='buy'){
+          let reco=normalizeRecoKey(t.recommendedBy);
+          // Direct transaction-created holdings carry the recommendation on the
+          // buy transaction. Keep that as the authoritative attribution.
+          if((!t.recommendedBy || !String(t.recommendedBy).trim()) && t.linkedHoldingId){
+            const linked=state.holdRows.find(r=>r.id===t.linkedHoldingId);
+            if(linked) reco=normalizeRecoKey(linked.recommendedBy);
+          }
+          const row=ensure(reco,symbol);
+          row.cashflows.push({date:t.date,amount:-(qty*price)});
+          fifo.push({qty,price,date:t.date,reco,symbol});
+        }else{
+          let remaining=qty;
+          while(remaining>1e-9 && fifo.length){
+            const lot=fifo[0];
+            const take=Math.min(lot.qty,remaining);
+            const row=ensure(lot.reco,symbol);
+            row.cashflows.push({date:t.date,amount:take*price});
+            row.realized += take*(price-lot.price);
+            lot.qty-=take;
+            remaining-=take;
+            if(lot.qty<=1e-9) fifo.shift();
+          }
+        }
+      });
+    });
+    return byReco;
+  }
+
+  function computeXirrForCashflows(holdPredicate, txnPredicate, valDate, commissionRecos=null){
+    const portfolioFilter=state.recoPortfolioFilter;
+    const holdMatches=state.holdRows.filter(r=>{
+      if(portfolioFilter!==null && r.portfolio!==portfolioFilter) return false;
+      return holdPredicate(r);
+    });
+    const txnMatches=state.manualTxns.filter(t=>{
+      if(portfolioFilter!==null && t.portfolio!==portfolioFilter) return false;
+      return txnPredicate(t);
+    });
+    const recos=selectedRecoSet(commissionRecos,txnMatches,holdMatches);
+    const symbols=new Set([...holdMatches.map(r=>symKey(r.symbol)),...txnMatches.map(t=>symKey(t.instrument))].filter(Boolean));
+    const attribution=buildTransactionAttribution(symbols);
+    const cfs=[];
+    let hasAttributedTxnFlow=false;
+    Object.values(attribution).forEach(group=>{
+      if(!recos.has(group.reco)) return;
+      group.cashflows.forEach(cf=>{ cfs.push(cf); hasAttributedTxnFlow=true; });
+    });
+
+    // If the selected recommendation has no transaction history at all, use the
+    // original holdings-entry cash flow as a compatibility fallback.
+    if(!hasAttributedTxnFlow){
+      holdMatches.forEach(r=>{
+        const investedAmt=computeInvested(r);
+        if(r.tradeDate && investedAmt!=null && investedAmt>0){
+          cfs.push({date:new Date(r.tradeDate+'T00:00:00'),amount:-investedAmt});
+        }
+      });
+    }
+
+    // Only currently-held shares contribute a terminal value. Fully sold stocks
+    // therefore have no terminal value and are calculated entirely from Buy/Sell
+    // dates and proceeds — exactly the realized XIRR we need.
+    const curValSum=holdMatches.reduce((sum,r)=>{
+      const cur=computeCurVal(r);
+      return cur!=null && Number.isFinite(cur) ? sum+cur : sum;
+    },0);
+    if(curValSum>0) cfs.push({date:valDate,amount:curValSum});
+
+    const commission=commissionForRecos(recos);
+    if(commission>0) cfs.push({date:valDate,amount:-commission});
+
+    const clean=cfs.filter(cf=>cf && cf.date instanceof Date && Number.isFinite(cf.date.getTime()) && Number.isFinite(cf.amount) && cf.amount!==0);
+    if(clean.length<2) return null;
+    return xirr(clean);
   }
 
   function computeRecoSummary(){
@@ -3929,9 +4012,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       unreal[key] = (unreal[key]||0) + (curVal - invested);
     });
     const real = {};
-    computeRealizedReport().forEach(r=>{
-      const key = r.recommendedBy || 'Unspecified';
-      real[key] = (real[key]||0) + r.realized;
+    const attribution = buildTransactionAttribution(null);
+    Object.values(attribution).forEach(g=>{
+      if(state.recoPortfolioFilter!==null){
+        // buildTransactionAttribution already applied the portfolio filter.
+      }
+      real[g.reco] = (real[g.reco]||0) + g.realized;
     });
     const keys = Array.from(new Set([...Object.keys(unreal), ...Object.keys(real)]))
       .filter(k=> !state.hiddenRecos.has(k))
@@ -4022,14 +4108,18 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       g.dividend += (r.dividend||0);
     });
 
-    // Realized side: booked profit/loss from the transactions log, same grouping.
+    // Realized side: allocate every sell FIFO back to the recommender of the
+    // buy lot it closed. This makes fully sold stocks and multi-recommender FIFO
+    // histories visible in both realized P&L and XIRR.
     const realizedByKey = {};
-    computeRealizedReport().forEach(r=>{
-      const reco = r.recommendedBy || 'Unspecified';
+    const attribution = buildTransactionAttribution(null);
+    Object.values(attribution).forEach(g=>{
+      const reco=g.reco;
       if(state.hiddenRecos.has(reco)) return;
-      const gKey = keyOf(reco, r.instrument);
-      if(!realizedByKey[gKey]) realizedByKey[gKey] = {reco, symbol: r.instrument, realized: 0};
-      realizedByKey[gKey].realized += r.realized;
+      const displaySymbol=state.holdRows.find(h=>symKey(h.symbol)===g.symbol && normalizeRecoKey(h.recommendedBy)===reco)?.symbol || g.symbol;
+      const gKey=keyOf(reco,displaySymbol);
+      if(!realizedByKey[gKey]) realizedByKey[gKey]={reco,symbol:displaySymbol,realized:0};
+      realizedByKey[gKey].realized += g.realized;
     });
 
     // Union of every (recommender, stock) that appears on either side — a fully
@@ -4055,7 +4145,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const xirrVal = computeXirrForCashflows(
         hr => (hr.recommendedBy||'Unspecified')===reco && symKey(hr.symbol)===symKey(symbol),
         t => (t.recommendedBy||'Unspecified')===reco && symKey(t.instrument)===symKey(symbol),
-        valDate
+        valDate,
+        new Set([reco])
       );
       return {reco, symbol, qty, invested, curVal, unrealizedPnl, realizedPnl, totalPnl, xirrVal};
     });
