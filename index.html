@@ -240,6 +240,11 @@ body{background:radial-gradient(1000px 420px at 12% -10%, rgba(108,99,255,.10), 
 .modal-body label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-faint); margin-bottom:6px; font-weight:600;}
 .modal-body input{width:100%; font-family:inherit; font-size:13px; padding:9px 10px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2); color:var(--text);}
 .modal-body input:focus{outline:none; border-color:var(--brand);}
+
+.mini-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin:12px 0 8px;}
+.mini-section-head b{font-family:'Space Grotesk',sans-serif;font-size:13px;}
+.mini-section-head .card-hint{margin:0;}
+
 .modal-foot{display:flex; justify-content:flex-end; gap:8px; margin-top:6px;}
 
 @media (max-width: 700px){
@@ -274,6 +279,8 @@ body{background:radial-gradient(1000px 420px at 12% -10%, rgba(108,99,255,.10), 
   .compact-table{max-width:100%;}
   .compact-table th:first-child, .compact-table td:first-child{width:38%;}
 
+
+  .mini-section-head{align-items:flex-start;flex-direction:column;gap:3px;}
   .modal-card{max-width:none;}
 }
 
@@ -1443,7 +1450,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     <div class="mapbox" style="margin-top:12px;">
       <b>Stock symbol mappings</b>
       <div style="margin-top:8px;line-height:1.7;">
-        Use this when your simple Equity - WealthLedger symbol is different from Angel One's exchange symbol. You can now also choose the <b>Price source</b> per stock: Auto, Angel One only, or Google Sheets only. Example: <code>JYOTI</code> is preset to <b>Google Sheets only</b>, so Angel One will never replace its price with an NSE lookup.
+        Use this when your simple Equity - WealthLedger symbol is different from Angel One's exchange symbol. You can now also choose the <b>Price source</b> per stock: Auto, Angel One only, or Google Sheets only. Example: <code>JYOTI</code> is preset to <b>Google Sheets only</b>, so Angel One will never replace its price with an NSE lookup. <b>Auto-resolved tokens are temporary and are re-checked; only mappings you save here are treated as fixed/manual tokens.</b>
       </div>
       <div class="inline-row" style="margin-top:10px;">
         <input class="text-input" id="angelMapSymbol" placeholder="Equity - WealthLedger symbol e.g. JYOTI" style="flex:1;min-width:220px;">
@@ -1543,61 +1550,64 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   <div class="filterbar" id="recoPortfolioBar"></div>
 
   <div id="realizedAnchor" class="section-anchor"></div>
-  <div class="card" id="realizedCard" style="display:none;">
-    <div class="card-head"><div class="card-icon">◆</div><b>Realized profit &amp; P&amp;L by recommendation</b></div>
-    <p class="card-hint">Every sell is matched FIFO against the earliest unsold buys of that instrument, within whichever portfolio it belongs to. Switch between the recommender summary and the individual sales behind it.</p>
+  <div class="card" id="recoStockCard" style="display:none;">
+    <div class="card-head"><div class="card-icon">◆</div><b>XIRR &amp; P&amp;L by recommendation</b></div>
+    <p class="card-hint">One place to understand recommendation performance. The summary shows each recommender's realized, unrealized and total P&amp;L with a blended XIRR. The stock detail underneath includes current holdings and fully sold positions, using the dated Buy/Sell transactions for XIRR.</p>
+
     <div class="stats-row show stats-row-3col">
       <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
       <div class="stat"><div class="k">Winning sells</div><div class="v gain" id="realWins">—</div></div>
       <div class="stat"><div class="k">Losing sells</div><div class="v loss" id="realLosses">—</div></div>
     </div>
+
     <div class="tabs">
       <button class="tabbtn active" data-tab="byReco">By recommendation</button>
       <button class="tabbtn" data-tab="byTxn">By transaction</button>
     </div>
+
     <div class="tabpanel active" data-panel="byReco">
+      <div class="mini-section-head"><b>Recommendation summary</b><span class="card-hint">Blended XIRR uses dated cash flows, not an average of stock percentages.</span></div>
       <div class="tscroll">
         <table class="compact-table">
           <thead><tr><th class="left">Recommended by</th><th>Realized P&amp;L</th><th>Unrealized P&amp;L</th><th>Total</th><th>XIRR</th><th></th></tr></thead>
           <tbody id="recoSummaryBody"></tbody>
         </table>
       </div>
+
+      <div class="mini-section-head" style="margin-top:18px;"><b>Stock detail</b><span class="card-hint">Includes open and sold-out stocks under each recommendation.</span></div>
+      <div class="inline-row" style="margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+        <label class="broker-label" style="margin:0; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Show:</label>
+        <select class="sel" id="recoStockFilter"><option value="__all__">All recommenders</option></select>
+        <span class="sort-label">Sort by</span>
+        <select class="sel" id="recoSortSelect" aria-label="Sort recommendation report by">
+          <option value="reco">Recommended by</option>
+          <option value="symbol">Stock</option>
+          <option value="qty">Shares left</option>
+          <option value="invested">Invested</option>
+          <option value="curVal">Current value</option>
+          <option value="unrealizedPnl">Unrealized P&amp;L</option>
+          <option value="realizedPnl">Realized P&amp;L</option>
+          <option value="totalPnl">Total P&amp;L</option>
+          <option value="xirrVal">XIRR</option>
+        </select>
+        <button type="button" id="recoSortDir" class="sort-dir" title="Toggle sort direction">↑ Asc</button>
+      </div>
+      <div class="tscroll">
+        <table class="resultstable" style="min-width:820px;">
+          <thead><tr><th class="left reco-sort" data-reco-sort="reco">Recommended by<span class="sort-arrow"></span></th><th class="left reco-sort" data-reco-sort="symbol">Stock<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="qty">Shares left<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="invested">Invested<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="curVal">Current val<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="unrealizedPnl">Unrealized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="realizedPnl">Realized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="totalPnl">Total P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="xirrVal">XIRR<span class="sort-arrow"></span></th></tr></thead>
+          <tbody id="recoStockBody"></tbody>
+        </table>
+      </div>
     </div>
+
     <div class="tabpanel" data-panel="byTxn">
+      <div class="mini-section-head"><b>Realized sales</b><span class="card-hint">FIFO-matched sells from your transaction history.</span></div>
       <div class="tscroll">
         <table class="txn-table">
           <thead><tr><th class="left">Instrument</th><th class="left">Sell date</th><th>Qty sold</th><th>Sell price</th><th>Avg. buy price</th><th>Realized P&amp;L</th><th>Return %</th></tr></thead>
           <tbody id="realizedBody"></tbody>
         </table>
       </div>
-    </div>
-  </div>
-
-  <div class="card" id="recoStockCard" style="display:none;">
-    <div class="card-head"><div class="card-icon">◆</div><b>XIRR by stock, by recommendation</b></div>
-    <p class="card-hint">Every stock recommended by each person, grouped together — current holdings and booked (realized) profit/loss both included, plus a blended total per recommender. A stock shows here even after it's fully sold, tagged "sold out", so the booked result isn't lost.</p>
-    <div class="inline-row" style="margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-      <label class="broker-label" style="margin:0; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Show:</label>
-      <select class="sel" id="recoStockFilter"><option value="__all__">All recommenders</option></select>
-      <span class="sort-label">Sort by</span>
-      <select class="sel" id="recoSortSelect" aria-label="Sort recommendation report by">
-        <option value="reco">Recommended by</option>
-        <option value="symbol">Stock</option>
-        <option value="qty">Shares left</option>
-        <option value="invested">Invested</option>
-        <option value="curVal">Current value</option>
-        <option value="unrealizedPnl">Unrealized P&amp;L</option>
-        <option value="realizedPnl">Realized P&amp;L</option>
-        <option value="totalPnl">Total P&amp;L</option>
-        <option value="xirrVal">XIRR</option>
-      </select>
-      <button type="button" id="recoSortDir" class="sort-dir" title="Toggle sort direction">↑ Asc</button>
-    </div>
-    <div class="tscroll">
-      <table class="resultstable" style="min-width:820px;">
-        <thead><tr><th class="left reco-sort" data-reco-sort="reco">Recommended by<span class="sort-arrow"></span></th><th class="left reco-sort" data-reco-sort="symbol">Stock<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="qty">Shares left<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="invested">Invested<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="curVal">Current val<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="unrealizedPnl">Unrealized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="realizedPnl">Realized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="totalPnl">Total P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="xirrVal">XIRR<span class="sort-arrow"></span></th></tr></thead>
-        <tbody id="recoStockBody"></tbody>
-      </table>
     </div>
   </div>
 
@@ -1724,6 +1734,13 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         return {'BSE:JYOTI':'504076'};
       }
     })(),
+    // Only mappings explicitly entered by the user are trusted as fixed/manual.
+    // Angel's automatic search results are cached separately in angelTokenMap,
+    // but must never become permanent exchange locks.
+    angelManualMap: (()=>{ 
+      try { return JSON.parse(localStorage.getItem('wealthledger-angel-manual-map-v1') || '{}') || {}; }
+      catch(e){ return {}; }
+    })(),
     priceSourceMap: (()=>{
       try{
         const saved=JSON.parse(localStorage.getItem('wealthledger-price-source-map-v1') || '{}') || {};
@@ -1754,6 +1771,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       angelApiUrl: state.angelApiUrl,
       angelExchange: state.angelExchange,
       angelTokenMap: state.angelTokenMap,
+      angelManualMap: state.angelManualMap,
       priceSourceMap: state.priceSourceMap,
       recoCommissions: state.recoCommissions,
       commissionMigrationVersion: 1
@@ -1814,7 +1832,11 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       if(data.angelApiUrl) state.angelApiUrl = normalizeAngelBaseUrl(data.angelApiUrl);
       if(data.angelExchange) state.angelExchange = String(data.angelExchange).toUpperCase();
       if(data.angelTokenMap && typeof data.angelTokenMap==='object') state.angelTokenMap = {...state.angelTokenMap,...data.angelTokenMap};
+      if(data.angelManualMap && typeof data.angelManualMap==='object') state.angelManualMap = {...state.angelManualMap,...data.angelManualMap};
       if(data.priceSourceMap && typeof data.priceSourceMap==='object') state.priceSourceMap = {...state.priceSourceMap,...data.priceSourceMap};
+      // Backward compatibility: a pre-v29 rule set to Angel One only is an explicit
+      // user choice, so trust its token as a manual mapping. Older Auto mappings are
+      // deliberately NOT trusted; they will be re-resolved exactly by the Worker.
       state.recoCommissions = (data.recoCommissions && typeof data.recoCommissions==='object') ? Object.fromEntries(Object.entries(data.recoCommissions).map(([k,v])=>[k,Number(v)||0])) : {};
       if(data.commissionMigrationVersion !== 1){
         const moved = migrateLegacyExpenses(state.holdRows);
@@ -1830,7 +1852,15 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       delete state.angelTokenMap['NSE:JYOTI'];
       delete state.angelTokenMap['JYOTI'];
       state.angelTokenMap['BSE:JYOTI'] = state.angelTokenMap['BSE:JYOTI'] || '504076';
-      try{ localStorage.setItem('wealthledger-angel-api-url-v1', state.angelApiUrl); localStorage.setItem('wealthledger-angel-exchange-v1', state.angelExchange); localStorage.setItem('wealthledger-angel-tokens-v1', JSON.stringify(state.angelTokenMap)); localStorage.setItem('wealthledger-price-source-map-v1', JSON.stringify(state.priceSourceMap)); }catch(e){}
+      if(state.priceSourceMap.JYOTI==='ANGEL' && state.angelTokenMap['BSE:JYOTI']) state.angelManualMap['BSE:JYOTI']=true;
+      Object.keys(state.angelManualMap||{}).forEach(k=>{ if(!state.angelTokenMap[k]) delete state.angelManualMap[k]; });
+      try{
+        localStorage.setItem('wealthledger-angel-api-url-v1', state.angelApiUrl);
+        localStorage.setItem('wealthledger-angel-exchange-v1', state.angelExchange);
+        localStorage.setItem('wealthledger-angel-tokens-v1', JSON.stringify(state.angelTokenMap));
+        localStorage.setItem('wealthledger-angel-manual-map-v1', JSON.stringify(state.angelManualMap||{}));
+        localStorage.setItem('wealthledger-price-source-map-v1', JSON.stringify(state.priceSourceMap));
+      }catch(e){}
       const el = document.getElementById('autosaveStatus');
       if(el && data.savedAt) el.textContent = 'Restored your last session, autosaved ' + new Date(data.savedAt).toLocaleString('en-IN') + '.';
       // Immediately migrate legacy data into the new durable key.
@@ -1960,7 +1990,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const n = parseFloat(String(v).replace(/,/g,'').replace(/[^\d.\-]/g,''));
     return isNaN(n) ? NaN : n;
   }
-  function symKey(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/(BE|EQ|BZ|BL|SM)$/,''); }
+  function symKey(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9-]/g,'').replace(/-(BE|EQ|BZ|BL|SM)$/,'').replace(/-/g,''); }
   function normHeader(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
   const fmtINR = (n)=> (n===null||n===undefined||isNaN(n)) ? '—' : (n<0?'-':'') + '₹' + Math.abs(n).toLocaleString('en-IN', {maximumFractionDigits:0});
   const fmtINR2 = (n)=> (n===null||n===undefined||isNaN(n)) ? '—' : (n<0?'-':'') + '₹' + Math.abs(n).toLocaleString('en-IN', {maximumFractionDigits:2});
@@ -2909,6 +2939,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     localStorage.setItem('wealthledger-angel-api-url-v1', state.angelApiUrl);
     localStorage.setItem('wealthledger-angel-exchange-v1', state.angelExchange);
     localStorage.setItem('wealthledger-angel-tokens-v1', JSON.stringify(state.angelTokenMap || {}));
+    localStorage.setItem('wealthledger-angel-manual-map-v1', JSON.stringify(state.angelManualMap || {}));
     localStorage.setItem('wealthledger-price-source-map-v1', JSON.stringify(state.priceSourceMap || {}));
   }
   function renderAngelStatus(kind='neutral', text=''){
@@ -3001,10 +3032,15 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       $('angelMapStatus').textContent='Enter an Angel token for Angel One or Auto mode.';
       return;
     }
-    if(token) state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    const mapKey=`${exchange}:${symbol}`;
+    if(token) state.angelTokenMap[mapKey]=token;
+    if(source!=='SHEET') state.angelManualMap[mapKey]=true; else delete state.angelManualMap[mapKey];
     state.priceSourceMap[symbol]=source;
     // JYOTI is always safe as a Google Sheets source unless you explicitly switch it.
-    if(symbol==='JYOTI' && source==='SHEET') { delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI']; state.angelTokenMap['BSE:JYOTI']='504076'; }
+    if(symbol==='JYOTI' && source==='SHEET') {
+      delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI'];
+      state.angelTokenMap['BSE:JYOTI']='504076'; delete state.angelManualMap['BSE:JYOTI'];
+    }
     persistAngelSettings();
     renderAngelMappings();
     $('angelMapStatus').textContent=`Saved rule: ${symbol} → ${priceSourceLabel(source)}${token?` (${exchange} / ${token})`:''}.`;
@@ -3032,10 +3068,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
     if(deleteKey){
       delete state.angelTokenMap[deleteKey];
+      delete state.angelManualMap[deleteKey];
       const [,symbol] = deleteKey.split(':');
       if(symKey(symbol)==='JYOTI'){
         state.priceSourceMap.JYOTI='SHEET';
         state.angelTokenMap['BSE:JYOTI']='504076';
+        delete state.angelManualMap['BSE:JYOTI'];
       }
       persistAngelSettings();
       renderAngelMappings();
@@ -3075,10 +3113,18 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       $('angelMapStatus').textContent='Enter an Angel token for Angel One or Auto mode.';
       return;
     }
-    if(oldKey && oldKey!==`${exchange}:${symbol}`) delete state.angelTokenMap[oldKey];
-    if(token) state.angelTokenMap[`${exchange}:${symbol}`]=token;
+    if(oldKey && oldKey!==`${exchange}:${symbol}`){
+      delete state.angelTokenMap[oldKey];
+      delete state.angelManualMap[oldKey];
+    }
+    const mapKey=`${exchange}:${symbol}`;
+    if(token) state.angelTokenMap[mapKey]=token;
+    if(source!=='SHEET') state.angelManualMap[mapKey]=true; else delete state.angelManualMap[mapKey];
     state.priceSourceMap[symbol]=source;
-    if(symbol==='JYOTI' && source==='SHEET'){ delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI']; state.angelTokenMap['BSE:JYOTI']='504076'; }
+    if(symbol==='JYOTI' && source==='SHEET'){
+      delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI'];
+      state.angelTokenMap['BSE:JYOTI']='504076'; delete state.angelManualMap['BSE:JYOTI'];
+    }
     delete state._editingAngelMapKey;
     persistAngelSettings();
     renderAngelMappings();
@@ -3151,7 +3197,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       let batchUpdated=0;
       batch.forEach(symbol=>{
         const k=symKey(symbol);
-        const token=state.angelTokenMap[`${exchange}:${k}`] || (!autoMode ? state.angelTokenMap[k] : '');
+        const exKey=`${exchange}:${k}`;
+        const token=state.angelManualMap[exKey] ? state.angelTokenMap[exKey] : (!autoMode && state.angelManualMap[k] ? state.angelTokenMap[k] : '');
         const row=bySymbol[k] || (token ? byToken[String(token)] : null);
         // For manual exchange/token mappings, the token match is authoritative.
         if(row && Number.isFinite(Number(row.price)) && Number(row.price)>0){
@@ -3172,8 +3219,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const unresolved=[];
     symbols.forEach(symbol=>{
       const k=symKey(symbol);
-      if(state.angelTokenMap[`NSE:${k}`]) forcedByExchange.NSE.push(symbol);
-      else if(state.angelTokenMap[`BSE:${k}`]) forcedByExchange.BSE.push(symbol);
+      if(state.angelManualMap[`NSE:${k}`] && state.angelTokenMap[`NSE:${k}`]) forcedByExchange.NSE.push(symbol);
+      else if(state.angelManualMap[`BSE:${k}`] && state.angelTokenMap[`BSE:${k}`]) forcedByExchange.BSE.push(symbol);
       else unresolved.push(symbol);
     });
 
@@ -3804,28 +3851,39 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderRecoPortfolioBar();
     const report = computeRealizedReport();
     const recoRows = computeRecoSummary();
-    const card = $('realizedCard');
-    if(report.length===0 && recoRows.length===0){ card.style.display='none'; return; }
-    card.style.display = 'block';
+    const card = $('recoStockCard');
+    if(!card) return;
+    if(report.length===0 && recoRows.length===0){
+      card.style.display='none';
+      return;
+    }
+    card.style.display='block';
+
     const total = report.reduce((s,r)=>s+r.realized,0);
     const wins = report.filter(r=>r.realized>0).length;
     const losses = report.filter(r=>r.realized<0).length;
-    $('realTotal').textContent = fmtINR(total);
-    $('realTotal').className = 'v ' + (total>=0?'gain':'loss');
-    $('realWins').textContent = wins;
-    $('realLosses').textContent = losses;
-    $('realizedBody').innerHTML = report.length ? report.map(r=>{
-      const unmatchedFlag = r.unmatchedQty>1e-9 ? `<span class="flag bad">${fmtQty(r.unmatchedQty)} unmatched</span>` : '';
-      return `<tr>
-        <td class="left">${escapeAttr(r.instrument)}${unmatchedFlag}</td>
-        <td class="left">${r.sellDate.toLocaleDateString('en-IN',{year:'2-digit',month:'short',day:'2-digit'})}</td>
-        <td>${fmtQty(r.qtySold)}</td>
-        <td>${fmtINR(r.sellPrice)}</td>
-        <td>${r.avgBuyPrice!=null?fmtINR(r.avgBuyPrice):'<span class="muted">—</span>'}</td>
-        <td class="${r.realized>=0?'gain':'loss'}">${fmtINR(r.realized)}</td>
-        <td class="${r.returnPct!=null?(r.returnPct>=0?'gain':'loss'):''}">${r.returnPct!=null?fmtPct(r.returnPct):'—'}</td>
-      </tr>`;
-    }).join('') : `<tr><td colspan="7" class="muted" style="text-align:center;">No sells recorded yet.</td></tr>`;
+    if($('realTotal')){
+      $('realTotal').textContent = fmtINR(total);
+      $('realTotal').className = 'v ' + (total>=0?'gain':'loss');
+    }
+    if($('realWins')) $('realWins').textContent = wins;
+    if($('realLosses')) $('realLosses').textContent = losses;
+
+    if($('realizedBody')){
+      $('realizedBody').innerHTML = report.length ? report.map(r=>{
+        const unmatchedFlag = r.unmatchedQty>1e-9 ? `<span class="flag bad">${fmtQty(r.unmatchedQty)} unmatched</span>` : '';
+        return `<tr>
+          <td class="left">${escapeAttr(r.instrument)}${unmatchedFlag}</td>
+          <td class="left">${r.sellDate.toLocaleDateString('en-IN',{year:'2-digit',month:'short',day:'2-digit'})}</td>
+          <td>${fmtQty(r.qtySold)}</td>
+          <td>${fmtINR(r.sellPrice)}</td>
+          <td>${r.avgBuyPrice!=null?fmtINR(r.avgBuyPrice):'<span class="muted">—</span>'}</td>
+          <td class="${r.realized>=0?'gain':'loss'}">${fmtINR(r.realized)}</td>
+          <td class="${r.returnPct!=null?(r.returnPct>=0?'gain':'loss'):''}">${r.returnPct!=null?fmtPct(r.returnPct):'—'}</td>
+        </tr>`;
+      }).join('') : `<tr><td colspan="7" class="muted" style="text-align:center;">No sells recorded yet.</td></tr>`;
+    }
+
     renderRecoSummary();
   }
 
@@ -4219,7 +4277,6 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     if($('allocationCard')){ $('allocationCard').style.display='none'; $('allocationList').innerHTML=''; $('allocationTotal').textContent='—'; }
     if($('insightsGrid')){ $('insightsGrid').style.display='none'; $('topPerformers').innerHTML=''; $('topLosers').innerHTML=''; }
     if($('warnBox')){ $('warnBox').style.display='none'; $('warnBox').innerHTML=''; }
-    if($('realizedCard')) $('realizedCard').style.display='none';
     if($('recoStockCard')) $('recoStockCard').style.display='none';
     ['realizedBody','recoSummaryBody','recoStockBody'].forEach(id=>{ if($(id)) $(id).innerHTML=''; });
     ['realTotal','realWins','realLosses'].forEach(id=>{ if($(id)) $(id).textContent='—'; });
