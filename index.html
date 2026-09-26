@@ -1552,7 +1552,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   <div id="realizedAnchor" class="section-anchor"></div>
   <div class="card" id="recoStockCard" style="display:none;">
     <div class="card-head"><div class="card-icon">◆</div><b>XIRR &amp; P&amp;L by recommendation</b></div>
-    <p class="card-hint">One place to understand recommendation performance. The summary shows each recommender's realized, unrealized and total P&amp;L with a blended XIRR. The stock detail underneath includes current holdings and fully sold positions, using the dated Buy/Sell transactions for XIRR.</p>
+    <p class="card-hint">One place to understand recommendation performance. This single report combines recommender totals with stock-level detail. XIRR uses every dated Buy/Sell transaction, plus current value for shares still held.</p>
 
     <div class="stats-row show stats-row-3col">
       <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
@@ -1872,6 +1872,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     }
   }
   loadFromLocalStorage();
+
+  // v32: this page has one recommendation-performance section. If an older cached
+  // DOM ever survives, hide the legacy realized card so the report cannot duplicate.
+  document.querySelectorAll('#realizedCard').forEach(el=>{ el.style.display='none'; });
 
   const $ = (id) => document.getElementById(id);
   let toastTimer = null;
@@ -2971,7 +2975,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     if(!base) throw new Error('Angel One Worker URL is not configured in Settings.');
     let res;
     try{
-      res=await fetch(base+path,{cache:'no-store',method:'GET',mode:'cors',headers:{'Accept':'application/json'}});
+      const freshUrl=base+path+(path.includes('?')?'&':'?')+'_wlts='+Date.now();
+      res=await fetch(freshUrl,{cache:'no-store',method:'GET',mode:'cors',headers:{'Accept':'application/json','Cache-Control':'no-cache'}});
     }catch(e){
       const local = location.protocol==='file:' || location.hostname==='localhost' || location.hostname==='127.0.0.1';
       throw new Error(local
@@ -2990,7 +2995,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const body=$('angelMapBody');
     if(!body) return;
     const keys=new Set();
-    Object.entries(state.angelManualMap||{}).forEach(([k,v])=>{ if(k.includes(':') && v && state.angelTokenMap?.[k]) keys.add(k); });
+    Object.entries(state.angelTokenMap||{}).forEach(([k,v])=>{ if(k.includes(':') && v) keys.add(k); });
     Object.keys(state.priceSourceMap||{}).forEach(symbol=>{ if(symbol) keys.add(`BSE:${symbol}`); });
     const entries=Array.from(keys).sort((a,b)=>a.localeCompare(b));
     if(!entries.length){
@@ -3022,8 +3027,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const symbol=symKey($('angelMapSymbol')?.value||'');
     const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
     const token=String($('angelMapToken')?.value||'').trim();
-    let source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
-    if(symbol==='JYOTI') source='SHEET';
+    const source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
 
     if(!symbol){
       $('angelMapStatus').textContent='Enter a symbol first.';
@@ -3057,7 +3061,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
     const sourceKey=e.target.getAttribute('data-source-map');
     if(sourceKey){
-      state.priceSourceMap[symKey(sourceKey)] = symKey(sourceKey)==='JYOTI' ? 'SHEET' : String(e.target.value||'AUTO').toUpperCase();
+      state.priceSourceMap[symKey(sourceKey)] = String(e.target.value||'AUTO').toUpperCase();
       if(symKey(sourceKey)==='JYOTI' && state.priceSourceMap.JYOTI==='SHEET'){
         delete state.angelTokenMap['NSE:JYOTI']; delete state.angelTokenMap['JYOTI']; state.angelTokenMap['BSE:JYOTI']='504076';
       }
@@ -3105,8 +3109,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const symbol=symKey($('angelMapSymbol')?.value||'');
     const exchange=String($('angelMapExchange')?.value||'NSE').toUpperCase();
     const token=String($('angelMapToken')?.value||'').trim();
-    let source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
-    if(symbol==='JYOTI') source='SHEET';
+    const source=String($('angelMapSource')?.value||'AUTO').toUpperCase();
     if(!symbol){
       $('angelMapStatus').textContent='Enter a symbol first.';
       return;
@@ -3167,7 +3170,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const tokenEntries=batch.map(s=>{
         const k=symKey(s);
         const exKey=`${exchange}:${k}`;
-        const token=state.angelTokenMap[exKey] || (!autoMode ? state.angelTokenMap[k] : '');
+        const token=state.angelManualMap[exKey] ? state.angelTokenMap[exKey] : (!autoMode && state.angelManualMap[k] ? state.angelTokenMap[k] : '');
         return [k,token];
       }).filter(([,v])=>v);
 
@@ -3265,6 +3268,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     }
 
     state.angelSourceBySymbol=sourceBySymbol;
+    state.angelUpdatedSymbols=new Set(Object.keys(sourceBySymbol));
     state.angelLastSource='Angel One';
     renderHoldTable();
     saveToLocalStorage();
@@ -3381,6 +3385,45 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     return {headers, rows, colMap};
   }
 
+  function extractSheetPriceMap(aoa){
+    const priceMap={};
+    // Standard flat header table: Symbol + Price/LTP/Last.
+    try{
+      const parsed=parsePriceSheet(aoa);
+      if(parsed && parsed.colMap?.symbol && parsed.colMap?.price){
+        const cm=parsed.colMap;
+        parsed.rows.forEach(r=>{
+          const sym=String(r[cm.symbol]||'').trim();
+          const price=num(r[cm.price]);
+          if(sym && Number.isFinite(price) && price>0) priceMap[symKey(sym)]=price;
+        });
+      }
+    }catch(e){}
+
+    // WealthLedger's existing sheet layout:
+    // A=SNo, B=Symbol, C=Exchange, D=Stock Name, E=Invested Price,
+    // F=Price current, H=Date, I+=dates, followed by a Close row.
+    // Scan every row for a plausible stock symbol in column B and a positive
+    // current price in column F. Date/Close rows have no symbol in B, so they
+    // are ignored.
+    if(Array.isArray(aoa)){
+      for(let i=0;i<aoa.length;i++){
+        const row=aoa[i]||[];
+        const sym=String(row[1]??'').trim();
+        const p=num(row[5]);
+        if(!sym || !Number.isFinite(p) || p<=0) continue;
+        const ex=String(row[2]??'').trim().toUpperCase();
+        const name=String(row[3]??'').trim();
+        const looksLikeSymbol=/^[A-Za-z0-9][A-Za-z0-9.&_-]{1,24}$/.test(sym);
+        const looksLikeDataRow=!!name || !!ex || Number.isFinite(num(row[0]));
+        if(looksLikeSymbol && looksLikeDataRow){
+          priceMap[symKey(sym)]=p;
+        }
+      }
+    }
+    return priceMap;
+  }
+
   function gvizToAOA(data){
     const cols = data.table.cols.map(c=> c.label || c.id || '');
     const rows = data.table.rows.map(row=> cols.map((_,i)=>{
@@ -3399,7 +3442,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const cleanup = ()=>{ delete window[cbName]; if(script.parentNode) script.parentNode.removeChild(script); };
       window[cbName] = (data)=>{ cleanup(); resolve(data); };
       const gidParam = gid ? ('&gid=' + encodeURIComponent(gid)) : '';
-      script.src = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?headers=1${gidParam}&tqx=responseHandler:${cbName}`;
+      script.src = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?headers=1${gidParam}&_wlts=${Date.now()}&tqx=responseHandler:${cbName}`;
       script.onerror = ()=>{ cleanup(); reject(new Error('Could not load that sheet — check it\'s shared as "Anyone with the link" → Viewer.')); };
       document.body.appendChild(script);
       setTimeout(()=>{ if(window[cbName]){ cleanup(); reject(new Error('Timed out waiting for the sheet.')); } }, 12000);
@@ -3426,14 +3469,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       aoa=gvizToAOA(data);
     }
     state.lastSheetAoa = aoa;
-    const parsed=parsePriceSheet(aoa);
-    if(!parsed) throw new Error('Fetched the sheet, but could not find Symbol/Price columns in it.');
-    const cm=parsed.colMap, priceMap={};
-    parsed.rows.forEach(r=>{
-      const sym=cm.symbol?String(r[cm.symbol]||'').trim():'';
-      const price=cm.price?num(r[cm.price]):NaN;
-      if(sym && !isNaN(price) && price>0) priceMap[symKey(sym)]=price;
-    });
+    const priceMap=extractSheetPriceMap(aoa);
+    if(!Object.keys(priceMap).length) throw new Error('Fetched the sheet, but could not find current prices. The existing B=Symbol / F=Price current layout is supported.');
     const targetSet = Array.isArray(onlySymbols) ? new Set(onlySymbols.map(symKey)) : null;
     let updated=0;
     state.holdRows.forEach(row=>{
@@ -3522,21 +3559,49 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
   async function refreshConfiguredPriceSources(){
     const symbols=uniqueHoldSymbols();
-    const sheetSymbols=symbols.filter(s=>priceSourceFor(s)==='SHEET');
+    const sheetOnly=symbols.filter(s=>priceSourceFor(s)==='SHEET');
     const angelSymbols=symbols.filter(s=>priceSourceFor(s)!=='SHEET');
     let updated=0;
+    let angelUpdated=0;
+    let sheetUpdated=0;
     let angelError=null;
+    state.angelUpdatedSymbols=new Set();
+
     if(angelSymbols.length && angelUrl()) {
-      try{ updated += await fetchAngelPrices(angelSymbols); }
-      catch(err){ angelError=err; renderAngelStatus('warn',`Angel One unavailable — ${err?.message||''}`); }
+      try{
+        angelUpdated=await fetchAngelPrices(angelSymbols);
+        updated += angelUpdated;
+      }catch(err){
+        angelError=err;
+        renderAngelStatus('warn',`Angel One unavailable — ${err?.message||''}`);
+      }
     }
-    if(sheetSymbols.length){
-      try{ updated += await fetchSheetPrices(sheetSymbols); }
-      catch(err){ $('sheetStatus').textContent=err?.message||"Couldn't reach that sheet."; if(!angelError) angelError=err; }
+
+    // Always honor Google-Sheets-only rules, and use Google Sheets as a fallback
+    // for any Auto-mode Angel symbol that wasn't successfully updated. This avoids
+    // stale prices when Angel cannot resolve an exchange/token while preserving
+    // Angel One as the primary source when it does work.
+    const angelSucceeded=state.angelUpdatedSymbols || new Set();
+    const fallbackSymbols=symbols.filter(s=>{
+      const src=priceSourceFor(s);
+      return src==='SHEET' || (src==='AUTO' && !angelSucceeded.has(symKey(s)));
+    });
+    if(fallbackSymbols.length){
+      try{
+        sheetUpdated=await fetchSheetPrices(fallbackSymbols);
+        updated += sheetUpdated;
+      }catch(err){
+        $('sheetStatus').textContent=err?.message||"Couldn't reach that sheet.";
+        if(!angelError) angelError=err;
+      }
     }
-    if(!angelSymbols.length && !sheetSymbols.length) return {updated,source:'No price rules'};
+
+    if(!symbols.length) return {updated:0,source:'No price rules'};
     if(angelError && updated===0) throw angelError;
-    return {updated,source:angelSymbols.length && sheetSymbols.length?'Angel One + Google Sheets':angelSymbols.length?'Angel One':'Google Sheets'};
+    const parts=[];
+    if(angelUpdated) parts.push(`Angel One ${angelUpdated}`);
+    if(sheetUpdated) parts.push(`Google Sheets ${sheetUpdated}`);
+    return {updated,source:parts.length?parts.join(' + '):'existing prices'};
   }
 
   $('refreshCalcBtn').addEventListener('click',async()=>{
@@ -3889,112 +3954,54 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderRecoSummary();
   }
 
-  function selectedRecoSet(commissionRecos, txnMatches, holdMatches){
-    if(commissionRecos instanceof Set) return new Set(Array.from(commissionRecos).map(normalizeRecoKey));
-    if(Array.isArray(commissionRecos)) return new Set(commissionRecos.map(normalizeRecoKey));
-    const set=new Set();
-    (txnMatches||[]).forEach(t=>set.add(normalizeRecoKey(t.recommendedBy)));
-    (holdMatches||[]).forEach(r=>set.add(normalizeRecoKey(r.recommendedBy)));
-    return set;
-  }
-
-  function buildTransactionAttribution(symbolFilter=null){
-    const groups={};
-    state.manualTxns.forEach(t=>{
-      if(state.recoPortfolioFilter!==null && t.portfolio!==state.recoPortfolioFilter) return;
-      const symbol=symKey(t.instrument);
-      if(!symbol || (symbolFilter && !symbolFilter.has(symbol))) return;
-      const k=(t.portfolio||'')+'|||'+symbol;
-      if(!groups[k]) groups[k]=[];
-      groups[k].push(t);
-    });
-
-    const byReco={};
-    function ensure(reco,symbol){
-      const key=normalizeRecoKey(reco)+'|||'+symbol;
-      if(!byReco[key]) byReco[key]={reco:normalizeRecoKey(reco),symbol,realized:0,cashflows:[]};
-      return byReco[key];
-    }
-
-    Object.values(groups).forEach(list=>{
-      const ordered=list.slice().sort((a,b)=>a.date-b.date);
-      const fifo=[];
-      ordered.forEach(t=>{
-        const qty=Number(t.qty)||0, price=Number(t.price)||0;
-        if(!(qty>0 && price>0) || !t.date) return;
-        const symbol=symKey(t.instrument);
-        if(t.type==='buy'){
-          let reco=normalizeRecoKey(t.recommendedBy);
-          // Direct transaction-created holdings carry the recommendation on the
-          // buy transaction. Keep that as the authoritative attribution.
-          if((!t.recommendedBy || !String(t.recommendedBy).trim()) && t.linkedHoldingId){
-            const linked=state.holdRows.find(r=>r.id===t.linkedHoldingId);
-            if(linked) reco=normalizeRecoKey(linked.recommendedBy);
-          }
-          const row=ensure(reco,symbol);
-          row.cashflows.push({date:t.date,amount:-(qty*price)});
-          fifo.push({qty,price,date:t.date,reco,symbol});
-        }else{
-          let remaining=qty;
-          while(remaining>1e-9 && fifo.length){
-            const lot=fifo[0];
-            const take=Math.min(lot.qty,remaining);
-            const row=ensure(lot.reco,symbol);
-            row.cashflows.push({date:t.date,amount:take*price});
-            row.realized += take*(price-lot.price);
-            lot.qty-=take;
-            remaining-=take;
-            if(lot.qty<=1e-9) fifo.shift();
-          }
-        }
-      });
-    });
-    return byReco;
-  }
-
   function computeXirrForCashflows(holdPredicate, txnPredicate, valDate, commissionRecos=null){
-    const portfolioFilter=state.recoPortfolioFilter;
-    const holdMatches=state.holdRows.filter(r=>{
+    const cfs = [];
+    const portfolioFilter = state.recoPortfolioFilter;
+    const holdMatches = state.holdRows.filter(r=>{
       if(portfolioFilter!==null && r.portfolio!==portfolioFilter) return false;
       return holdPredicate(r);
     });
-    const txnMatches=state.manualTxns.filter(t=>{
+    const txnMatches = state.manualTxns.filter(t=>{
       if(portfolioFilter!==null && t.portfolio!==portfolioFilter) return false;
       return txnPredicate(t);
     });
-    const recos=selectedRecoSet(commissionRecos,txnMatches,holdMatches);
-    const symbols=new Set([...holdMatches.map(r=>symKey(r.symbol)),...txnMatches.map(t=>symKey(t.instrument))].filter(Boolean));
-    const attribution=buildTransactionAttribution(symbols);
-    const cfs=[];
-    let hasAttributedTxnFlow=false;
-    Object.values(attribution).forEach(group=>{
-      if(!recos.has(group.reco)) return;
-      group.cashflows.forEach(cf=>{ cfs.push(cf); hasAttributedTxnFlow=true; });
-    });
 
-    // If the selected recommendation has no transaction history at all, use the
-    // original holdings-entry cash flow as a compatibility fallback.
-    if(!hasAttributedTxnFlow){
+    // Transaction-first model: when dated buy/sell transactions exist for the
+    // selected stock/recommendation, use every Buy and Sell cash flow. Do NOT
+    // exclude linked buys — those are exactly the cash outflows needed for a
+    // realized-only XIRR after the holding row has been reduced to zero.
+    // Remaining open shares are valued separately from the current holdings rows.
+    if(txnMatches.length>0){
+      txnMatches.slice().sort((a,b)=>a.date-b.date).forEach(t=>{
+        if(!t.date) return;
+        const qty=Number(t.qty)||0, price=Number(t.price)||0;
+        if(!(qty>0 && price>0)) return;
+        cfs.push({date:t.date, amount:t.type==='buy' ? -(qty*price) : (qty*price)});
+      });
+    }else{
+      // Holdings-only fallback for manually entered positions that have no
+      // transaction history.
       holdMatches.forEach(r=>{
         const investedAmt=computeInvested(r);
         if(r.tradeDate && investedAmt!=null && investedAmt>0){
-          cfs.push({date:new Date(r.tradeDate+'T00:00:00'),amount:-investedAmt});
+          cfs.push({date:new Date(r.tradeDate+'T00:00:00'), amount:-investedAmt});
         }
       });
     }
 
-    // Only currently-held shares contribute a terminal value. Fully sold stocks
-    // therefore have no terminal value and are calculated entirely from Buy/Sell
-    // dates and proceeds — exactly the realized XIRR we need.
+    // Current value is ALWAYS the value of currently-held shares only. This is
+    // zero for a fully sold position, which is exactly what we need for a
+    // realized-only XIRR.
     const curValSum=holdMatches.reduce((sum,r)=>{
       const cur=computeCurVal(r);
       return cur!=null && Number.isFinite(cur) ? sum+cur : sum;
     },0);
-    if(curValSum>0) cfs.push({date:valDate,amount:curValSum});
+    if(curValSum>0) cfs.push({date:valDate, amount:curValSum});
 
-    const commission=commissionForRecos(recos);
-    if(commission>0) cfs.push({date:valDate,amount:-commission});
+    const commission=commissionForRecos(commissionRecos);
+    if(commission>0) cfs.push({date:valDate, amount:-commission});
 
+    // Remove zero-value/invalid dates and guard against duplicate same-day zero flows.
     const clean=cfs.filter(cf=>cf && cf.date instanceof Date && Number.isFinite(cf.date.getTime()) && Number.isFinite(cf.amount) && cf.amount!==0);
     if(clean.length<2) return null;
     return xirr(clean);
@@ -4009,15 +4016,15 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const invested = computeInvested(r);
       const curVal = computeCurVal(r);
       if(invested==null || curVal==null) return;
-      unreal[key] = (unreal[key]||0) + (curVal - invested);
+      const dividend = Number(r.dividend)||0;
+      // Keep recommendation summary consistent with the stock-detail table:
+      // dividend is part of gross stock profit, while commissions affect XIRR only.
+      unreal[key] = (unreal[key]||0) + (curVal - invested + dividend);
     });
     const real = {};
-    const attribution = buildTransactionAttribution(null);
-    Object.values(attribution).forEach(g=>{
-      if(state.recoPortfolioFilter!==null){
-        // buildTransactionAttribution already applied the portfolio filter.
-      }
-      real[g.reco] = (real[g.reco]||0) + g.realized;
+    computeRealizedReport().forEach(r=>{
+      const key = r.recommendedBy || 'Unspecified';
+      real[key] = (real[key]||0) + r.realized;
     });
     const keys = Array.from(new Set([...Object.keys(unreal), ...Object.keys(real)]))
       .filter(k=> !state.hiddenRecos.has(k))
@@ -4108,18 +4115,14 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       g.dividend += (r.dividend||0);
     });
 
-    // Realized side: allocate every sell FIFO back to the recommender of the
-    // buy lot it closed. This makes fully sold stocks and multi-recommender FIFO
-    // histories visible in both realized P&L and XIRR.
+    // Realized side: booked profit/loss from the transactions log, same grouping.
     const realizedByKey = {};
-    const attribution = buildTransactionAttribution(null);
-    Object.values(attribution).forEach(g=>{
-      const reco=g.reco;
+    computeRealizedReport().forEach(r=>{
+      const reco = r.recommendedBy || 'Unspecified';
       if(state.hiddenRecos.has(reco)) return;
-      const displaySymbol=state.holdRows.find(h=>symKey(h.symbol)===g.symbol && normalizeRecoKey(h.recommendedBy)===reco)?.symbol || g.symbol;
-      const gKey=keyOf(reco,displaySymbol);
-      if(!realizedByKey[gKey]) realizedByKey[gKey]={reco,symbol:displaySymbol,realized:0};
-      realizedByKey[gKey].realized += g.realized;
+      const gKey = keyOf(reco, r.instrument);
+      if(!realizedByKey[gKey]) realizedByKey[gKey] = {reco, symbol: r.instrument, realized: 0};
+      realizedByKey[gKey].realized += r.realized;
     });
 
     // Union of every (recommender, stock) that appears on either side — a fully
@@ -4555,6 +4558,17 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     btn.classList.toggle('collapsed', collapsing);
     btn.setAttribute('aria-expanded', collapsing ? 'false' : 'true');
     btn.title = collapsing ? 'Expand this section' : 'Collapse this section';
+  });
+
+  // Keep desktop/laptop tabs fresh as well as mobile. Each browser has its own
+  // localStorage, so a refresh performed on one device does not update another.
+  // When this tab becomes visible again, refresh live prices in the background.
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState==='visible' && state.holdRows.length){
+      setTimeout(async()=>{
+        try{ await refreshConfiguredPriceSources(); runCalculation(); }catch(e){}
+      },120);
+    }
   });
 
   // ---------- warn before closing if there's data and autosave isn't working ----------
