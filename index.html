@@ -2428,27 +2428,44 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const u=$('tickerUpdated'); if(u) u.textContent='Connect Angel One in Settings';
       return false;
     }
+    const u=$('tickerUpdated');
+    if(u) u.textContent='Refreshing market…';
     try{
       const body=await angelGet('/api/indices');
       const items=Array.isArray(body?.data)?body.data:[];
       const byKey={}; items.forEach(x=>{ if(x?.key) byKey[x.key]=x; });
+      let shown=0;
       const bind=(key,valueId,moveId)=>{
         const row=byKey[key];
         const value=$(valueId),move=$(moveId);
-        if(!row){ if(value) value.textContent='—'; if(move) move.textContent='▲ —'; return; }
-        if(value) value.textContent=Number.isFinite(Number(row.price)) ? Number(row.price).toLocaleString('en-IN',{maximumFractionDigits:2}) : '—';
+        if(!row){ if(value) value.textContent='—'; if(move) move.textContent='—'; return; }
+        const price=Number(row.price);
+        if(value) value.textContent=Number.isFinite(price) ? price.toLocaleString('en-IN',{maximumFractionDigits:2}) : '—';
         const pct=Number(row.percentChange), net=Number(row.change);
         const up=Number.isFinite(pct)?pct>=0:(Number.isFinite(net)?net>=0:true);
-        const pctText=Number.isFinite(pct) ? `${up?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%` : (Number.isFinite(net)?`${up?'▲':'▼'} ${Math.abs(net).toFixed(2)}`:'▲ —');
+        const pctText=Number.isFinite(pct) ? `${up?'▲':'▼'} ${Math.abs(pct).toFixed(2)}%` : (Number.isFinite(net)?`${up?'▲':'▼'} ${Math.abs(net).toFixed(2)}`:'—');
         if(move){move.textContent=pctText;move.classList.toggle('ticker-up',up);move.classList.toggle('ticker-down',!up);}
+        if(Number.isFinite(price)) shown++;
       };
       bind('NIFTY50','tickerNifty','tickerNiftyMove');
       bind('SENSEX','tickerSensex','tickerSensexMove');
       bind('BANKNIFTY','tickerBankNifty','tickerBankNiftyMove');
-      const u=$('tickerUpdated'); if(u) u.textContent=`Live · ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
-      return true;
+      if(u) u.textContent=shown===3 ? `Live · ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}` : (shown>0 ? `Partial live feed · ${shown}/3` : 'Market feed unavailable');
+      try{ localStorage.setItem('wealthledger-market-ticker-v1',JSON.stringify({savedAt:Date.now(),data:items})); }catch(e){}
+      return shown>0;
     }catch(err){
-      const u=$('tickerUpdated'); if(u) u.textContent='Market feed unavailable';
+      try{
+        const saved=JSON.parse(localStorage.getItem('wealthledger-market-ticker-v1')||'null');
+        const items=Array.isArray(saved?.data)?saved.data:[];
+        if(items.length){
+          const byKey={}; items.forEach(x=>{if(x?.key) byKey[x.key]=x;});
+          const set=(k,vid,mid)=>{const row=byKey[k];if(!row)return;const v=$(vid),m=$(mid);if(v&&Number.isFinite(Number(row.price)))v.textContent=Number(row.price).toLocaleString('en-IN',{maximumFractionDigits:2});if(m)m.textContent='Cached';};
+          set('NIFTY50','tickerNifty','tickerNiftyMove');set('SENSEX','tickerSensex','tickerSensexMove');set('BANKNIFTY','tickerBankNifty','tickerBankNiftyMove');
+          if(u) u.textContent='Cached · Angel One unavailable';
+          return false;
+        }
+      }catch(e){}
+      if(u) u.textContent=err?.message||'Market feed unavailable';
       return false;
     }
   }
@@ -2974,15 +2991,20 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const base=angelUrl();
     if(!base) throw new Error('Angel One Worker URL is not configured in Settings.');
     let res;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),9000);
     try{
       const freshUrl=base+path+(path.includes('?')?'&':'?')+'_wlts='+Date.now();
-      res=await fetch(freshUrl,{cache:'no-store',method:'GET',mode:'cors',headers:{'Accept':'application/json','Cache-Control':'no-cache'}});
+      res=await fetch(freshUrl,{cache:'no-store',method:'GET',mode:'cors',headers:{'Accept':'application/json','Cache-Control':'no-cache'},signal:controller.signal});
     }catch(e){
+      clearTimeout(timeout);
+      if(e?.name==='AbortError') throw new Error('Angel One Worker request timed out after 9 seconds.');
       const local = location.protocol==='file:' || location.hostname==='localhost' || location.hostname==='127.0.0.1';
       throw new Error(local
-        ? 'Could not reach the Angel One Worker from this local page. Use the fixed Cloudflare Worker version included with this release, which allows local testing.'
-        : 'Could not reach the Angel One Worker. Check the Worker URL and CORS settings, then try Test connection again.');
+        ? 'Could not reach the Angel One Worker from this local page. Use the deployed Cloudflare Worker for Angel One testing.'
+        : 'Could not reach the Angel One Worker. Check the Worker URL and CORS settings, then try again.');
     }
+    clearTimeout(timeout);
     let body=null;
     try{ body=await res.json(); }catch(e){ throw new Error(`Angel One Worker returned HTTP ${res.status}.`); }
     if(!res.ok || body?.ok===false) throw new Error(body?.error || `Angel One Worker returned HTTP ${res.status}.`);
