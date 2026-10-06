@@ -2453,10 +2453,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const sources=items.filter(x=>Number.isFinite(Number(x.price))).map(x=>x.source||'live');
       const liveCount=sources.filter(x=>x==='live').length;
       const historyCount=sources.filter(x=>x==='history').length;
+      const closeCount=sources.filter(x=>x==='quote-close').length;
       if(u){
         if(shown===3 && liveCount===3) u.textContent=`Live · Angel One · ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
         else if(shown===3 && historyCount===3) u.textContent='Last close · Angel One';
-        else if(shown>0) u.textContent=`Angel One · ${liveCount} live${historyCount?` + ${historyCount} last close`:''}`;
+        else if(shown===3 && closeCount===3) u.textContent='Last quote close · Angel One';
+        else if(shown>0) u.textContent=`Angel One · ${liveCount} live${closeCount?` + ${closeCount} quote close`:''}${historyCount?` + ${historyCount} last close`:''}`;
         else u.textContent='Market feed unavailable';
       }
       try{ localStorage.setItem('wealthledger-market-ticker-v1',JSON.stringify({savedAt:Date.now(),data:items})); }catch(e){}
@@ -2952,6 +2954,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   // ================= ANGEL ONE MARKET DATA =================
+  const ANGEL_BATCH_SIZE=20;
+  const ANGEL_REQUEST_TIMEOUT_MS=30000;
   function normalizeAngelBaseUrl(v){
     let s=String(v||'').trim().replace(/\/+$/,'');
     // Accept a worker root URL as well as a pasted /api or /api/health URL.
@@ -3000,13 +3004,13 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     if(!base) throw new Error('Angel One Worker URL is not configured in Settings.');
     let res;
     const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),9000);
+    const timeout=setTimeout(()=>controller.abort(),ANGEL_REQUEST_TIMEOUT_MS);
     try{
       const freshUrl=base+path+(path.includes('?')?'&':'?')+'_wlts='+Date.now();
       res=await fetch(freshUrl,{cache:'no-store',method:'GET',mode:'cors',headers:{'Accept':'application/json','Cache-Control':'no-cache'},signal:controller.signal});
     }catch(e){
       clearTimeout(timeout);
-      if(e?.name==='AbortError') throw new Error('Angel One Worker request timed out after 9 seconds.');
+      if(e?.name==='AbortError') throw new Error('Angel One Worker request timed out after 30 seconds.');
       const local = location.protocol==='file:' || location.hostname==='localhost' || location.hostname==='127.0.0.1';
       throw new Error(local
         ? 'Could not reach the Angel One Worker from this local page. Use the deployed Cloudflare Worker for Angel One testing.'
@@ -3176,7 +3180,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderAngelStatus('neutral','Testing the secure Angel One bridge…');
     try{
       const body=await angelGet('/api/health');
-      renderAngelStatus('ok',body?.session==='active'?'Angel One session is active.':'Angel One bridge is reachable.');
+      renderAngelStatus('ok',body?.session==='active'?'Angel One session is active.':`Angel One bridge is reachable${body?.configured===false?' but Worker secrets are not configured':''}.`);
       return true;
     }catch(err){
       renderAngelStatus('err',err?.message||'Angel One connection failed.');
@@ -3215,6 +3219,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
       const body=await angelGet('/api/quotes?'+q.toString());
       angelSaveMappings(body.mappings||[],exchange);
+      (body.resolveErrors||[]).forEach(e=>failures.push(`${e.symbol} ${exchange}: ${e.message||'not found'}`));
 
       const rows=body.data||[];
       const bySymbol={};
@@ -3266,8 +3271,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     });
 
     for(const exchange of ['NSE','BSE']){
-      for(let i=0;i<forcedByExchange[exchange].length;i+=50){
-        const batch=forcedByExchange[exchange].slice(i,i+50);
+      for(let i=0;i<forcedByExchange[exchange].length;i+=ANGEL_BATCH_SIZE){
+        const batch=forcedByExchange[exchange].slice(i,i+ANGEL_BATCH_SIZE);
         try{ updated += await applyBatch(batch,exchange); }
         catch(err){ batch.forEach(symbol=>failures.push(`${symbol} ${exchange}: ${err?.message||'quote failed'}`)); }
       }
@@ -3279,21 +3284,13 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     for(const exchange of autoExchanges){
       const remaining=unresolved.filter(s=>pending.has(symKey(s)));
       if(!remaining.length) break;
-      for(let i=0;i<remaining.length;i+=50){
-        const batch=remaining.slice(i,i+50);
-        renderAngelStatus('neutral',`Angel One ${exchange} lookup: ${i+1}-${Math.min(i+50,remaining.length)} of ${remaining.length}…`);
+      for(let i=0;i<remaining.length;i+=ANGEL_BATCH_SIZE){
+        const batch=remaining.slice(i,i+ANGEL_BATCH_SIZE);
+        renderAngelStatus('neutral',`Angel One ${exchange}: preparing prices ${i+1}-${Math.min(i+ANGEL_BATCH_SIZE,remaining.length)} of ${remaining.length}…`);
         try{
           updated += await applyBatch(batch,exchange);
         }catch(err){
-          if(batch.length===1){
-            failures.push(`${batch[0]} ${exchange}: ${err?.message||'quote failed'}`);
-          }else{
-            for(const symbol of batch){
-              if(!pending.has(symKey(symbol))) continue;
-              try{ updated += await applyBatch([symbol],exchange); }
-              catch(oneErr){ failures.push(`${symbol} ${exchange}: ${oneErr?.message||'quote failed'}`); }
-            }
-          }
+          batch.forEach(symbol=>failures.push(`${symbol} ${exchange}: ${err?.message||'quote failed'}`));
         }
       }
     }
