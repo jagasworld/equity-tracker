@@ -2450,7 +2450,15 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       bind('NIFTY50','tickerNifty','tickerNiftyMove');
       bind('SENSEX','tickerSensex','tickerSensexMove');
       bind('BANKNIFTY','tickerBankNifty','tickerBankNiftyMove');
-      if(u) u.textContent=shown===3 ? `Live · ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}` : (shown>0 ? `Partial live feed · ${shown}/3` : 'Market feed unavailable');
+      const sources=items.filter(x=>Number.isFinite(Number(x.price))).map(x=>x.source||'live');
+      const liveCount=sources.filter(x=>x==='live').length;
+      const historyCount=sources.filter(x=>x==='history').length;
+      if(u){
+        if(shown===3 && liveCount===3) u.textContent=`Live · Angel One · ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+        else if(shown===3 && historyCount===3) u.textContent='Last close · Angel One';
+        else if(shown>0) u.textContent=`Angel One · ${liveCount} live${historyCount?` + ${historyCount} last close`:''}`;
+        else u.textContent='Market feed unavailable';
+      }
       try{ localStorage.setItem('wealthledger-market-ticker-v1',JSON.stringify({savedAt:Date.now(),data:items})); }catch(e){}
       return shown>0;
     }catch(err){
@@ -3192,7 +3200,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const tokenEntries=batch.map(s=>{
         const k=symKey(s);
         const exKey=`${exchange}:${k}`;
-        const token=state.angelManualMap[exKey] ? state.angelTokenMap[exKey] : (!autoMode && state.angelManualMap[k] ? state.angelTokenMap[k] : '');
+        // Reuse any cached Angel token for this exchange. Manual mappings remain authoritative,
+        // while automatic mappings are reused as a fast cache and are re-validated by quoteSymbols.
+        const cachedToken=state.angelTokenMap[exKey] || '';
+        const token=state.angelManualMap[exKey] ? state.angelTokenMap[exKey] : (!autoMode && state.angelManualMap[k] ? state.angelTokenMap[k] : cachedToken);
         return [k,token];
       }).filter(([,v])=>v);
 
@@ -3225,7 +3236,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       batch.forEach(symbol=>{
         const k=symKey(symbol);
         const exKey=`${exchange}:${k}`;
-        const token=state.angelManualMap[exKey] ? state.angelTokenMap[exKey] : (!autoMode && state.angelManualMap[k] ? state.angelTokenMap[k] : '');
+        // Reuse any cached Angel token for this exchange. Manual mappings remain authoritative,
+        // while automatic mappings are reused as a fast cache and are re-validated by quoteSymbols.
+        const cachedToken=state.angelTokenMap[exKey] || '';
+        const token=state.angelManualMap[exKey] ? state.angelTokenMap[exKey] : (!autoMode && state.angelManualMap[k] ? state.angelTokenMap[k] : cachedToken);
         const row=bySymbol[k] || (token ? byToken[String(token)] : null);
         // For manual exchange/token mappings, the token match is authoritative.
         if(row && Number.isFinite(Number(row.price)) && Number(row.price)>0){
@@ -3252,8 +3266,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     });
 
     for(const exchange of ['NSE','BSE']){
-      for(let i=0;i<forcedByExchange[exchange].length;i+=5){
-        const batch=forcedByExchange[exchange].slice(i,i+5);
+      for(let i=0;i<forcedByExchange[exchange].length;i+=50){
+        const batch=forcedByExchange[exchange].slice(i,i+50);
         try{ updated += await applyBatch(batch,exchange); }
         catch(err){ batch.forEach(symbol=>failures.push(`${symbol} ${exchange}: ${err?.message||'quote failed'}`)); }
       }
@@ -3265,9 +3279,9 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     for(const exchange of autoExchanges){
       const remaining=unresolved.filter(s=>pending.has(symKey(s)));
       if(!remaining.length) break;
-      for(let i=0;i<remaining.length;i+=5){
-        const batch=remaining.slice(i,i+5);
-        renderAngelStatus('neutral',`Angel One ${exchange} lookup: ${i+1}-${Math.min(i+5,remaining.length)} of ${remaining.length}…`);
+      for(let i=0;i<remaining.length;i+=50){
+        const batch=remaining.slice(i,i+50);
+        renderAngelStatus('neutral',`Angel One ${exchange} lookup: ${i+1}-${Math.min(i+50,remaining.length)} of ${remaining.length}…`);
         try{
           updated += await applyBatch(batch,exchange);
         }catch(err){
@@ -3623,7 +3637,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const parts=[];
     if(angelUpdated) parts.push(`Angel One ${angelUpdated}`);
     if(sheetUpdated) parts.push(`Google Sheets ${sheetUpdated}`);
-    return {updated,source:parts.length?parts.join(' + '):'existing prices'};
+    return {updated,source:parts.length?parts.join(' + '):'existing prices',angelError};
   }
 
   $('refreshCalcBtn').addEventListener('click',async()=>{
@@ -3641,7 +3655,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       preserveViewportAround('tableWrap',()=>{ runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows); });
       await (window.wlRefreshMarketTicker ? window.wlRefreshMarketTicker() : Promise.resolve(false));
       const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
-      status.textContent=`Updated ${updated} price${updated===1?'':'s'} from ${source} and recalculated at ${now}.`;
+      status.textContent=`Updated ${updated} price${updated===1?'':'s'} from ${source} and recalculated at ${now}.${result.angelError && source.includes('Google Sheets') ? ' Angel One was unavailable, so Google Sheets was used for the fallback rows.' : ''}`;
     }catch(err){
       preserveViewportAround('tableWrap',()=>{ runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows); });
       status.textContent=`Calculated using existing prices. Refresh unavailable: ${err&&err.message?err.message:'unavailable'}`;
