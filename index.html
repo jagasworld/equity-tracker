@@ -4558,8 +4558,21 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderHoldTable();
     renderTxnTable();
     renderRealizedReport();
+
+    // IMPORTANT: selling from the Holdings table changes the holding lots
+    // directly. Re-render the calculated portfolio immediately so the summary
+    // cards, portfolio results table, XIRR and trend sections all reflect the
+    // reduced quantity without requiring a separate Calculate click.
+    if(state.lastResults) {
+      applyFilterAndRender();
+      renderMomentumAlerts();
+    } else {
+      runCalculation();
+      renderMomentumAlerts();
+    }
+
     saveToLocalStorage();
-    $('holdStatus').textContent = `Sold ${fmtQty(qtySold)} share(s) at ${fmtINR(soldPrice)}`
+    $('holdStatus').textContent = `Sold ${fmtQty(qtySold)} share(s) at ${fmtINR(soldPrice)} — portfolio recalculated.`
       + (rows.length>1 ? ` across ${rows.length} lot(s)` : '')
       + (profit!=null ? ` — realized ${profit>=0?'profit':'loss'} of ${fmtINR(Math.abs(profit))}. See the realized profit report below.` : '.');
   });
