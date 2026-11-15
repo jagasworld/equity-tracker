@@ -1534,7 +1534,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     <div class="mapbox" style="margin-top:0;">
       <b>Sheet layout expected</b>
       <div style="margin-top:8px; line-height:1.7;">
-        Your existing layout is supported: each stock row contains the <code>Symbol</code> in column B, and the following two rows contain <code>Date</code> / <code>Close</code> history starting from column H. Example: <code>Date → 09/07, 09/08, 09/09...</code> and the next row <code>Close → 862.65, 867, 829.65...</code>.
+        Your existing layout is supported: each stock row contains the <code>Symbol</code> in column B and current <code>Price</code> in column F. Use the currently blank <b>column G</b> for <code>Previous Close</code> (the last completed trading session's close). Keep the existing Date / Close history in column H onward; do not insert or shift columns. Example: <code>F = current price</code>, <code>G = previous close</code>, <code>H = Date / Close labels</code>.
       </div>
     </div>
     <div class="inline-row" style="margin-top:12px;">
@@ -3631,6 +3631,47 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     return priceMap;
   }
 
+  function extractSheetPreviousCloseMap(aoa){
+    const closeMap={};
+    const previousCloseHeaders=['previousclose','prevclose','previousclosingprice','prevclosingprice','yesterdaysclose'];
+
+    // Standard flat table support: Symbol/Ticker + Previous Close columns.
+    try{
+      const hdr=findHeaderRow(aoa,[PRICE_GROUPS.symbol,previousCloseHeaders]);
+      if(hdr.idx!==-1){
+        const {headers,rows}=buildRowsFromHeader(aoa,hdr.idx);
+        const norm=headers.map(h=>({h,n:normHeader(h)}));
+        const symbolCol=norm.find(x=>['symbol','ticker','scrip','instrument'].includes(x.n))?.h || '';
+        const closeCol=norm.find(x=>previousCloseHeaders.includes(x.n))?.h || '';
+        if(symbolCol && closeCol){
+          rows.forEach(row=>{
+            const symbol=String(row[symbolCol]||'').trim();
+            const close=num(row[closeCol]);
+            if(symbol && Number.isFinite(close) && close>0) closeMap[symKey(symbol)]=close;
+          });
+        }
+      }
+    }catch(e){}
+
+    // WealthLedger's existing layout reserves G for Previous Close:
+    // B=Symbol, F=Price current, G=Previous Close, H=Date, I+=dates / closes.
+    // Do not shift the Date / Close history columns when adding this value.
+    if(Array.isArray(aoa)){
+      for(let i=0;i<aoa.length;i++){
+        const row=aoa[i]||[];
+        const symbol=String(row[1]??'').trim();
+        const close=num(row[6]);
+        if(!symbol || !Number.isFinite(close) || close<=0) continue;
+        const exchange=String(row[2]??'').trim().toUpperCase();
+        const name=String(row[3]??'').trim();
+        const looksLikeSymbol=/^[A-Za-z0-9][A-Za-z0-9.&_-]{1,24}$/.test(symbol);
+        const looksLikeDataRow=!!name || !!exchange || Number.isFinite(num(row[0]));
+        if(looksLikeSymbol && looksLikeDataRow) closeMap[symKey(symbol)]=close;
+      }
+    }
+    return closeMap;
+  }
+
   function gvizToAOA(data){
     const cols = data.table.cols.map(c=> c.label || c.id || '');
     const rows = data.table.rows.map(row=> cols.map((_,i)=>{
@@ -3677,18 +3718,27 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     }
     state.lastSheetAoa = aoa;
     const priceMap=extractSheetPriceMap(aoa);
+    const previousCloseMap=extractSheetPreviousCloseMap(aoa);
     if(!Object.keys(priceMap).length) throw new Error('Fetched the sheet, but could not find current prices. The existing B=Symbol / F=Price current layout is supported.');
     const targetSet = Array.isArray(onlySymbols) ? new Set(onlySymbols.map(symKey)) : null;
-    let updated=0;
+    let updated=0, closeUpdated=0;
     state.holdRows.forEach(row=>{
       const sym=String(row.symbol||'').trim(); if(!sym) return;
       const k=symKey(sym);
       if(targetSet && !targetSet.has(k)) return;
       const p=priceMap[k];
       if(p!=null){row.currentPrice=p;updated++;}
+      const previousClose=previousCloseMap[k];
+      if(Number.isFinite(previousClose) && previousClose>0){
+        state.dailyCloseBySymbol.set(k,{price:previousClose,forDate:localMarketDateKey()});
+        closeUpdated++;
+      }
     });
     renderHoldTable();
-    $('sheetStatus').textContent=updated>0?`Updated current price for ${updated} row(s).`:'Fetched the sheet, but none of its symbols matched your holdings.';
+    const statusParts=[];
+    if(updated) statusParts.push(`current price for ${updated} row(s)`);
+    if(closeUpdated) statusParts.push(`previous close for ${closeUpdated} row(s)`);
+    $('sheetStatus').textContent=statusParts.length?`Updated ${statusParts.join(' and ')}.`:'Fetched the sheet, but none of its symbols matched your holdings.';
     scheduleAutosave();
     return updated;
   }
