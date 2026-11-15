@@ -1085,6 +1085,30 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   .filterbar .chip{font-size:10px!important;padding-left:10px!important;padding-right:10px!important;}
   .portfolio-primary-title h2{font-size:19px!important;}
 }
+
+/* v47 — portfolio daily gain and holdings market-movers strip */
+.stat-note{margin-top:5px;font-size:9px;line-height:1.35;color:var(--text-faint)}
+.today-gain-pct{display:block;margin-top:3px;font-size:9px;font-weight:700;opacity:.78}
+.portfolio-ticker-group{display:flex!important;align-items:center;gap:9px!important;min-width:0;flex:1 1 420px;overflow:hidden}
+.portfolio-ticker-group>b{flex:none!important;font-size:9px!important;letter-spacing:.08em;color:#5b3ef0!important}
+.portfolio-ticker-total{flex:none;font-size:10px;color:#505263;white-space:nowrap}
+.portfolio-ticker-coverage{flex:none;font-size:9px;color:#858797!important;white-space:nowrap}
+.portfolio-movers-viewport{min-width:80px;max-width:440px;flex:1 1 180px;overflow:hidden;mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
+.portfolio-movers-track{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;width:max-content}
+.portfolio-movers-track.is-animated{animation:portfolioMoverScroll 34s linear infinite}
+.portfolio-movers-viewport:hover .portfolio-movers-track.is-animated{animation-play-state:paused}
+.portfolio-mover{display:inline-flex;align-items:center;gap:5px;font-size:9px;white-space:nowrap}
+.portfolio-mover b{color:#333!important;font-size:9px!important}
+.portfolio-mover strong{font-size:9px}
+.portfolio-mover small{font-size:8.5px;opacity:.8}
+.portfolio-mover-sep{height:13px;border-left:1px solid #dedee7}
+.portfolio-mover-empty{font-size:9px;color:#858797;white-space:nowrap}
+@keyframes portfolioMoverScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:1050px){.portfolio-ticker-group{flex-basis:100%;order:4}.portfolio-movers-viewport{max-width:none}}
+@media(max-width:760px){.wl-market-ticker{flex-wrap:nowrap!important}.portfolio-ticker-group{flex:0 0 85vw!important;max-width:85vw!important}.portfolio-movers-viewport{max-width:44vw!important}.portfolio-movers-track.is-animated{animation-duration:28s}}
+.stats-row.show{grid-template-columns:repeat(6,minmax(0,1fr))}
+.resultstable{min-width:1020px}
+
 </style>
 
 </head>
@@ -1175,6 +1199,13 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     <div><b>SENSEX</b><span id="tickerSensex">—</span><em id="tickerSensexMove" class="ticker-up">▲ —</em></div>
     <i class="ticker-sep"></i>
     <div><b>BANK NIFTY</b><span id="tickerBankNifty">—</span><em id="tickerBankNiftyMove" class="ticker-up">▲ —</em></div>
+    <i class="ticker-sep"></i>
+    <div class="portfolio-ticker-group" aria-label="Your portfolio daily movers">
+      <b>MY PORTFOLIO</b>
+      <strong id="tickerPortfolioGain" class="portfolio-ticker-total">Today —</strong>
+      <span id="tickerPortfolioCoverage" class="portfolio-ticker-coverage">Previous close pending</span>
+      <div class="portfolio-movers-viewport"><div id="portfolioTickerItems" class="portfolio-movers-track"><span class="portfolio-mover-empty">Refresh portfolio prices to load stock movers</span></div></div>
+    </div>
     <div class="ticker-meta"><span id="tickerUpdated">Live market connected</span><button id="tickerRefresh">↻ Refresh</button></div>
   </div>
 
@@ -1192,6 +1223,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     <div class="stat"><div class="k">Invested</div><div class="v" id="sumInvested">—</div></div>
     <div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
     <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
+    <div class="stat"><div class="k">Today's gain / loss</div><div class="v" id="sumTodayGain">—</div><div class="stat-note" id="todayGainNote">Compared with previous trading close</div></div>
     <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
     <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div><div class="xirr-note" id="sumXirrNote"></div></div>
   </div>
@@ -1233,6 +1265,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
           <option value="qty">Shares</option>
           <option value="investedPrice">Invested / share</option>
           <option value="currentPrice">Current / share</option>
+          <option value="todayGain">Today's gain / loss</option>
           <option value="invested">Invested</option>
           <option value="curVal">Current value</option>
           <option value="pnl">P&amp;L</option>
@@ -1251,6 +1284,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         <th class="sortable" data-sort="qty">Shares<span class="sort-arrow"></span></th>
         <th class="sortable" data-sort="investedPrice">Invested / share<span class="sort-arrow"></span></th>
         <th class="sortable" data-sort="currentPrice">Current / share<span class="sort-arrow"></span></th>
+        <th>Previous close</th>
+        <th class="sortable" data-sort="todayGain">Today's gain / loss<span class="sort-arrow"></span></th>
         <th class="sortable" data-sort="invested">Invested<span class="sort-arrow"></span></th>
         <th class="sortable" data-sort="curVal">Current val<span class="sort-arrow"></span></th>
         <th class="sortable" data-sort="pnl">P&amp;L<span class="sort-arrow"></span></th>
@@ -1709,6 +1744,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     tableSort: {key:null, dir:1},
     recoSort: {key:'reco', dir:1},
     priceHistory: new Map(),
+    dailyCloseBySymbol: new Map(), // {symbolKey: {price, forDate}} from the latest quote close
     momentumAlerts: [],
     priceHistoryUrl: '',
     angelApiUrl: localStorage.getItem('wealthledger-angel-api-url-v1') || 'https://wealthledger-angel-bridge.jagasworld.workers.dev',
@@ -2006,6 +2042,28 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     return isNaN(n) ? NaN : n;
   }
   function symKey(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9-]/g,'').replace(/-(BE|EQ|BZ|BL|SM)$/,'').replace(/-/g,''); }
+  function localMarketDateKey(){
+    const d=new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function getPreviousClose(symbol){
+    const key=symKey(symbol), today=localMarketDateKey();
+    const quoteClose=state.dailyCloseBySymbol?.get(key);
+    if(quoteClose && quoteClose.forDate===today && Number.isFinite(Number(quoteClose.price)) && Number(quoteClose.price)>0) return Number(quoteClose.price);
+    const history=state.priceHistory?.get(key)||[];
+    const prior=history.filter(x=>x && x.date && String(x.date)<today && Number.isFinite(Number(x.price)) && Number(x.price)>0)
+      .sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
+    return prior ? Number(prior.price) : null;
+  }
+  function extractPreviousClose(quote){
+    if(!quote || typeof quote!=='object') return null;
+    const fields=['close','prevClose','previousClose','previous_close','prev_close','closePrice','close_price','closeprice'];
+    for(const field of fields){
+      const value=Number(quote[field]);
+      if(Number.isFinite(value) && value>0) return value;
+    }
+    return null;
+  }
   function normHeader(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
   const fmtINR = (n)=> (n===null||n===undefined||isNaN(n)) ? '—' : (n<0?'-':'') + '₹' + Math.abs(n).toLocaleString('en-IN', {maximumFractionDigits:0});
   const fmtINR2 = (n)=> (n===null||n===undefined||isNaN(n)) ? '—' : (n<0?'-':'') + '₹' + Math.abs(n).toLocaleString('en-IN', {maximumFractionDigits:2});
@@ -2668,12 +2726,16 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       if(m.cfs.length>0 && m.curValForXirr>0){
         ixirr = xirr(m.cfs.concat([{date:valDate, amount:m.curValForXirr}]));
       }
+      const currentPrice=m.qty>0 ? m.curVal/m.qty : null;
+      const previousClose=getPreviousClose(m.symbol);
+      const todayGain=(currentPrice!=null && previousClose!=null) ? (currentPrice-previousClose)*m.qty : null;
+      const todayPct=(currentPrice!=null && previousClose>0) ? ((currentPrice/previousClose)-1)*100 : null;
       results.push({
         key:k, instrument:m.symbol, qty:m.qty, invested:m.invested, curVal:m.curVal, pnl:m.curVal-m.invested+m.dividend,
         brokers:Array.from(m.brokers).sort(), recos:Array.from(m.recos).sort(), portfolios:Array.from(m.portfolios).sort(),
         firstDate, xirr:ixirr, txnCount:m.cfs.length, cfs:m.cfs, curValForXirr:m.curValForXirr,
         investedPrice:m.qty>0 ? m.investedPriceTotal/m.qty : null,
-        currentPrice:m.qty>0 ? m.curVal/m.qty : null
+        currentPrice, previousClose, todayGain, todayPct
       });
     });
     return {results, warnings};
@@ -2769,6 +2831,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const totalInvested = results.reduce((s,r)=>s+(isNaN(r.invested)?0:r.invested),0);
     const totalCurVal = results.reduce((s,r)=>s+(isNaN(r.curVal)?0:r.curVal),0);
     const totalPnl = results.reduce((s,r)=>s+(isNaN(r.pnl)?0:r.pnl),0);
+    const todayKnown = results.filter(r=>Number.isFinite(r.todayGain));
+    const todayGain = todayKnown.length ? todayKnown.reduce((s,r)=>s+r.todayGain,0) : null;
     const absReturn = totalInvested>0 ? (totalPnl/totalInvested)*100 : null;
 
     const cfsForPortfolio = [];
@@ -2781,7 +2845,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       portXirr = xirr(cfsForPortfolio.concat([{date:valDate, amount:adjustedPortfolioValue}]));
     }
 
-    renderStats({totalInvested, totalCurVal, totalPnl, absReturn, portXirr});
+    renderStats({totalInvested, totalCurVal, totalPnl, todayGain, todayKnownCount:todayKnown.length, todayCount:results.length, absReturn, portXirr});
     renderTable(results);
     renderMomentumTrends(filteredRows);
   }
@@ -2791,6 +2855,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     $('sumInvested').textContent = fmtINR(sum.totalInvested);
     $('sumCurrent').textContent = fmtINR(sum.totalCurVal);
     const pnlEl = $('sumPnl'); pnlEl.textContent = fmtINR(sum.totalPnl); pnlEl.className = 'v ' + (sum.totalPnl>=0?'gain':'loss');
+    const todayEl=$('sumTodayGain');
+    if(todayEl){
+      todayEl.textContent=sum.todayGain==null?'—':fmtINR(sum.todayGain);
+      todayEl.className='v '+(sum.todayGain==null?'':(sum.todayGain>=0?'gain':'loss'));
+    }
+    if($('todayGainNote')) $('todayGainNote').textContent=sum.todayKnownCount ? `${sum.todayKnownCount}/${sum.todayCount} stocks · versus previous trading close` : 'Previous close data not available yet';
     const absEl = $('sumAbs'); absEl.textContent = fmtPct(sum.absReturn); absEl.className = 'v ' + (sum.absReturn>=0?'gain':'loss');
     $('sumXirr').textContent = sum.portXirr!==null ? fmtPct(sum.portXirr*100) : 'n/a';
     if($('sumXirrNote')){
@@ -2816,6 +2886,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     if(key==='absReturn') return r.invested>0 ? (r.pnl/r.invested)*100 : -Infinity;
     if(key==='investedPrice') return r.investedPrice==null ? -Infinity : r.investedPrice;
     if(key==='currentPrice') return r.currentPrice==null ? -Infinity : r.currentPrice;
+    if(key==='todayGain') return r.todayGain==null ? -Infinity : r.todayGain;
     const v=r[key];
     return (v==null || isNaN(v)) ? -Infinity : v;
   }
@@ -2896,6 +2967,34 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     wrap.style.display='grid';
   }
 
+  function renderPortfolioMovers(rows){
+    const totalEl=$('tickerPortfolioGain'), coverageEl=$('tickerPortfolioCoverage'), track=$('portfolioTickerItems');
+    if(!totalEl || !coverageEl || !track) return;
+    const items=(rows||[]).filter(r=>Number.isFinite(r.todayGain) && Number.isFinite(r.todayPct));
+    const gain=items.reduce((sum,r)=>sum+r.todayGain,0);
+    const total=(rows||[]).length;
+    totalEl.textContent=items.length?`Today ${fmtINR(gain)}`:'Today —';
+    totalEl.classList.toggle('ticker-up',gain>=0 && items.length>0);
+    totalEl.classList.toggle('ticker-down',gain<0);
+    coverageEl.textContent=items.length?`${items.length}/${total} stocks priced`:'Previous close unavailable';
+    if(!items.length){ track.classList.remove('is-animated'); track.innerHTML='<span class="portfolio-mover-empty">Refresh portfolio prices to load stock movers</span>'; return; }
+    const sorted=items.slice().sort((a,b)=>b.todayPct-a.todayPct);
+    let movers;
+    if(sorted.length<=10) movers=sorted;
+    else {
+      const winners=sorted.filter(r=>r.todayPct>0).slice(0,5);
+      const losers=sorted.filter(r=>r.todayPct<0).slice(-5).reverse();
+      movers=[...winners,...losers];
+      if(movers.length<Math.min(10,sorted.length)){
+        sorted.forEach(r=>{if(movers.length<10 && !movers.some(x=>x.key===r.key)) movers.push(r);});
+      }
+    }
+    const renderItems=()=>movers.map(r=>`<span class="portfolio-mover ${r.todayPct>=0?'ticker-up':'ticker-down'}"><b>${escapeAttr(r.instrument)}</b><strong>${r.todayPct>=0?'▲':'▼'} ${Math.abs(r.todayPct).toFixed(2)}%</strong><small>${fmtINR(r.todayGain)}</small></span>`).join('<i class="portfolio-mover-sep"></i>');
+    const sequence=renderItems();
+    track.innerHTML=movers.length>1?sequence+sequence:sequence;
+    track.classList.toggle('is-animated',movers.length>1);
+  }
+
   function renderTable(visible){
     $('tableWrap').classList.add('show');
     const sorted=sortResults(visible);
@@ -2913,6 +3012,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         <td>${fmtQty(r.qty)}</td>
         <td>${r.investedPrice!=null?fmtINR2(r.investedPrice):'—'}</td>
         <td>${r.currentPrice!=null?fmtINR2(r.currentPrice):'—'}</td>
+        <td>${r.previousClose!=null?fmtINR2(r.previousClose):'—'}</td>
+        <td class="${r.todayGain==null?'':(r.todayGain>=0?'gain':'loss')}">${r.todayGain!=null?`${fmtINR(r.todayGain)}${r.todayPct!=null?`<small class="today-gain-pct">${r.todayPct>=0?'+':''}${r.todayPct.toFixed(2)}%</small>`:''}`:'—'}</td>
         <td>${fmtINR(r.invested)}</td>
         <td>${fmtINR(r.curVal)}</td>
         <td class="${pnlClass}">${fmtINR(r.pnl)}</td>
@@ -2923,6 +3024,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderSortIndicators();
     renderInsights(sorted);
     renderAllocation(sorted);
+    renderPortfolioMovers(sorted);
   }
 
   setupSortControls();
@@ -3314,6 +3416,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         const row=bySymbol[k] || (token ? byToken[String(token)] : null);
         // For manual exchange/token mappings, the token match is authoritative.
         if(row && Number.isFinite(Number(row.price)) && Number(row.price)>0){
+          const previousClose=extractPreviousClose(row);
+          if(previousClose!=null) state.dailyCloseBySymbol.set(k,{price:previousClose,forDate:localMarketDateKey()});
           const affected=state.holdRows.filter(r=>symKey(r.symbol)===k);
           affected.forEach(r=>{ r.currentPrice=Number(row.price); });
           batchUpdated += affected.length;
@@ -3379,8 +3483,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     renderAngelStatus('ok',`Angel One updated ${updated} holding row${updated===1?'':'s'} using ${modeLabel}.${missingLabel}`);
     return updated;
   }
-  async function fetchAngelHistory(){
-    const symbols=uniqueHoldSymbols();
+  async function fetchAngelHistory(symbolsOverride=null){
+    const symbols=Array.isArray(symbolsOverride)?symbolsOverride:uniqueHoldSymbols();
     if(!symbols.length) return 0;
     persistAngelSettings();
     if(!angelUrl()) throw new Error('Angel One Worker URL is not configured in Settings.');
@@ -3388,18 +3492,22 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const result=new Map();
     let completed=0, failures=0;
     for(let idx=0; idx<symbols.length; idx++){
-      const symbol=symbols[idx], k=symKey(symbol), token=state.angelTokenMap[k]||'';
+      const symbol=symbols[idx], k=symKey(symbol);
+      const exchange=state.angelSourceBySymbol?.[k] || (state.angelManualMap?.[`BSE:${k}`]?'BSE':state.angelManualMap?.[`NSE:${k}`]?'NSE':(state.angelExchange==='AUTO'?'NSE':state.angelExchange));
+      const token=state.angelTokenMap[`${exchange}:${k}`] || state.angelTokenMap[k] || '';
       try{
-        const q=new URLSearchParams({exchange:state.angelExchange,symbol,days:'60'}); if(token) q.set('token',token);
+        const q=new URLSearchParams({exchange,symbol,days:'60'}); if(token) q.set('token',token);
         const body=await angelGet('/api/history?'+q.toString());
-        if(body.token){ state.angelTokenMap[k]=String(body.token); }
+        if(body.token){ state.angelTokenMap[`${exchange}:${k}`]=String(body.token); }
         if(Array.isArray(body.data) && body.data.length) result.set(k,body.data);
         if(Array.isArray(body.data) && body.data.length) completed++; else failures++;
       }catch(err){ failures++; if(old.has(k) && old.get(k)?.length) result.set(k,old.get(k)); }
       await new Promise(r=>setTimeout(r,380));
     }
     if(result.size===0) throw new Error('Angel One returned no usable daily history; using Google Sheets history instead.');
-    state.priceHistory=result;
+    const mergedHistory=new Map(old);
+    result.forEach((rows,key)=>mergedHistory.set(key,rows));
+    state.priceHistory=mergedHistory;
     persistAngelSettings();
     renderMomentumAlerts();
     renderMomentumTrends(state.holdRows);
@@ -3715,6 +3823,11 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       status.textContent='Loading recent history from Google Sheets…';
       try{ await fetchHistoryPrices(state.lastSheetAoa); }
       catch(err){ /* keep whatever history is already loaded */ }
+      const missingAngelCloses=uniqueHoldSymbols().filter(symbol=>priceSourceFor(symbol)!=='SHEET' && getPreviousClose(symbol)==null);
+      if(missingAngelCloses.length && angelUrl()){
+        try{ await fetchAngelHistory(missingAngelCloses); }
+        catch(err){ /* daily gain stays unavailable for symbols without a previous close */ }
+      }
       preserveViewportAround('tableWrap',()=>{ runCalculation(); renderMomentumAlerts(); renderMomentumTrends(state.holdRows); });
       await (window.wlRefreshMarketTicker ? window.wlRefreshMarketTicker() : Promise.resolve(false));
       const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
