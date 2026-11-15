@@ -1,6 +1,6 @@
 // Bump this whenever index.html (or any cached asset) changes, so old
 // caches get cleared out and users pick up the new version promptly.
-const CACHE_NAME = 'wealthledger-v45';
+const CACHE_NAME = 'wealthledger-v46';
 
 const ASSETS = [
   './',

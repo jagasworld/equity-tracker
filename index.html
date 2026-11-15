@@ -1552,7 +1552,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   <div id="realizedAnchor" class="section-anchor"></div>
   <div class="card" id="recoStockCard" style="display:none;">
     <div class="card-head"><div class="card-icon">◆</div><b>XIRR &amp; P&amp;L by recommendation</b></div>
-    <p class="card-hint">One place to understand recommendation performance. This single report combines recommender totals with stock-level detail. XIRR uses every dated Buy/Sell transaction, plus current value for shares still held.</p>
+    <p class="card-hint">One place to understand recommendation performance. This single report combines recommender totals with stock-level detail. XIRR uses dated Buy/Sell cash flows plus the value of shares still held. Manually-entered holdings remain included when sold from Holdings. If no stable valid annualized rate can be solved, XIRR is shown as n/a.</p>
 
     <div class="stats-row show stats-row-3col">
       <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
@@ -2021,31 +2021,77 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   function xnpv(rate, cfs, d0){ return cfs.reduce((acc,cf)=> acc + cf.amount / Math.pow(1+rate, (cf.date-d0)/(365*DAY)), 0); }
   function xnpvDeriv(rate, cfs, d0){ return cfs.reduce((acc,cf)=>{ const t=(cf.date-d0)/(365*DAY); return acc - t*cf.amount/Math.pow(1+rate, t+1); },0); }
   function xirr(cashflows){
-    if(cashflows.length < 2) return null;
-    const cfs = cashflows.slice().sort((a,b)=>a.date-b.date);
-    if(!cfs.some(c=>c.amount>0) || !cfs.some(c=>c.amount<0)) return null;
-    const d0 = cfs[0].date;
-    let rate = 0.15, converged = false;
-    for(let i=0;i<200;i++){
-      const f = xnpv(rate, cfs, d0), df = xnpvDeriv(rate, cfs, d0);
-      if(Math.abs(df) < 1e-9) break;
-      let next = rate - f/df;
-      if(next < -0.999999) next = -0.5*(1+rate) - 0.5;
-      if(!isFinite(next)) break;
-      if(Math.abs(next-rate) < 1e-8){ rate = next; converged = true; break; }
-      rate = next;
+    // A valid XIRR must be greater than -100%. The previous Newton iteration
+    // could leave that domain and, when no valid bracket existed, return the
+    // last unverified guess (occasionally producing -1,243% or enormous rates).
+    // Use a bounded, bracketed solver in log(1 + rate) space instead.
+    if(!Array.isArray(cashflows) || cashflows.length<2) return null;
+    const cfs=cashflows.map(cf=>({
+      date: cf?.date instanceof Date ? cf.date : new Date(cf?.date),
+      amount: Number(cf?.amount)
+    })).filter(cf=>Number.isFinite(cf.date.getTime()) && Number.isFinite(cf.amount) && cf.amount!==0)
+      .sort((a,b)=>a.date-b.date);
+    if(cfs.length<2 || !cfs.some(c=>c.amount>0) || !cfs.some(c=>c.amount<0)) return null;
+    const d0=cfs[0].date;
+    const times=cfs.map(c=>(c.date-d0)/(365*DAY));
+    const maxTime=times[times.length-1];
+    // Same-day-only cash flows have no meaningful annualized return.
+    if(!Number.isFinite(maxTime) || maxTime<1/(365*24)) return null;
+
+    // Scale the NPV terms before summing. This preserves the sign while
+    // avoiding overflow/underflow for long holding periods or high rates.
+    function scaledNpvSign(logGrowth){
+      let maxLog=-Infinity;
+      const terms=cfs.map((cf,i)=>{
+        const v=Math.log(Math.abs(cf.amount))-logGrowth*times[i];
+        if(v>maxLog) maxLog=v;
+        return v;
+      });
+      if(!Number.isFinite(maxLog)) return 0;
+      let total=0;
+      for(let i=0;i<cfs.length;i++){
+        const mag=Math.exp(terms[i]-maxLog);
+        total+=(cfs[i].amount>0?mag:-mag);
+      }
+      return total>0?1:(total<0?-1:0);
     }
-    if(!converged || !isFinite(rate) || rate < -0.999){
-      let lo=-0.9999, hi=10, flo=xnpv(lo,cfs,d0), fhi=xnpv(hi,cfs,d0);
-      if(flo*fhi > 0) return isFinite(rate) ? rate : null;
-      for(let i=0;i<300;i++){
-        const mid=(lo+hi)/2, fm=xnpv(mid,cfs,d0);
-        if(Math.abs(fm) < 1e-6){ rate = mid; break; }
-        if(flo*fm < 0){ hi=mid; fhi=fm; } else { lo=mid; flo=fm; }
-        rate = mid;
+
+    // Search from -99.99% through +100,000% annualized. Anything outside
+    // this intentionally generous range is more useful as n/a than as a
+    // misleading, unbounded percentage caused by a solver failure.
+    const loLimit=Math.log(0.0001);
+    const hiLimit=Math.log(1001);
+    const target=Math.log(1.15);
+    const steps=800;
+    const brackets=[];
+    let prevY=loLimit, prevSign=scaledNpvSign(prevY);
+    if(prevSign===0) brackets.push([prevY,prevY]);
+    for(let i=1;i<=steps;i++){
+      const y=loLimit+(hiLimit-loLimit)*i/steps;
+      const sign=scaledNpvSign(y);
+      if(sign===0) brackets.push([y,y]);
+      else if(prevSign!==0 && sign!==prevSign) brackets.push([prevY,y]);
+      prevY=y; prevSign=sign;
+    }
+    if(!brackets.length) return null;
+
+    // Non-conventional cash flows can have multiple roots. Choose the root
+    // nearest the customary 15% initial estimate, rather than an arbitrary one.
+    brackets.sort((a,b)=>Math.abs((a[0]+a[1])/2-target)-Math.abs((b[0]+b[1])/2-target));
+    let [lo,hi]=brackets[0];
+    if(lo!==hi){
+      let slo=scaledNpvSign(lo);
+      for(let i=0;i<160;i++){
+        const mid=(lo+hi)/2;
+        if(mid===lo || mid===hi) break;
+        const smid=scaledNpvSign(mid);
+        if(smid===0){lo=hi=mid;break;}
+        if(smid===slo){lo=mid;slo=smid;} else hi=mid;
+        if(hi-lo<1e-12) break;
       }
     }
-    return rate;
+    const answer=Math.expm1((lo+hi)/2);
+    return Number.isFinite(answer) && answer>-1 && answer<=1000 ? answer : null;
   }
 
   // ================= HOLDINGS: add-form + editable ledger =================
@@ -4033,54 +4079,80 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   function computeXirrForCashflows(holdPredicate, txnPredicate, valDate, commissionRecos=null){
-    const cfs = [];
-    const portfolioFilter = state.recoPortfolioFilter;
-    const holdMatches = state.holdRows.filter(r=>{
+    const cfs=[];
+    const portfolioFilter=state.recoPortfolioFilter;
+    const holdMatches=state.holdRows.filter(r=>{
       if(portfolioFilter!==null && r.portfolio!==portfolioFilter) return false;
       return holdPredicate(r);
     });
-    const txnMatches = state.manualTxns.filter(t=>{
+    const txnMatches=state.manualTxns.filter(t=>{
       if(portfolioFilter!==null && t.portfolio!==portfolioFilter) return false;
       return txnPredicate(t);
     });
 
-    // Transaction-first model: when dated buy/sell transactions exist for the
-    // selected stock/recommendation, use every Buy and Sell cash flow. Do NOT
-    // exclude linked buys — those are exactly the cash outflows needed for a
-    // realized-only XIRR after the holding row has been reduced to zero.
-    // Remaining open shares are valued separately from the current holdings rows.
-    if(txnMatches.length>0){
-      txnMatches.slice().sort((a,b)=>a.date-b.date).forEach(t=>{
-        if(!t.date) return;
-        const qty=Number(t.qty)||0, price=Number(t.price)||0;
-        if(!(qty>0 && price>0)) return;
-        cfs.push({date:t.date, amount:t.type==='buy' ? -(qty*price) : (qty*price)});
-      });
-    }else{
-      // Holdings-only fallback for manually entered positions that have no
-      // transaction history.
-      holdMatches.forEach(r=>{
-        const investedAmt=computeInvested(r);
-        if(r.tradeDate && investedAmt!=null && investedAmt>0){
-          cfs.push({date:new Date(r.tradeDate+'T00:00:00'), amount:-investedAmt});
-        }
-      });
-    }
+    // Transaction-generated lots are represented by their Buy transactions.
+    // Manually-entered holdings have no Buy transaction, so retain their
+    // original cash outflow even after one or more Holdings-originated sells.
+    txnMatches.forEach(t=>{
+      if(!t.date) return;
+      const qty=Number(t.qty)||0, price=Number(t.price)||0;
+      if(!(qty>0 && price>0)) return;
+      cfs.push({date:t.date,amount:t.type==='buy'?-(qty*price):(qty*price)});
+    });
 
-    // Current value is ALWAYS the value of currently-held shares only. This is
-    // zero for a fully sold position, which is exactly what we need for a
-    // realized-only XIRR.
+    const allocQtyByHold=new Map();
+    txnMatches.forEach(t=>{
+      if(t.type!=='sell') return;
+      // Holdings-originated sales persist holdAllocations. Transaction-tab
+      // sales get linkedSellAllocations during FIFO synchronization. Prefer
+      // the durable original allocation list to avoid counting both copies.
+      const allocations=Array.isArray(t.holdAllocations)&&t.holdAllocations.length
+        ? t.holdAllocations
+        : (Array.isArray(t.linkedSellAllocations)?t.linkedSellAllocations:[]);
+      allocations.forEach(a=>{
+        const id=String(a.holdId||'');
+        if(!id) return;
+        allocQtyByHold.set(id,(allocQtyByHold.get(id)||0)+(Number(a.qty)||0));
+      });
+    });
+
+    holdMatches.forEach(r=>{
+      if(r.sourceTransactionId) return; // the linked Buy transaction already records this outflow
+      if(!r.tradeDate || r.investedPrice==null) return;
+      const currentQty=Math.max(0,Number(r.qty)||0);
+      const soldQty=allocQtyByHold.get(String(r.id))||0;
+      // v35.1.3 represented a Holdings-originated sale as a synthetic Buy
+      // (at the lot's original date/cost) plus a Sell. Those legacy Buy rows
+      // are already included above; do not count their sold quantity again.
+      const legacyBuyQty=txnMatches.reduce((sum,t)=>{
+        if(t.type!=='buy' || t.linkedHoldingId || t.holdingLotId) return sum;
+        if((t.portfolio||'')!==(r.portfolio||'') || symKey(t.instrument)!==symKey(r.symbol)) return sum;
+        if((t.recommendedBy||'')!==(r.recommendedBy||'')) return sum;
+        if(t.broker && r.broker && t.broker!==r.broker) return sum;
+        const td=t.date instanceof Date?t.date:new Date(t.date);
+        const rd=new Date(r.tradeDate+'T00:00:00');
+        const sameDay=Number.isFinite(td.getTime()) && td.getFullYear()===rd.getFullYear() && td.getMonth()===rd.getMonth() && td.getDate()===rd.getDate();
+        return sameDay ? sum+(Number(t.qty)||0) : sum;
+      },0);
+      const uncoveredSoldQty=Math.max(0,soldQty-legacyBuyQty);
+      const investedQty=currentQty+uncoveredSoldQty;
+      const invested=investedQty*(Number(r.investedPrice)||0);
+      if(investedQty>0 && invested>0){
+        cfs.push({date:new Date(r.tradeDate+'T00:00:00'),amount:-invested});
+      }
+    });
+
+    // Value only the shares still held on the valuation date.
     const curValSum=holdMatches.reduce((sum,r)=>{
       const cur=computeCurVal(r);
       return cur!=null && Number.isFinite(cur) ? sum+cur : sum;
     },0);
-    if(curValSum>0) cfs.push({date:valDate, amount:curValSum});
+    if(curValSum>0) cfs.push({date:valDate,amount:curValSum});
 
     const commission=commissionForRecos(commissionRecos);
-    if(commission>0) cfs.push({date:valDate, amount:-commission});
+    if(commission>0) cfs.push({date:valDate,amount:-commission});
 
-    // Remove zero-value/invalid dates and guard against duplicate same-day zero flows.
-    const clean=cfs.filter(cf=>cf && cf.date instanceof Date && Number.isFinite(cf.date.getTime()) && Number.isFinite(cf.amount) && cf.amount!==0);
+    const clean=cfs.filter(cf=>cf && cf.date && Number.isFinite(new Date(cf.date).getTime()) && Number.isFinite(cf.amount) && cf.amount!==0);
     if(clean.length<2) return null;
     return xirr(clean);
   }
