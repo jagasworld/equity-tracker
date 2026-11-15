@@ -1,6 +1,6 @@
 // Bump this whenever index.html (or any cached asset) changes, so old
-// caches get cleared out and users pick up the new version promptly.
-const CACHE_NAME = 'wealthledger-v48';
+// caches get cleared and users receive the latest WealthLedger build.
+const CACHE_NAME = 'wealthledger-v49-watchlist-search';
 
 const ASSETS = [
   './',
@@ -30,13 +30,9 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-first: always try to fetch the latest version (important since this
-// app gets updated), falling back to the cached copy when offline. This keeps
-// the app usable without a connection while still picking up updates promptly
-// whenever one is available.
+// Network-first: try the latest app version, then fall back to the cache offline.
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-
   event.respondWith(
     fetch(event.request)
       .then((response) => {

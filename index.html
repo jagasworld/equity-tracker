@@ -1,16 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Equity - WealthLedger — Private Equity Dashboard</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#5B5BF6">
-<link rel="icon" href="icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="icon-180-apple.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Equity - WealthLedger">
+<link href="manifest.json" rel="manifest"/>
+<meta content="#5B5BF6" name="theme-color"/>
+<link href="icon-192.png" rel="icon" type="image/png"/>
+<link href="icon-180-apple.png" rel="apple-touch-icon"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="default" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Equity - WealthLedger" name="apple-mobile-web-app-title"/>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
@@ -716,8 +717,9 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
 @media (max-width:720px){.commission-head{display:block}.commission-pill{display:inline-block;margin-top:9px}.commission-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.commission-item{padding:8px}.commission-item .commission-input{width:84px;min-width:64px}}
 @media (max-width:430px){.commission-grid{grid-template-columns:1fr}.commission-item .commission-input{width:100px}}
 
-</style>
 
+
+</style>
 <style id="v22-visual-fix">
 /* ===== v22 visual alignment and reference-hero fixes ===== */
 .filterbar.show{
@@ -832,7 +834,6 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
 @media(max-width:700px){.filterbar.show{grid-template-columns:1fr !important;padding:11px 13px !important;gap:7px !important;}.filterbar .flabel{padding-right:0 !important;}.filterbar .filter-chips{width:100%;}.sort-controls{align-items:stretch;}.sort-select{flex:1;min-width:150px;}}
 
 </style>
-
 <style id="v27-responsive">
 /* ===== v27 responsive system: comfortable on phone, efficient on laptop/desktop ===== */
 html{scroll-padding-top:96px;-webkit-text-size-adjust:100%;}
@@ -1109,606 +1110,615 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 .stats-row.show{grid-template-columns:repeat(6,minmax(0,1fr))}
 .resultstable{min-width:1020px}
 
+
+/* v35.1.9 — persistent watch-only stock search and Angel One quote snapshots */
+.pageHero,.hero-reference,.wl-feature-grid,.wl-growth-banner{display:none!important}
+.wl-market-ticker{margin:8px 0 14px!important;padding:10px 14px!important;min-height:42px;border:1px solid #e7e7ef;border-radius:14px;background:var(--surface,#fff);box-shadow:0 5px 18px rgba(28,25,55,.045);gap:16px!important;flex-wrap:wrap}
+.wl-market-ticker>div{gap:7px!important}
+.wl-market-ticker>div>b{font-size:9px!important;letter-spacing:.06em;color:#6b6c7d!important}
+.wl-market-ticker>div>span{font-size:10px!important;font-weight:700;color:#30313e!important}
+.ticker-meta{margin-left:auto!important;display:flex;align-items:center;gap:9px}
+.ticker-meta button{font-size:10px!important}
+.wl-terminal-layout{display:grid;grid-template-columns:252px minmax(0,1fr);gap:15px;align-items:start;margin-top:4px}
+.wl-watchlist-card{position:sticky;top:14px;min-width:0;overflow:hidden;background:var(--surface,#fff);border:1px solid var(--border,#e8e7ef);border-radius:17px;box-shadow:0 8px 24px rgba(31,25,64,.045)}
+.wl-watchlist-head{padding:15px 14px 12px;border-bottom:1px solid var(--border,#ecebf1)}
+.wl-watchlist-kicker{font-size:8px;letter-spacing:.14em;font-weight:800;color:#7b66d9;margin-bottom:5px}
+.wl-watchlist-title-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wl-watchlist-title-row h2{margin:0;font-size:17px;letter-spacing:-.03em;color:var(--text,#20212b)}
+.wl-watchlist-count{flex:none;border-radius:999px;padding:4px 7px;background:#f2f0fb;color:#6450bd;font-size:9px;font-weight:800}
+.wl-watchlist-head p{margin:4px 0 11px;font-size:10px;color:var(--text-faint,#858595)}
+.wl-watchlist-search{height:34px;display:flex;align-items:center;gap:7px;padding:0 9px;border:1px solid var(--border,#e8e7ef);border-radius:9px;background:var(--surface-2,#fafafd);color:#8a8998}
+.wl-watchlist-search span{font-size:18px;line-height:1}
+.wl-watchlist-search input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:var(--text,#222);font:500 10px Inter,sans-serif}
+.wl-watchlist-list{max-height:calc(100vh - 270px);min-height:150px;overflow:auto;scrollbar-width:thin}
+.wl-watch-row{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:0;border-bottom:1px solid var(--border,#f0eff4);background:transparent;text-align:left;cursor:pointer;transition:background .14s ease}
+.wl-watch-row:hover,.wl-watch-row.active{background:#f6f4ff}
+.wl-watch-main,.wl-watch-side{display:flex;flex-direction:column;gap:3px;min-width:0}
+.wl-watch-main b{font-size:10.5px;color:var(--text,#252531);font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wl-watch-main small,.wl-watch-side small{font-size:8.5px;color:var(--text-faint,#888899)}
+.wl-watch-side{align-items:flex-end;text-align:right}
+.wl-watch-side>b{font-size:10px;color:var(--text,#292a35);font-variant-numeric:tabular-nums}
+.wl-watch-side small{font-weight:800;white-space:nowrap}
+.wl-watch-side small i{display:none;font-style:normal}
+.wl-watch-side .ticker-up,.wl-watch-side .ticker-down{display:block}
+.wl-no-move{color:#9292a1!important}
+.wl-watchlist-empty{padding:24px 14px;color:var(--text-faint,#888899);font-size:10px;line-height:1.6;text-align:center}
+.wl-watchlist-foot{display:flex;align-items:center;gap:7px;padding:10px 12px;border-top:1px solid var(--border,#ecebf1);font-size:8px;color:var(--text-faint,#888899)}
+.wl-watchlist-dot{width:6px;height:6px;border-radius:50%;background:#23a36f;flex:none}
+
+/* v35.1.9 — searchable, persistent watch-only instruments */
+.wl-watchlist-add{display:grid;grid-template-columns:minmax(0,1fr) 78px auto;gap:6px;padding:9px 12px 10px;border-bottom:1px solid var(--border,#ecebf1);background:var(--surface,#fff)}
+.wl-watchlist-add input,.wl-watchlist-add select{min-width:0;width:100%;height:31px;border:1px solid var(--border,#e8e7ef);border-radius:8px;background:var(--surface-2,#fafafd);color:var(--text,#222);padding:0 8px;font:500 9px Inter,sans-serif;outline:0}
+.wl-watchlist-add input:focus,.wl-watchlist-add select:focus{border-color:var(--brand,#6c63ff)}
+.wl-watchlist-add button{height:31px;padding:0 9px;border:0;border-radius:8px;background:var(--brand,#6c63ff);color:#fff;font:700 9px Inter,sans-serif;white-space:nowrap;cursor:pointer}
+.wl-watchlist-add button:disabled{opacity:.55;cursor:wait}
+.wl-watchlist-add-status{grid-column:1/-1;min-height:12px;font-size:8px;line-height:1.4;color:var(--text-faint,#888899)}
+.wl-watch-row{gap:5px!important;padding-right:8px!important}
+.wl-watch-select{display:flex;flex:1;min-width:0;align-items:center;justify-content:space-between;gap:8px;padding:0;border:0;background:transparent;text-align:left;cursor:pointer}
+.wl-watch-type{display:inline-block;margin-top:1px;font-size:7px!important;letter-spacing:.04em;text-transform:uppercase;color:var(--text-faint,#888899)!important}
+.wl-watch-remove{flex:none;width:20px;height:20px;border:0;border-radius:6px;background:transparent;color:var(--text-faint,#888899);font-size:13px;cursor:pointer}
+.wl-watch-remove:hover{background:var(--loss-soft,#fff0f0);color:var(--loss,#d44)}
+.wl-watch-side small{font-variant-numeric:tabular-nums}
+@media(max-width:780px){.wl-watchlist-add{grid-template-columns:minmax(0,1fr) 75px auto}.wl-watchlist-add input,.wl-watchlist-add select,.wl-watchlist-add button{height:34px}.wl-watchlist-list{max-height:280px}}
+.wl-portfolio-pane{min-width:0}
+.wl-portfolio-pane .portfolio-primary-title{margin:2px 0 9px!important;align-items:center!important}
+.wl-portfolio-pane .portfolio-primary-title h2{font-size:20px!important}
+.wl-portfolio-pane .dashboard-update{grid-template-columns:130px minmax(0,1fr) auto!important;gap:10px!important;padding:10px 12px!important;margin-bottom:10px!important}
+.wl-portfolio-pane .dashboard-update .update-date input{max-width:130px}
+.wl-portfolio-pane .stats-row.show{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin:0 0 10px!important}
+.wl-portfolio-pane .stat{min-width:0;padding:12px 13px!important;min-height:72px!important;border-radius:13px!important}
+.wl-portfolio-pane .stat .k{font-size:8px!important;margin-bottom:5px!important}
+.wl-portfolio-pane .stat .v{font-size:17px!important;margin-top:4px!important;overflow-wrap:anywhere}
+.wl-portfolio-pane .stat.brand .v{font-size:18px!important}
+.wl-portfolio-pane .stat-note,.wl-portfolio-pane .xirr-note{font-size:8px!important}
+.wl-portfolio-pane .filterbar{margin-bottom:6px!important}
+.wl-portfolio-pane .tablewrap{margin-top:8px!important;border-radius:15px!important}
+.wl-portfolio-pane .table-toolbar{padding:9px 11px!important;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.wl-portfolio-pane .sort-controls{min-width:0;gap:7px!important}
+.wl-portfolio-pane .sort-label{font-size:9px!important}
+.wl-portfolio-pane .sort-select{max-width:160px;font-size:10px!important}
+.wl-columns-toggle{flex:none;padding:7px 10px;border:1px solid var(--border,#e4e2eb);border-radius:8px;background:#fff;color:#6553b9;font:700 9px Inter,sans-serif;cursor:pointer}
+.wl-portfolio-pane .resultstable{min-width:640px!important;width:100%}
+.wl-portfolio-pane .resultstable th,.wl-portfolio-pane .resultstable td{white-space:nowrap}
+/* Default portfolio view keeps only the key trading columns; full detail is one click away. */
+.wl-portfolio-pane:not(.show-all-cols) .resultstable th:nth-child(2),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable td:nth-child(2),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable th:nth-child(4),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable td:nth-child(4),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable th:nth-child(8),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable td:nth-child(8),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable th:nth-child(11),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable td:nth-child(11),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable th:nth-child(12),
+.wl-portfolio-pane:not(.show-all-cols) .resultstable td:nth-child(12){display:none!important}
+.wl-watch-highlight{animation:wlWatchFlash 1.5s ease}
+@keyframes wlWatchFlash{0%,100%{background:transparent}35%{background:#eeeaff}}
+.wl-tab-heading{margin:8px 0 18px;padding:4px 0 13px;border-bottom:1px solid var(--border,#ecebf1)}
+.wl-tab-heading h2{margin:0;font-size:23px;letter-spacing:-.035em;color:var(--text,#22232f)}
+.wl-tab-heading p{margin:5px 0 0;font-size:11px;color:var(--text-faint,#858595)}
+.wl-analytics-heading{margin-top:28px}
+.wl-analytics-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;align-items:start}
+.wl-analytics-stack .trend-card,.wl-analytics-stack .visual-strip{grid-column:1/-1}
+.wl-analytics-stack .insights-grid{grid-column:1/-1}
+.wl-analytics-stack .allocation-card{grid-column:1/-1}
+@media(max-width:1080px){.wl-terminal-layout{grid-template-columns:218px minmax(0,1fr);gap:11px}.wl-portfolio-pane .stats-row.show{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:780px){
+  .wl-market-ticker{flex-wrap:nowrap!important;overflow-x:auto!important;gap:13px!important;white-space:nowrap!important;border-radius:11px!important}
+  .wl-terminal-layout{grid-template-columns:1fr;gap:12px}
+  .wl-watchlist-card{position:relative;top:auto}
+  .wl-watchlist-list{max-height:235px;min-height:90px}
+  .wl-watch-row{padding:8px 11px}
+  .wl-portfolio-pane .dashboard-update{grid-template-columns:1fr!important}
+  .wl-portfolio-pane .dashboard-update .update-date input{max-width:none}
+  .wl-portfolio-pane .stats-row.show{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .wl-analytics-stack{grid-template-columns:1fr}
+  .wl-analytics-stack .trend-card,.wl-analytics-stack .visual-strip,.wl-analytics-stack .insights-grid,.wl-analytics-stack .allocation-card{grid-column:auto}
+}
+@media(max-width:460px){
+  .wl-watchlist-title-row h2{font-size:16px}
+  .wl-portfolio-pane .stats-row.show{grid-template-columns:1fr 1fr!important}
+  .wl-portfolio-pane .stat{padding:10px!important}
+  .wl-portfolio-pane .stat .v{font-size:15px!important}
+  .wl-portfolio-pane .sort-controls{width:100%;flex-wrap:wrap}
+  .wl-portfolio-pane .table-toolbar{align-items:flex-start}
+}
 </style>
-
 </head>
-<body data-theme="light" class="wl-v7-light">
+<body class="wl-v7-light" data-theme="light">
 <div class="wrap">
-
-  <header class="wl-header">
-    <div class="wl-brand">
-      <div class="wl-logo" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-      <div><strong>Equity - WealthLedger</strong><small>TRACK · INVEST · GROW</small></div>
-    </div>
-    <nav class="wl-mainnav" id="appNav" aria-label="Primary navigation">
-      <button class="nav-btn active" data-view="dashboard">Home</button>
-      <button class="nav-btn" data-view="dashboard" data-scroll="tableWrap">Portfolio</button>
-      <button class="nav-btn" data-view="activity" data-scroll="addTransactionAnchor">Transactions</button>
-      <button class="nav-btn" data-view="reports">Reports</button>
-      <button class="nav-btn" data-view="manage">Settings</button>
-      <button class="nav-btn" data-view="help">Help</button>
-    </nav>
-    <div class="wl-header-tools">
-      <div class="wl-live"><i></i><b>Live Market</b><small>NSE · BSE</small></div>
-      <div class="theme-toggle wl-theme" aria-label="Theme"><button id="btnLight" class="active">☀</button><button id="btnDark">☾</button></div>
-    </div>
-  </header>
-
-  <div class="hero hero-reference" id="pageHero">
-    <div class="hero-copy">
-      <div class="hero-kicker" id="heroKicker">YOUR INVESTMENT COMMAND CENTRE</div>
-      <h1 id="heroTitle"><span>Build wealth.</span><em>Track every move.</em></h1>
-      <p id="heroText">Track your equity portfolio, manage transactions, get live prices from Angel One, view performance, set alerts and keep your history safe — all in one place.</p>
-      <div class="hero-actions">
-        <button class="hero-primary" id="heroPrimaryBtn">Go to Portfolio <span>→</span></button>
-      </div>
-      <div class="hero-trust">
-        <span>✓ <b>Live market data</b></span>
-        <span>✓ <b>Your data, your control</b></span>
-        <span>✓ <b>Simple. Secure. Powerful.</b></span>
-      </div>
-    </div>
-
-    <div class="hero-dashboard-card">
-      <div class="hdc-head"><span>Portfolio Value</span><span class="hdc-range">1Y⌄</span></div>
-      <div class="hdc-value-row"><strong id="heroCurrentValue">—</strong><div><b id="heroXirr">—</b><small>Total Return</small></div></div>
-      <div class="hdc-chart" aria-hidden="true">
-        <div class="chart-grid"><i></i><i></i><i></i></div>
-        <div class="chart-line"></div><div class="chart-fill"></div><span class="chart-point">₹</span>
-      </div>
-      <div class="hdc-foot">
-        <div><small>Net P&amp;L</small><b id="heroPnl">—</b></div>
-        <div><small>Portfolio XIRR</small><b id="heroXirrMini">—</b></div>
-        <div><small>Status</small><b class="live-text">Live</b></div>
-      </div>
-    </div>
-    <div class="hero-holdings-badge"><strong id="heroHoldingCount">—</strong><span>Holdings</span><b>↑ <i>Live</i></b><small>Market connected</small></div>
-  </div>
-
-  <div class="wl-feature-grid" aria-label="WealthLedger features">
-    <button class="wl-feature" data-goto="tableWrap"><span class="feature-icon purple">▥</span><span><b>Portfolio</b><small>View your holdings, performance, allocation and gains/losses.</small></span><strong>→</strong></button>
-    <button class="wl-feature" data-goto="addTransactionAnchor"><span class="feature-icon green">☷</span><span><b>Transactions</b><small>Add, edit and manage your buy/sell transactions.</small></span><strong>→</strong></button>
-    <button class="wl-feature" data-goto="priceHistoryAnchor"><span class="feature-icon amber">●</span><span><b>Market Alerts</b><small>Set price alerts and monitor recent movement.</small></span><strong>→</strong></button>
-    <button class="wl-feature" data-goto="angelAnchor"><span class="feature-icon red">A</span><span><b>Angel One Live Prices</b><small>Get current prices through Angel One SmartAPI.</small></span><strong>→</strong></button>
-    <button class="wl-feature" data-goto="priceHistoryAnchor"><span class="feature-icon green">▤</span><span><b>Google Sheets History</b><small>Use your existing sheet for historical prices and fallback data.</small></span><strong>→</strong></button>
-    <button class="wl-feature" data-goto="backupAnchor"><span class="feature-icon violet">☁</span><span><b>Backup &amp; Restore</b><small>Keep your portfolio safe with export and restore tools.</small></span><strong>→</strong></button>
-  </div>
-
-  <section class="wl-growth-banner" id="growthBanner" aria-label="WealthLedger growth message">
-    <div class="growth-copy">
-      <div class="growth-kicker">INVEST BETTER. LIVE BRIGHTER.</div>
-      <h2>Not just a tracker — a clearer financial future.</h2>
-      <p>Simple tools. Deeper insights. Built for long-term investors.</p>
-      <button class="growth-btn" id="growthBtn">Go to Portfolio <span>→</span></button>
-    </div>
-    <div class="growth-metrics">
-      <div class="growth-metric"><span class="gm-icon">♧</span><strong>1</strong><small>Investor<br>(You)</small></div>
-      <div class="growth-metric"><span class="gm-icon">ϟ</span><strong>100%</strong><small>Your Data<br>Stays With You</small></div>
-      <div class="growth-metric"><span class="gm-icon">♢</span><strong>Always</strong><small>Learning<br>&amp; Improving</small></div>
-    </div>
-    <div class="growth-plant" aria-hidden="true">
-      <div class="plant-leaf l1"></div><div class="plant-leaf l2"></div><div class="plant-leaf l3"></div><div class="plant-leaf l4"></div><div class="plant-leaf l5"></div>
-      <div class="plant-pot"><span>Good<br>Investments<br>Better<br>Tomorrows</span></div>
-    </div>
-  </section>
-
-  <div class="wl-market-ticker" aria-label="Market today">
-    <div><b>Market Today</b></div>
-    <div><b>NIFTY 50</b><span id="tickerNifty">—</span><em id="tickerNiftyMove" class="ticker-up">▲ —</em></div>
-    <i class="ticker-sep"></i>
-    <div><b>SENSEX</b><span id="tickerSensex">—</span><em id="tickerSensexMove" class="ticker-up">▲ —</em></div>
-    <i class="ticker-sep"></i>
-    <div><b>BANK NIFTY</b><span id="tickerBankNifty">—</span><em id="tickerBankNiftyMove" class="ticker-up">▲ —</em></div>
-    <i class="ticker-sep"></i>
-    <div class="portfolio-ticker-group" aria-label="Your portfolio daily movers">
-      <b>MY PORTFOLIO</b>
-      <strong id="tickerPortfolioGain" class="portfolio-ticker-total">Today —</strong>
-      <span id="tickerPortfolioCoverage" class="portfolio-ticker-coverage">Previous close pending</span>
-      <div class="portfolio-movers-viewport"><div id="portfolioTickerItems" class="portfolio-movers-track"><span class="portfolio-mover-empty">Refresh portfolio prices to load stock movers</span></div></div>
-    </div>
-    <div class="ticker-meta"><span id="tickerUpdated">Live market connected</span><button id="tickerRefresh">↻ Refresh</button></div>
-  </div>
-
-  <section id="viewDashboard" class="view-panel">
-  <div class="section-title-row portfolio-primary-title"><div><div class="section-eyebrow">Portfolio</div><h2>Your holdings</h2></div><div class="live-dot"><span></span> Live view</div></div>
-  <div class="card dashboard-update">
-    <div class="update-date"><span class="k">Valuation date</span><input type="date" id="valDate"></div>
-    <div class="update-status"><span class="k">Portfolio update</span><div class="v" id="combinedStatus">Ready to refresh prices and calculate.</div></div>
-    <button class="refresh-btn" id="refreshCalcBtn">↻ Refresh prices &amp; calculate</button>
-    <button id="calcBtn" style="display:none;">Calculate returns</button>
-  </div>
-  <div class="warnbox" id="warnBox" style="display:none;"></div>
-
-  <div class="stats-row" id="statsRow">
-    <div class="stat"><div class="k">Invested</div><div class="v" id="sumInvested">—</div></div>
-    <div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
-    <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
-    <div class="stat"><div class="k">Today's gain / loss</div><div class="v" id="sumTodayGain">—</div><div class="stat-note" id="todayGainNote">Compared with previous trading close</div></div>
-    <div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
-    <div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div><div class="xirr-note" id="sumXirrNote"></div></div>
-  </div>
-
-
-
-  <div class="momentum-card" id="momentumCard" style="display:none;">
-    <div class="momentum-head">
-      <div><div class="section-eyebrow">Market signals</div><h3>Price movement alerts</h3><div class="momentum-sub" id="momentumSummary">—</div></div>
-      <div class="momentum-badge" id="momentumBadge">0 alerts</div>
-    </div>
-    <div class="momentum-list" id="momentumList"></div>
-  </div>
-
-  <div class="trend-card" id="trendCard" style="display:none;">
-    <div class="momentum-head">
-      <div><div class="section-eyebrow">Recent price trend</div><h3>1D · 3D · 5D · 7D</h3><div class="momentum-sub" id="trendSummary">Refresh the portfolio to load recent trading-day movements.</div></div>
-    </div>
-    <div class="trend-table-wrap">
-      <table class="trend-table">
-        <thead><tr><th class="left">Stock</th><th>1D</th><th>3D</th><th>5D</th><th>7D</th></tr></thead>
-        <tbody id="trendBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="filterbar" id="filterBarPortfolio"></div>
-  <div class="filterbar" id="filterBarBroker"></div>
-  <div class="filterbar" id="filterBarReco"></div>
-
-  <div class="tablewrap" id="tableWrap">
-    <div class="table-toolbar">
-      <div class="sort-controls">
-        <span class="sort-label">Sort by</span>
-        <select id="tableSortSelect" class="sort-select" aria-label="Sort holdings by">
-          <option value="">Default order</option>
-          <option value="instrument">Instrument</option>
-          <option value="firstDate">First trade</option>
-          <option value="qty">Shares</option>
-          <option value="investedPrice">Invested / share</option>
-          <option value="currentPrice">Current / share</option>
-          <option value="todayGain">Today's gain / loss</option>
-          <option value="invested">Invested</option>
-          <option value="curVal">Current value</option>
-          <option value="pnl">P&amp;L</option>
-          <option value="absReturn">Absolute return</option>
-          <option value="xirr">XIRR</option>
-        </select>
-        <button type="button" id="tableSortDir" class="sort-dir" title="Toggle sort direction">↑ Asc</button>
-        <span class="hint" id="tableCount"></span>
-      </div>
-    </div>
-    <div class="tscroll">
-    <table class="resultstable">
-      <thead><tr>
-        <th class="left sortable" data-sort="instrument">Instrument<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="firstDate">First trade<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="qty">Shares<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="investedPrice">Invested / share<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="currentPrice">Current / share<span class="sort-arrow"></span></th>
-        <th>Previous close</th>
-        <th class="sortable" data-sort="todayGain">Today's gain / loss<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="invested">Invested<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="curVal">Current val<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="pnl">P&amp;L<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="absReturn">Abs. return<span class="sort-arrow"></span></th>
-        <th class="sortable" data-sort="xirr">XIRR<span class="sort-arrow"></span></th>
-      </tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    </div>
-  </div>
-
-  <div class="insights-grid" id="insightsGrid" style="display:none;">
-    <div class="insight-card">
-      <div class="insight-head"><div><span class="insight-kicker">Momentum</span><b>Top performers</b></div><span class="insight-icon">↗</span></div>
-      <div id="topPerformers"></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-head"><div><span class="insight-kicker">Watchlist</span><b>Needs attention</b></div><span class="insight-icon danger">↘</span></div>
-      <div id="topLosers"></div>
-    </div>
-  </div>
-
-
-  <div class="allocation-card" id="allocationCard" style="display:none;margin-top:14px;">
-    <div class="allocation-head"><div><b>Top holdings</b><div class="allocation-sub">By current market value</div></div><span class="allocation-sub" id="allocationTotal">—</span></div>
-    <div id="allocationList"></div>
-  </div>
-
-
-  <div class="visual-strip" aria-label="Portfolio visuals">
-    <div class="visual-copy">
-      <div class="section-eyebrow">Portfolio pulse</div>
-      <h3>See the story behind the numbers.</h3>
-      <p>Daily movement, live quotes and your own historical context in one calm workspace.</p>
-      <div class="visual-tags"><span>Angel One</span><span>Google Sheets fallback</span><span>Local data</span></div>
-    </div>
-    <div class="visual-media"><img src="wealthledger-growth.gif" alt="Animated portfolio growth illustration" onerror="this.closest('.visual-media').classList.add('media-failed')"></div>
-    <div class="visual-media visual-media-live"><img src="wealthledger-live.gif" alt="Animated live market pulse" onerror="this.closest('.visual-media-live').classList.add('media-failed')"></div>
-  </div>
-
-  <div class="section-title-row"><h2><span class="num">02</span>Add / import holdings</h2></div>
-  <div class="card">
-    <div class="tabs">
-      <button class="tabbtn active" data-tab="single">Single entry</button>
-      <button class="tabbtn" data-tab="paste">Paste from Excel</button>
-    </div>
-
-    <div class="tabpanel active" data-panel="single">
-      <p class="card-hint">Fill this in and click Add — it lands in the ledger below immediately. The form clears so you can keep entering the next one. Invested and current value are calculated automatically from shares × price.</p>
-      <div class="holdform-grid">
-        <div class="f"><label>Portfolio</label><select id="hfPortfolio" class="sel"></select></div>
-        <div class="f"><label>Symbol</label><input id="hfSymbol" placeholder="e.g. INFY"></div>
-        <div class="f"><label>Broker</label><select id="hfBroker" class="sel"></select></div>
-        <div class="f"><label>Recommended by</label><select id="hfReco" class="sel"></select></div>
-        <div class="f"><label>Trade date</label><input id="hfDate" type="date"></div>
-        <div class="f"><label>Shares</label><input id="hfQty" type="number" step="any"></div>
-        <div class="f"><label>Invested price</label><input id="hfInvestedPrice" type="number" step="any"></div>
-        <div class="f"><label>Dividend</label><input id="hfDividend" type="number" step="any" placeholder="optional"></div>
-        <div class="f"><button class="btn-small" id="hfAdd">+ Add to ledger</button></div>
-      </div>
-      <div class="status-text" id="hfStatus"></div>
-      <datalist id="exList"><option value="NSE"><option value="BSE"></datalist>
-    </div>
-
-    <div class="tabpanel" data-panel="paste">
-      <p class="card-hint">Two formats work here. A flat table — one row per lot with a <code>Symbol</code> column, plus whichever of <code>Portfolio</code>, <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Dividend</code>, <code>Current price</code> you have (unlabeled rows land in the first portfolio). Legacy <code>Expenses</code> values are still accepted during import and are moved to the matching recommendation commission total. Or a per-stock trade history — the stock symbol on its own line, followed by a <code>Date / Type / Quantity / Price</code> table, repeated for as many stocks as you like in one paste; only "buy" rows become holdings (log "sell" rows in the Transactions section instead).</p>
-      <textarea class="pastearea" id="hpArea" placeholder="Paste your holdings table here, header row included..."></textarea>
-      <button class="btn-small" id="hpParseBtn" style="margin-top:10px;">+ Add pasted rows to ledger</button>
-      <div class="status-text" id="hpStatus"></div>
-    </div>
-  </div>
-
-  <div class="section-title-row">
-    <h2><span class="num">03</span>Holdings</h2>
-    <button class="chevron-btn" id="ledgerToggleBtn" title="Collapse this section" aria-expanded="true">▾</button>
-  </div>
-  <div class="card commission-card" id="commissionCard">
-    <div class="commission-head">
-      <div>
-        <div class="section-eyebrow">Recommendation costs</div>
-        <h3>Commissions by Recommended by</h3>
-        <p>Individual stock P&amp;L stays <b>gross</b>. These totals are included only in XIRR when you filter by Recommended by, and in the recommendation report. Because this row stores a total amount only, XIRR treats the commission as a current-date cash cost.</p>
-      </div>
-      <div class="commission-pill">XIRR only</div>
-    </div>
-    <div id="commissionGrid" class="commission-grid"></div>
-    <div class="commission-foot" id="commissionFoot">Enter the total commission paid for each recommendation.</div>
-  </div>
-  <div class="card">
-    <p class="card-hint">Everything you've added lands here — this is the only place values can be edited. Click any cell to change it; Invested, Current value, Price change, % change and Profit recalculate automatically. To sell, check the box on the lot(s) you're selling — one lot or several of the same stock — then click <b>Sell selected</b> below.</p>
-    <div id="ledgerCollapsible">
-      <div class="inline-row" style="margin-bottom:10px;">
-        <button class="btn-small" id="sellSelectedBtn" disabled>Sell selected (0)</button>
-        <span class="status-text" id="selectStatus" style="margin:0;"></span>
-      </div>
-      <div class="tscroll">
-        <table class="holdings-table">
-          <thead>
-            <tr>
-              <th style="width:30px;"></th>
-              <th class="left">Portfolio</th>
-              <th class="left">Symbol</th>
-              <th class="left">Broker</th><th class="left">Recommended by</th><th class="left">Trade date</th>
-              <th>Shares</th><th>Invested price</th><th>Invested</th>
-              <th>Current price</th><th>Current value</th>
-              <th>Price change</th><th>% change</th><th>Dividend</th><th>Profit</th><th></th>
-            </tr>
-          </thead>
-          <tbody id="holdBody"></tbody>
-        </table>
-      </div>
-      <div class="status-text" id="holdStatus"></div>
-    </div>
-  </div>
-
-  <div id="sellModalOverlay" class="modal-overlay" style="display:none;">
-    <div class="modal-card">
-      <div class="modal-head">
-        <b id="sellModalTitle">Sell shares</b>
-        <button class="modal-close" id="sellModalClose">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="f"><label>Shares sold</label><input id="sellQty" type="number" step="any"></div>
-        <div class="f"><label>Sold price (₹)</label><input id="sellPrice" type="number" step="any"></div>
-        <div class="f"><label>Sell date</label><input id="sellDate" type="date"></div>
-        <div class="status-text" id="sellModalStatus"></div>
-      </div>
-      <div class="modal-foot">
-        <button class="btn-small ghost" id="sellCancelBtn">Cancel</button>
-        <button class="btn-small" id="sellConfirmBtn">Confirm sale</button>
-      </div>
-    </div>
-  </div>
-
-  </section>
-
-  <section id="viewManage" class="view-panel hidden">
-  <div id="settingsTopAnchor" class="section-anchor"></div>
-  <div id="backupAnchor" class="section-anchor"></div>
-  <div class="card backup-bar">
-    <div class="backup-left">
-      <div class="card-icon">⇅</div>
-      <div>
-        <b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Backup &amp; restore</b>
-        <div class="card-hint" style="margin:2px 0 0;">Autosave stays in this browser on the current site. Use Download backup before moving devices or installing a new version, then Restore on the other copy.</div>
-      </div>
-    </div>
-    <div class="inline-row" style="flex:none;">
-      <button class="btn-small" id="backupBtn">⬇ Download backup</button>
-      <button class="btn-small ghost" id="restoreBtn">⬆ Restore from file</button>
-      <button class="btn-small danger" id="wipeBtn">🗑 Wipe all data</button>
-      <input type="file" id="restoreFile" accept=".json" style="display:none;">
-    </div>
-  </div>
-  <div class="status-text" id="backupStatus" style="margin:-8px 0 2px;"></div>
-  <div class="status-text" id="autosaveStatus" style="margin:0 0 16px; color:var(--text-faint);"></div>
-
-  <div class="card backup-bar" id="portfolioBar">
-    <div class="backup-left">
-      <div class="card-icon">◧</div>
-      <div>
-        <b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Portfolios</b>
-        <div class="card-hint" style="margin:2px 0 8px;">Keep everyone's holdings in one place, tagged by whose portfolio they belong to. Pick a portfolio when adding a holding, and use the filter below the results table to view one person's numbers — or leave it on "All" for the combined total.</div>
-        <div class="inline-row" id="portfolioChips" style="margin-bottom:0;"></div>
-      </div>
-    </div>
-    <div class="inline-row" style="flex:none;">
-      <input class="text-input" id="newPortfolioInput" placeholder="e.g. Spouse" style="width:150px;">
-      <button class="btn-small" id="addPortfolioBtn">+ Add portfolio</button>
-    </div>
-  </div>
-  <div class="status-text" id="portfolioStatus" style="margin:-8px 0 16px;"></div>
-
-
-  <div id="angelAnchor" class="section-anchor"></div>
-  <div class="section-title-row"><h2><span class="num">03</span>Angel One SmartAPI</h2></div>
-  <div class="card provider-card">
-    <div class="provider-head">
-      <div>
-        <div class="provider-kicker">PRIMARY MARKET DATA</div>
-        <h3>Angel One current prices &amp; history</h3>
-        <p class="card-hint" style="margin:4px 0 0;">Equity - WealthLedger can use a small secure Worker as the bridge to Angel One. Your Angel credentials stay in the Worker — never in this public page. Google Sheets remains available as a fallback.</p>
-      </div>
-      <span class="provider-badge" id="angelStatusBadge">Not connected</span>
-    </div>
-    <div class="inline-row" style="margin-top:14px;">
-      <input class="text-input" id="angelApiUrl" style="flex:1; min-width:260px;" placeholder="https://your-worker.your-subdomain.workers.dev" autocomplete="off">
-      <select class="sel" id="angelExchange" style="width:180px;"><option value="AUTO">Auto (NSE → BSE)</option><option value="NSE">NSE only</option><option value="BSE">BSE only</option></select>
-      <button class="btn-small" id="angelTestBtn">Test connection</button>
-    </div>
-    <div class="status-text" id="angelStatusText"></div>
-    <div class="mapbox" style="margin-top:12px;">
-      <b>One-time Worker setup</b>
-      <div style="margin-top:8px;line-height:1.7;">
+<header class="wl-header">
+<div class="wl-brand">
+<div aria-hidden="true" class="wl-logo"><span></span><span></span><span></span><span></span></div>
+<div><strong>Equity - WealthLedger</strong><small>TRACK · INVEST · GROW</small></div>
+</div>
+<nav aria-label="Primary navigation" class="wl-mainnav" id="appNav">
+<button class="nav-btn active" data-view="dashboard">Dashboard</button>
+<button class="nav-btn" data-view="holdings">Holdings</button>
+<button class="nav-btn" data-view="activity">Transactions</button>
+<button class="nav-btn" data-view="reports">Reports</button>
+<button class="nav-btn" data-view="manage">Settings</button>
+<button class="nav-btn" data-view="help">Help</button>
+</nav>
+<div class="wl-header-tools">
+<div class="wl-live"><i></i><b>Live Market</b><small>NSE · BSE</small></div>
+<div aria-label="Theme" class="theme-toggle wl-theme"><button class="active" id="btnLight">☀</button><button id="btnDark">☾</button></div>
+</div>
+</header><div aria-label="Market today" class="wl-market-ticker">
+<div><b>Market Today</b></div>
+<div><b>NIFTY 50</b><span id="tickerNifty">—</span><em class="ticker-up" id="tickerNiftyMove">▲ —</em></div>
+<i class="ticker-sep"></i>
+<div><b>SENSEX</b><span id="tickerSensex">—</span><em class="ticker-up" id="tickerSensexMove">▲ —</em></div>
+<i class="ticker-sep"></i>
+<div><b>BANK NIFTY</b><span id="tickerBankNifty">—</span><em class="ticker-up" id="tickerBankNiftyMove">▲ —</em></div>
+<i class="ticker-sep"></i>
+<div aria-label="Your portfolio daily movers" class="portfolio-ticker-group">
+<b>MY PORTFOLIO</b>
+<strong class="portfolio-ticker-total" id="tickerPortfolioGain">Today —</strong>
+<span class="portfolio-ticker-coverage" id="tickerPortfolioCoverage">Previous close pending</span>
+<div class="portfolio-movers-viewport"><div class="portfolio-movers-track" id="portfolioTickerItems"><span class="portfolio-mover-empty">Refresh portfolio prices to load stock movers</span></div></div>
+</div>
+<div class="ticker-meta"><span id="tickerUpdated">Live market connected</span><button id="tickerRefresh">↻ Refresh</button></div>
+</div>
+<section class="view-panel" id="viewDashboard"><div class="wl-terminal-layout"><aside aria-label="Market watchlist" class="wl-watchlist-card">
+<div class="wl-watchlist-head">
+<div class="wl-watchlist-kicker">MARKET WATCH</div>
+<div class="wl-watchlist-title-row"><h2>Watchlist</h2><span class="wl-watchlist-count" id="watchlistCount">0 stocks</span></div>
+<p>Portfolio holdings and stocks you follow</p>
+<label class="wl-watchlist-search"><span aria-hidden="true">⌕</span><input aria-label="Filter watchlist" id="watchlistSearch" placeholder="Filter watchlist" type="search"/></label>
+</div>
+<div class="wl-watchlist-add" role="group" aria-label="Add a stock to watchlist">
+<input aria-label="Stock symbol or company name" id="watchlistAddSymbol" placeholder="Symbol / company name" maxlength="40" autocomplete="off"/>
+<select id="watchlistAddExchange" aria-label="Exchange for watchlist stock"><option value="AUTO">Auto</option><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
+<button id="watchlistAddBtn" type="button">+ Add</button>
+<div aria-live="polite" class="wl-watchlist-add-status" id="watchlistAddStatus">Lookup uses your connected Angel One Worker. Exact NSE/BSE trading symbols are the most reliable.</div>
+</div>
+<div aria-live="polite" class="wl-watchlist-list" id="watchlistList">
+<div class="wl-watchlist-empty">Your portfolio stocks will appear here after refresh.</div>
+</div>
+<div class="wl-watchlist-foot"><span class="wl-watchlist-dot"></span> Holdings affect portfolio totals; watch-only stocks do not. <button id="watchlistRefreshBtn" type="button" style="margin-left:auto;border:0;background:transparent;color:var(--brand);font:700 8px Inter,sans-serif;cursor:pointer;white-space:nowrap">↻ Refresh quotes</button></div>
+</aside><div class="wl-portfolio-pane"><div class="section-title-row portfolio-primary-title"><div><div class="section-eyebrow">Portfolio</div><h2>Portfolio overview</h2></div><div class="live-dot"><span></span> Live view</div></div><div class="card dashboard-update">
+<div class="update-date"><span class="k">Valuation date</span><input id="valDate" type="date"/></div>
+<div class="update-status"><span class="k">Portfolio update</span><div class="v" id="combinedStatus">Ready to refresh prices and calculate.</div></div>
+<button class="refresh-btn" id="refreshCalcBtn">↻ Refresh prices &amp; calculate</button>
+<button id="calcBtn" style="display:none;">Calculate returns</button>
+</div><div class="warnbox" id="warnBox" style="display:none;"></div><div class="stats-row" id="statsRow">
+<div class="stat"><div class="k">Invested</div><div class="v" id="sumInvested">—</div></div>
+<div class="stat"><div class="k">Current value</div><div class="v" id="sumCurrent">—</div></div>
+<div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="sumPnl">—</div></div>
+<div class="stat"><div class="k">Today's gain / loss</div><div class="v" id="sumTodayGain">—</div><div class="stat-note" id="todayGainNote">Compared with previous trading close</div></div>
+<div class="stat"><div class="k">Absolute return</div><div class="v" id="sumAbs">—</div></div>
+<div class="stat brand"><div class="k">Portfolio XIRR</div><div class="v" id="sumXirr">—</div><div class="xirr-note" id="sumXirrNote"></div></div>
+</div><div class="filterbar" id="filterBarPortfolio"></div><div class="filterbar" id="filterBarBroker"></div><div class="filterbar" id="filterBarReco"></div><div class="tablewrap" id="tableWrap">
+<div class="table-toolbar">
+<div class="sort-controls">
+<span class="sort-label">Sort by</span>
+<select aria-label="Sort holdings by" class="sort-select" id="tableSortSelect">
+<option value="">Default order</option>
+<option value="instrument">Instrument</option>
+<option value="firstDate">First trade</option>
+<option value="qty">Shares</option>
+<option value="investedPrice">Invested / share</option>
+<option value="currentPrice">Current / share</option>
+<option value="todayGain">Today's gain / loss</option>
+<option value="invested">Invested</option>
+<option value="curVal">Current value</option>
+<option value="pnl">P&amp;L</option>
+<option value="absReturn">Absolute return</option>
+<option value="xirr">XIRR</option>
+</select>
+<button class="sort-dir" id="tableSortDir" title="Toggle sort direction" type="button">↑ Asc</button>
+<span class="hint" id="tableCount"></span>
+</div>
+<button class="wl-columns-toggle" id="togglePortfolioCols" type="button">More columns</button></div>
+<div class="tscroll">
+<table class="resultstable">
+<thead><tr>
+<th class="left sortable" data-sort="instrument">Instrument<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="firstDate">First trade<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="qty">Shares<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="investedPrice">Invested / share<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="currentPrice">Current / share<span class="sort-arrow"></span></th>
+<th>Previous close</th>
+<th class="sortable" data-sort="todayGain">Today's gain / loss<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="invested">Invested<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="curVal">Current val<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="pnl">P&amp;L<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="absReturn">Abs. return<span class="sort-arrow"></span></th>
+<th class="sortable" data-sort="xirr">XIRR<span class="sort-arrow"></span></th>
+</tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+</div></div></div></section><section class="view-panel hidden" id="viewHoldings">
+<div class="wl-tab-heading"><div><div class="section-eyebrow">YOUR DATA</div><h2>Holdings</h2><p>Add stocks, import lots, and edit your holdings ledger.</p></div></div>
+<div class="wl-subsection-title"><h3>Add or import holdings</h3><p>Enter a new stock or paste your existing spreadsheet rows.</p></div><div class="card">
+<div class="tabs">
+<button class="tabbtn active" data-tab="single">Single entry</button>
+<button class="tabbtn" data-tab="paste">Paste from Excel</button>
+</div>
+<div class="tabpanel active" data-panel="single">
+<p class="card-hint">Fill this in and click Add — it lands in the ledger below immediately. The form clears so you can keep entering the next one. Invested and current value are calculated automatically from shares × price.</p>
+<div class="holdform-grid">
+<div class="f"><label>Portfolio</label><select class="sel" id="hfPortfolio"></select></div>
+<div class="f"><label>Symbol</label><input id="hfSymbol" placeholder="e.g. INFY"/></div>
+<div class="f"><label>Broker</label><select class="sel" id="hfBroker"></select></div>
+<div class="f"><label>Recommended by</label><select class="sel" id="hfReco"></select></div>
+<div class="f"><label>Trade date</label><input id="hfDate" type="date"/></div>
+<div class="f"><label>Shares</label><input id="hfQty" step="any" type="number"/></div>
+<div class="f"><label>Invested price</label><input id="hfInvestedPrice" step="any" type="number"/></div>
+<div class="f"><label>Dividend</label><input id="hfDividend" placeholder="optional" step="any" type="number"/></div>
+<div class="f"><button class="btn-small" id="hfAdd">+ Add to ledger</button></div>
+</div>
+<div class="status-text" id="hfStatus"></div>
+<datalist id="exList"><option value="NSE"><option value="BSE"></option></option></datalist>
+</div>
+<div class="tabpanel" data-panel="paste">
+<p class="card-hint">Two formats work here. A flat table — one row per lot with a <code>Symbol</code> column, plus whichever of <code>Portfolio</code>, <code>Broker</code>, <code>Recommended by</code>, <code>Trade date</code>, <code>Shares</code>, <code>Invested price</code>, <code>Dividend</code>, <code>Current price</code> you have (unlabeled rows land in the first portfolio). Legacy <code>Expenses</code> values are still accepted during import and are moved to the matching recommendation commission total. Or a per-stock trade history — the stock symbol on its own line, followed by a <code>Date / Type / Quantity / Price</code> table, repeated for as many stocks as you like in one paste; only "buy" rows become holdings (log "sell" rows in the Transactions section instead).</p>
+<textarea class="pastearea" id="hpArea" placeholder="Paste your holdings table here, header row included..."></textarea>
+<button class="btn-small" id="hpParseBtn" style="margin-top:10px;">+ Add pasted rows to ledger</button>
+<div class="status-text" id="hpStatus"></div>
+</div>
+</div><div class="section-title-row">
+<h2>Holdings ledger</h2>
+<button aria-expanded="true" class="chevron-btn" id="ledgerToggleBtn" title="Collapse this section">▾</button>
+</div><div class="card commission-card" id="commissionCard">
+<div class="commission-head">
+<div>
+<div class="section-eyebrow">Recommendation costs</div>
+<h3>Commissions by Recommended by</h3>
+<p>Individual stock P&amp;L stays <b>gross</b>. These totals are included only in XIRR when you filter by Recommended by, and in the recommendation report. Because this row stores a total amount only, XIRR treats the commission as a current-date cash cost.</p>
+</div>
+<div class="commission-pill">XIRR only</div>
+</div>
+<div class="commission-grid" id="commissionGrid"></div>
+<div class="commission-foot" id="commissionFoot">Enter the total commission paid for each recommendation.</div>
+</div><div class="card">
+<p class="card-hint">Everything you've added lands here — this is the only place values can be edited. Click any cell to change it; Invested, Current value, Price change, % change and Profit recalculate automatically. To sell, check the box on the lot(s) you're selling — one lot or several of the same stock — then click <b>Sell selected</b> below.</p>
+<div id="ledgerCollapsible">
+<div class="inline-row" style="margin-bottom:10px;">
+<button class="btn-small" disabled="" id="sellSelectedBtn">Sell selected (0)</button>
+<span class="status-text" id="selectStatus" style="margin:0;"></span>
+</div>
+<div class="tscroll">
+<table class="holdings-table">
+<thead>
+<tr>
+<th style="width:30px;"></th>
+<th class="left">Portfolio</th>
+<th class="left">Symbol</th>
+<th class="left">Broker</th><th class="left">Recommended by</th><th class="left">Trade date</th>
+<th>Shares</th><th>Invested price</th><th>Invested</th>
+<th>Current price</th><th>Current value</th>
+<th>Price change</th><th>% change</th><th>Dividend</th><th>Profit</th><th></th>
+</tr>
+</thead>
+<tbody id="holdBody"></tbody>
+</table>
+</div>
+<div class="status-text" id="holdStatus"></div>
+</div>
+</div><div class="modal-overlay" id="sellModalOverlay" style="display:none;">
+<div class="modal-card">
+<div class="modal-head">
+<b id="sellModalTitle">Sell shares</b>
+<button class="modal-close" id="sellModalClose">✕</button>
+</div>
+<div class="modal-body">
+<div class="f"><label>Shares sold</label><input id="sellQty" step="any" type="number"/></div>
+<div class="f"><label>Sold price (₹)</label><input id="sellPrice" step="any" type="number"/></div>
+<div class="f"><label>Sell date</label><input id="sellDate" type="date"/></div>
+<div class="status-text" id="sellModalStatus"></div>
+</div>
+<div class="modal-foot">
+<button class="btn-small ghost" id="sellCancelBtn">Cancel</button>
+<button class="btn-small" id="sellConfirmBtn">Confirm sale</button>
+</div>
+</div>
+</div></section>
+<section class="view-panel hidden" id="viewManage">
+<div class="section-anchor" id="settingsTopAnchor"></div>
+<div class="section-anchor" id="backupAnchor"></div>
+<div class="card backup-bar">
+<div class="backup-left">
+<div class="card-icon">⇅</div>
+<div>
+<b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Backup &amp; restore</b>
+<div class="card-hint" style="margin:2px 0 0;">Autosave stays in this browser on the current site. Use Download backup before moving devices or installing a new version, then Restore on the other copy.</div>
+</div>
+</div>
+<div class="inline-row" style="flex:none;">
+<button class="btn-small" id="backupBtn">⬇ Download backup</button>
+<button class="btn-small ghost" id="restoreBtn">⬆ Restore from file</button>
+<button class="btn-small danger" id="wipeBtn">🗑 Wipe all data</button>
+<input accept=".json" id="restoreFile" style="display:none;" type="file"/>
+</div>
+</div>
+<div class="status-text" id="backupStatus" style="margin:-8px 0 2px;"></div>
+<div class="status-text" id="autosaveStatus" style="margin:0 0 16px; color:var(--text-faint);"></div>
+<div class="card backup-bar" id="portfolioBar">
+<div class="backup-left">
+<div class="card-icon">◧</div>
+<div>
+<b style="font-family:'Space Grotesk',sans-serif; font-size:13.5px; font-weight:600;">Portfolios</b>
+<div class="card-hint" style="margin:2px 0 8px;">Keep everyone's holdings in one place, tagged by whose portfolio they belong to. Pick a portfolio when adding a holding, and use the filter below the results table to view one person's numbers — or leave it on "All" for the combined total.</div>
+<div class="inline-row" id="portfolioChips" style="margin-bottom:0;"></div>
+</div>
+</div>
+<div class="inline-row" style="flex:none;">
+<input class="text-input" id="newPortfolioInput" placeholder="e.g. Spouse" style="width:150px;"/>
+<button class="btn-small" id="addPortfolioBtn">+ Add portfolio</button>
+</div>
+</div>
+<div class="status-text" id="portfolioStatus" style="margin:-8px 0 16px;"></div>
+<div class="section-anchor" id="angelAnchor"></div>
+<div class="section-title-row"><h2><span class="num">03</span>Angel One SmartAPI</h2></div>
+<div class="card provider-card">
+<div class="provider-head">
+<div>
+<div class="provider-kicker">PRIMARY MARKET DATA</div>
+<h3>Angel One current prices &amp; history</h3>
+<p class="card-hint" style="margin:4px 0 0;">Equity - WealthLedger can use a small secure Worker as the bridge to Angel One. Your Angel credentials stay in the Worker — never in this public page. Google Sheets remains available as a fallback.</p>
+</div>
+<span class="provider-badge" id="angelStatusBadge">Not connected</span>
+</div>
+<div class="inline-row" style="margin-top:14px;">
+<input autocomplete="off" class="text-input" id="angelApiUrl" placeholder="https://your-worker.your-subdomain.workers.dev" style="flex:1; min-width:260px;"/>
+<select class="sel" id="angelExchange" style="width:180px;"><option value="AUTO">Auto (NSE → BSE)</option><option value="NSE">NSE only</option><option value="BSE">BSE only</option></select>
+<button class="btn-small" id="angelTestBtn">Test connection</button>
+</div>
+<div class="status-text" id="angelStatusText"></div>
+<div class="mapbox" style="margin-top:12px;">
+<b>One-time Worker setup</b>
+<div style="margin-top:8px;line-height:1.7;">
         Deploy the <code>angel-worker</code> folder from this package to Cloudflare Workers, add the four Angel secrets there, then paste the Worker URL above. The page only calls read-only market-data endpoints. No Angel login, PIN, TOTP, API key, or order API is exposed here.
       </div>
-    <div class="mapbox" style="margin-top:12px;">
-      <b>Stock symbol mappings</b>
-      <div style="margin-top:8px;line-height:1.7;">
+<div class="mapbox" style="margin-top:12px;">
+<b>Stock symbol mappings</b>
+<div style="margin-top:8px;line-height:1.7;">
         Use this when your simple Equity - WealthLedger symbol is different from Angel One's exchange symbol. You can now also choose the <b>Price source</b> per stock: Auto, Angel One only, or Google Sheets only. Example: <code>JYOTI</code> is preset to <b>Google Sheets only</b>, so Angel One will never replace its price with an NSE lookup. <b>Auto-resolved tokens are temporary and are re-checked; only mappings you save here are treated as fixed/manual tokens.</b>
-      </div>
-      <div class="inline-row" style="margin-top:10px;">
-        <input class="text-input" id="angelMapSymbol" placeholder="Equity - WealthLedger symbol e.g. JYOTI" style="flex:1;min-width:220px;">
-        <select class="sel" id="angelMapExchange" style="width:120px;"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
-        <input class="text-input" id="angelMapToken" placeholder="Angel token e.g. 504076" style="width:190px;">
-        <select class="sel" id="angelMapSource" style="width:170px;">
-          <option value="AUTO">Auto source</option>
-          <option value="ANGEL">Angel One only</option>
-          <option value="SHEET">Google Sheets only</option>
-        </select>
-        <button class="btn-small" id="angelMapAdd">+ Save mapping</button>
-      </div>
-      <div class="status-text" id="angelMapStatus"></div>
-      <div class="tscroll" style="margin-top:10px;">
-        <table class="txn-table mapping-table">
-          <thead><tr><th class="left">Symbol</th><th class="left">Exchange</th><th class="left">Angel token</th><th class="left">Price source</th><th></th></tr></thead>
-          <tbody id="angelMapBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div id="dataConnectionsAnchor" class="section-anchor"></div>
-  <div class="section-title-row"><h2><span class="num">04</span>Fallback data connection</h2></div>
-  <div class="card">
-    <p class="card-hint">Google Sheets stays here as a fallback. You do not need to change your existing sheet just to use Angel One. Leave this connected if you want a second price source or a backup when SmartAPI history is temporarily unavailable.</p>
-    <div class="mapbox" style="margin-top:0;">
-      <b>One-time setup</b>
-      <div style="margin-top:8px; line-height:1.7;">
-        In your sheet, keep a <code>Symbol</code> column and a <code>Price</code> column, e.g.<br>
-        <code>=IFERROR(GOOGLEFINANCE(IF(ISBLANK(C2),B2,C2&amp;":"&amp;B2),"price"),"-")</code><br>
+</div>
+<div class="inline-row" style="margin-top:10px;">
+<input class="text-input" id="angelMapSymbol" placeholder="Equity - WealthLedger symbol e.g. JYOTI" style="flex:1;min-width:220px;"/>
+<select class="sel" id="angelMapExchange" style="width:120px;"><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
+<input class="text-input" id="angelMapToken" placeholder="Angel token e.g. 504076" style="width:190px;"/>
+<select class="sel" id="angelMapSource" style="width:170px;">
+<option value="AUTO">Auto source</option>
+<option value="ANGEL">Angel One only</option>
+<option value="SHEET">Google Sheets only</option>
+</select>
+<button class="btn-small" id="angelMapAdd">+ Save mapping</button>
+</div>
+<div class="status-text" id="angelMapStatus"></div>
+<div class="tscroll" style="margin-top:10px;">
+<table class="txn-table mapping-table">
+<thead><tr><th class="left">Symbol</th><th class="left">Exchange</th><th class="left">Angel token</th><th class="left">Price source</th><th></th></tr></thead>
+<tbody id="angelMapBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section-anchor" id="dataConnectionsAnchor"></div>
+<div class="section-title-row"><h2><span class="num">04</span>Fallback data connection</h2></div>
+<div class="card">
+<p class="card-hint">Google Sheets stays here as a fallback. You do not need to change your existing sheet just to use Angel One. Leave this connected if you want a second price source or a backup when SmartAPI history is temporarily unavailable.</p>
+<div class="mapbox" style="margin-top:0;">
+<b>One-time setup</b>
+<div style="margin-top:8px; line-height:1.7;">
+        In your sheet, keep a <code>Symbol</code> column and a <code>Price</code> column, e.g.<br/>
+<code>=IFERROR(GOOGLEFINANCE(IF(ISBLANK(C2),B2,C2&amp;":"&amp;B2),"price"),"-")</code><br/>
         Then paste either link below: the normal address-bar link with <b>Share → "Anyone with the link" → Viewer</b> turned on, or a <b>File → Share → Publish to web → CSV</b> link.
       </div>
-    </div>
-    <div class="inline-row" style="margin-top:12px;">
-      <input class="text-input" id="sheetUrl" style="flex:1; min-width:260px;" value="https://docs.google.com/spreadsheets/d/1MG1-urrfHN5zRtaozDEOl_8a8cUQohjShm4PHH8sLMM/edit?usp=sharing" placeholder="https://docs.google.com/spreadsheets/d/XXXXXXXX/edit#gid=0">
-      <button class="btn-small" id="fetchSheetBtn">Refresh prices only</button>
-    </div>
-    <div class="status-text" id="sheetStatus"></div>
-  </div>
-
-  <div id="priceHistoryAnchor" class="section-anchor"></div>
-  <div class="section-title-row"><h2><span class="num">05</span>Price history &amp; alerts</h2></div>
-  <div class="card">
-    <p class="card-hint">Angel One history is used first when connected. Your existing Date / Close rows in Google Sheets are still supported as a fallback; no second sheet is required.</p>
-    <div class="mapbox" style="margin-top:0;">
-      <b>Sheet layout expected</b>
-      <div style="margin-top:8px; line-height:1.7;">
+</div>
+<div class="inline-row" style="margin-top:12px;">
+<input class="text-input" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/XXXXXXXX/edit#gid=0" style="flex:1; min-width:260px;" value="https://docs.google.com/spreadsheets/d/1MG1-urrfHN5zRtaozDEOl_8a8cUQohjShm4PHH8sLMM/edit?usp=sharing"/>
+<button class="btn-small" id="fetchSheetBtn">Refresh prices only</button>
+</div>
+<div class="status-text" id="sheetStatus"></div>
+</div>
+<div class="section-anchor" id="priceHistoryAnchor"></div>
+<div class="section-title-row"><h2><span class="num">05</span>Price history &amp; alerts</h2></div>
+<div class="card">
+<p class="card-hint">Angel One history is used first when connected. Your existing Date / Close rows in Google Sheets are still supported as a fallback; no second sheet is required.</p>
+<div class="mapbox" style="margin-top:0;">
+<b>Sheet layout expected</b>
+<div style="margin-top:8px; line-height:1.7;">
         Your existing layout is supported: each stock row contains the <code>Symbol</code> in column B and current <code>Price</code> in column F. Use the currently blank <b>column G</b> for <code>Previous Close</code> (the last completed trading session's close). Keep the existing Date / Close history in column H onward; do not insert or shift columns. Example: <code>F = current price</code>, <code>G = previous close</code>, <code>H = Date / Close labels</code>.
       </div>
-    </div>
-    <div class="inline-row" style="margin-top:12px;">
-      <span class="status-text" id="historyStatus" style="margin:0;">History is checked automatically when you refresh the portfolio.</span>
-    </div>
-    <div class="inline-row" style="margin-top:12px;">
-      <div class="field compact-setting"><label>1 day alert %</label><input class="text-input" id="alert1d" type="number" min="0" step="0.1" value="5"></div>
-      <div class="field compact-setting"><label>3 day alert %</label><input class="text-input" id="alert3d" type="number" min="0" step="0.1" value="10"></div>
-      <div class="field compact-setting"><label>7 day alert %</label><input class="text-input" id="alert7d" type="number" min="0" step="0.1" value="20"></div>
-      <div class="field compact-setting"><label>14 day alert %</label><input class="text-input" id="alert14d" type="number" min="0" step="0.1" value="30"></div>
-      <div class="field compact-setting"><label>30 day alert %</label><input class="text-input" id="alert30d" type="number" min="0" step="0.1" value="40"></div>
-    </div>
-  </div>
-
-
-  </section>
-
-  <section id="viewActivity" class="view-panel hidden">
-  <div id="activityTopAnchor" class="section-anchor"></div>
-  <div id="transactionsAnchor" class="section-anchor"></div>
-  <div class="section-title-row"><h2><span class="num">06</span>Transactions &amp; realized profit</h2></div>
-  <div id="addTransactionAnchor" class="section-anchor"></div>
-  <div class="card">
-    <p class="card-hint">Log a buy or sell by hand. A <b>Buy</b> is automatically added to Holdings, while a <b>Sell</b> reduces the matching holding lots FIFO and is included in realized profit. You can still edit the holdings ledger directly below.</p>
-    <div class="mapbox" style="margin-top:0;">
+</div>
+<div class="inline-row" style="margin-top:12px;">
+<span class="status-text" id="historyStatus" style="margin:0;">History is checked automatically when you refresh the portfolio.</span>
+</div>
+<div class="inline-row" style="margin-top:12px;">
+<div class="field compact-setting"><label>1 day alert %</label><input class="text-input" id="alert1d" min="0" step="0.1" type="number" value="5"/></div>
+<div class="field compact-setting"><label>3 day alert %</label><input class="text-input" id="alert3d" min="0" step="0.1" type="number" value="10"/></div>
+<div class="field compact-setting"><label>7 day alert %</label><input class="text-input" id="alert7d" min="0" step="0.1" type="number" value="20"/></div>
+<div class="field compact-setting"><label>14 day alert %</label><input class="text-input" id="alert14d" min="0" step="0.1" type="number" value="30"/></div>
+<div class="field compact-setting"><label>30 day alert %</label><input class="text-input" id="alert30d" min="0" step="0.1" type="number" value="40"/></div>
+</div>
+</div>
+</div></section>
+<section class="view-panel hidden" id="viewActivity">
+<div class="section-anchor" id="activityTopAnchor"></div>
+<div class="section-anchor" id="transactionsAnchor"></div>
+<div class="section-title-row"><h2><span class="num">06</span>Transactions &amp; realized profit</h2></div>
+<div class="section-anchor" id="addTransactionAnchor"></div>
+<div class="card">
+<p class="card-hint">Log a buy or sell by hand. A <b>Buy</b> is automatically added to Holdings, while a <b>Sell</b> reduces the matching holding lots FIFO and is included in realized profit. You can still edit the holdings ledger directly below.</p>
+<div class="mapbox" style="margin-top:0;">
       You can use your own short symbol in <b>Instrument</b>. For a stock whose Angel One symbol differs, add an exchange/token mapping in Settings → Angel One SmartAPI. For example, <code>JYOTI</code> can map to <code>BSE</code> token <code>504076</code> while the portfolio continues to display <code>JYOTI</code>.
     </div>
-    <div class="quickadd-grid quickadd-grid-tx">
-      <div class="f"><label>Instrument</label><input id="txInstrument" placeholder="e.g. INFY" list="txInstrumentList"><datalist id="txInstrumentList"></datalist></div>
-      <div class="f"><label>Portfolio</label><select id="txPortfolio" class="sel"></select></div>
-      <div class="f"><label>Broker</label><select id="txBroker" class="sel"></select></div>
-      <div class="f"><label>Recommended by</label><select id="txReco" class="sel"></select></div>
-      <div class="f"><label>Type</label><select id="txType" class="sel"><option value="buy">Buy</option><option value="sell">Sell</option></select></div>
-      <div class="f"><label>Date</label><input id="txDate" type="date"></div>
-      <div class="f"><label>Qty</label><input id="txQty" type="number" step="any" placeholder="0"></div>
-      <div class="f"><label>Price (₹)</label><input id="txPrice" type="number" step="any" placeholder="0"></div>
-      <div class="f"><div class="inline-row"><button class="btn-small" id="txAdd">+ Add</button><button class="btn-small ghost" id="txCancelEdit" style="display:none;">Cancel edit</button></div></div>
-    </div>
-    <div class="status-text" id="txStatus"></div>
-    <div class="tscroll" style="margin-top:14px;">
-      <table class="txn-table" id="txnTableEl" style="display:none;">
-        <thead><tr><th class="left">Instrument</th><th class="left">Broker</th><th class="left">Type</th><th class="left">Date</th><th>Qty</th><th>Price</th><th>Value</th><th></th></tr></thead>
-        <tbody id="txnBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="filterbar" id="recoPortfolioBar"></div>
-
-  <div id="realizedAnchor" class="section-anchor"></div>
-  <div class="card" id="recoStockCard" style="display:none;">
-    <div class="card-head"><div class="card-icon">◆</div><b>XIRR &amp; P&amp;L by recommendation</b></div>
-    <p class="card-hint">One place to understand recommendation performance. This single report combines recommender totals with stock-level detail. XIRR uses dated Buy/Sell cash flows plus the value of shares still held. Manually-entered holdings remain included when sold from Holdings. If no stable valid annualized rate can be solved, XIRR is shown as n/a.</p>
-
-    <div class="stats-row show stats-row-3col">
-      <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
-      <div class="stat"><div class="k">Winning sells</div><div class="v gain" id="realWins">—</div></div>
-      <div class="stat"><div class="k">Losing sells</div><div class="v loss" id="realLosses">—</div></div>
-    </div>
-
-    <div class="tabs">
-      <button class="tabbtn active" data-tab="byReco">By recommendation</button>
-      <button class="tabbtn" data-tab="byTxn">By transaction</button>
-    </div>
-
-    <div class="tabpanel active" data-panel="byReco">
-      <div class="mini-section-head"><b>Recommendation summary</b><span class="card-hint">Blended XIRR uses dated cash flows, not an average of stock percentages.</span></div>
-      <div class="tscroll">
-        <table class="compact-table">
-          <thead><tr><th class="left">Recommended by</th><th>Realized P&amp;L</th><th>Unrealized P&amp;L</th><th>Total</th><th>XIRR</th><th></th></tr></thead>
-          <tbody id="recoSummaryBody"></tbody>
-        </table>
-      </div>
-
-      <div class="mini-section-head" style="margin-top:18px;"><b>Stock detail</b><span class="card-hint">Includes open and sold-out stocks under each recommendation.</span></div>
-      <div class="inline-row" style="margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-        <label class="broker-label" style="margin:0; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Show:</label>
-        <select class="sel" id="recoStockFilter"><option value="__all__">All recommenders</option></select>
-        <span class="sort-label">Sort by</span>
-        <select class="sel" id="recoSortSelect" aria-label="Sort recommendation report by">
-          <option value="reco">Recommended by</option>
-          <option value="symbol">Stock</option>
-          <option value="qty">Shares left</option>
-          <option value="invested">Invested</option>
-          <option value="curVal">Current value</option>
-          <option value="unrealizedPnl">Unrealized P&amp;L</option>
-          <option value="realizedPnl">Realized P&amp;L</option>
-          <option value="totalPnl">Total P&amp;L</option>
-          <option value="xirrVal">XIRR</option>
-        </select>
-        <button type="button" id="recoSortDir" class="sort-dir" title="Toggle sort direction">↑ Asc</button>
-      </div>
-      <div class="tscroll">
-        <table class="resultstable" style="min-width:820px;">
-          <thead><tr><th class="left reco-sort" data-reco-sort="reco">Recommended by<span class="sort-arrow"></span></th><th class="left reco-sort" data-reco-sort="symbol">Stock<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="qty">Shares left<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="invested">Invested<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="curVal">Current val<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="unrealizedPnl">Unrealized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="realizedPnl">Realized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="totalPnl">Total P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="xirrVal">XIRR<span class="sort-arrow"></span></th></tr></thead>
-          <tbody id="recoStockBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="tabpanel" data-panel="byTxn">
-      <div class="mini-section-head"><b>Realized sales</b><span class="card-hint">FIFO-matched sells from your transaction history.</span></div>
-      <div class="tscroll">
-        <table class="txn-table">
-          <thead><tr><th class="left">Instrument</th><th class="left">Sell date</th><th>Qty sold</th><th>Sell price</th><th>Avg. buy price</th><th>Realized P&amp;L</th><th>Return %</th></tr></thead>
-          <tbody id="realizedBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  </section>
-
-  <section id="viewReports" class="view-panel hidden">
-    <div class="section-title-row">
-      <div><div class="section-eyebrow">Reports</div><h2>Portfolio reports</h2></div>
-      <div class="live-dot"><span></span> From your current data</div>
-    </div>
-    <div class="stats-row show stats-row-3col">
-      <div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="reportNetPnl">—</div></div>
-      <div class="stat"><div class="k">Portfolio XIRR</div><div class="v brand" id="reportXirr">—</div></div>
-      <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="reportRealized">—</div></div>
-    </div>
-    <div class="insights-grid">
-      <div class="card insight-card">
-        <div class="card-head"><div class="card-icon">◆</div><b>Realized profit &amp; loss</b></div>
-        <p class="card-hint">Review booked gains and losses from your sell transactions. This uses the same FIFO calculation as the detailed report.</p>
-        <button class="btn-small" id="openRealizedReportBtn">Open realized report →</button>
-      </div>
-      <div class="card insight-card">
-        <div class="card-head"><div class="card-icon">▥</div><b>Portfolio allocation</b></div>
-        <p class="card-hint">See where your current portfolio value sits across your holdings and portfolios.</p>
-        <button class="btn-small" id="openAllocationReportBtn">Open portfolio view →</button>
-      </div>
-      <div class="card insight-card">
-        <div class="card-head"><div class="card-icon">↗</div><b>Recommendation performance</b></div>
-        <p class="card-hint">Compare realized and unrealized results by recommender using the existing XIRR analysis.</p>
-        <button class="btn-small" id="openRecoReportBtn">Open recommendation report →</button>
-      </div>
-    </div>
-    <div class="card" style="margin-top:14px;">
-      <div class="card-head"><div class="card-icon">✓</div><b>What this tab is for</b></div>
-      <p class="card-hint">Reports is the place for analysis rather than data entry: realized P&amp;L, XIRR, portfolio allocation and recommendation-level performance all use the same data you maintain in Holdings and Transactions.</p>
-    </div>
-  </section>
-
-  <section id="viewHelp" class="view-panel hidden">
-    <div id="helpTopAnchor" class="section-anchor"></div>
-    <div class="section-title-row">
-      <div><div class="section-eyebrow">Help</div><h2>How WealthLedger works</h2></div>
-      <div class="live-dot"><span></span> Local-first</div>
-    </div>
-    <div class="insights-grid">
-      <div class="card insight-card"><div class="card-head"><div class="card-icon">1</div><b>Enter your transactions</b></div><p class="card-hint">Add a Buy in Transactions. WealthLedger synchronizes it into Holdings and rebuilds FIFO automatically. Sells reduce holdings and feed the realized report.</p></div>
-      <div class="card insight-card"><div class="card-head"><div class="card-icon">2</div><b>Refresh market data</b></div><p class="card-hint">Use Refresh prices &amp; calculate to fetch current prices from Angel One. When Angel One is unavailable, Google Sheets remains the fallback.</p><button class="btn-small" id="helpRefreshBtn">Go to portfolio refresh →</button></div>
-      <div class="card insight-card"><div class="card-head"><div class="card-icon">3</div><b>Back up your data</b></div><p class="card-hint">Download a JSON backup before changing browsers or devices. Restore that file on the other copy.</p><button class="btn-small" id="helpBackupBtn">Open backup &amp; restore →</button></div>
-      <div class="card insight-card"><div class="card-head"><div class="card-icon">?</div><b>Angel One connection</b></div><p class="card-hint">The public page never stores your Angel credentials. The Cloudflare Worker holds the secrets and exposes only the read-only market-data bridge.</p><button class="btn-small" id="helpAngelBtn">Open Angel One setup →</button></div>
-    </div>
-    <div class="card" style="margin-top:14px;">
-      <div class="card-head"><div class="card-icon">⚙</div><b>Common troubleshooting</b></div>
-      <div class="card-hint" style="line-height:1.8;">
-        <b>Angel One says connection error:</b> test <code>/api/health</code> on your Worker first. If it reports an active session, use the production site rather than opening the HTML as a <code>file://</code> URL.
-        <br><b>Prices are blank:</b> check the Worker URL in Settings, then run Refresh prices &amp; calculate.
-        <br><b>A newly added Buy is missing:</b> check Transactions for the saved Buy, then return to Portfolio; the holding is rebuilt from the transaction history.
-      </div>
-    </div>
-  </section>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <div class="foot">Absolute return and each stock's Profit use the gross stock cost (shares × invested price) and current value. Recommendation commissions are kept separate and are included only in XIRR when a Recommended by filter/report is applied. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. Market data can be refreshed through the secure Angel One Worker bridge; Google Sheets remains supported as a browser-friendly fallback and needs the sheet link-shared as viewable. Reports uses the same local Holdings and Transactions data for realized P&L, XIRR, allocation and recommendation analysis. Help explains the main workflows and troubleshooting steps.</div>
-
+<div class="quickadd-grid quickadd-grid-tx">
+<div class="f"><label>Instrument</label><input id="txInstrument" list="txInstrumentList" placeholder="e.g. INFY"/><datalist id="txInstrumentList"></datalist></div>
+<div class="f"><label>Portfolio</label><select class="sel" id="txPortfolio"></select></div>
+<div class="f"><label>Broker</label><select class="sel" id="txBroker"></select></div>
+<div class="f"><label>Recommended by</label><select class="sel" id="txReco"></select></div>
+<div class="f"><label>Type</label><select class="sel" id="txType"><option value="buy">Buy</option><option value="sell">Sell</option></select></div>
+<div class="f"><label>Date</label><input id="txDate" type="date"/></div>
+<div class="f"><label>Qty</label><input id="txQty" placeholder="0" step="any" type="number"/></div>
+<div class="f"><label>Price (₹)</label><input id="txPrice" placeholder="0" step="any" type="number"/></div>
+<div class="f"><div class="inline-row"><button class="btn-small" id="txAdd">+ Add</button><button class="btn-small ghost" id="txCancelEdit" style="display:none;">Cancel edit</button></div></div>
 </div>
-
+<div class="status-text" id="txStatus"></div>
+<div class="tscroll" style="margin-top:14px;">
+<table class="txn-table" id="txnTableEl" style="display:none;">
+<thead><tr><th class="left">Instrument</th><th class="left">Broker</th><th class="left">Type</th><th class="left">Date</th><th>Qty</th><th>Price</th><th>Value</th><th></th></tr></thead>
+<tbody id="txnBody"></tbody>
+</table>
+</div>
+</div>
+<div class="filterbar" id="recoPortfolioBar"></div>
+<div class="section-anchor" id="realizedAnchor"></div>
+<div class="card" id="recoStockCard" style="display:none;">
+<div class="card-head"><div class="card-icon">◆</div><b>XIRR &amp; P&amp;L by recommendation</b></div>
+<p class="card-hint">One place to understand recommendation performance. This single report combines recommender totals with stock-level detail. XIRR uses dated Buy/Sell cash flows plus the value of shares still held. Manually-entered holdings remain included when sold from Holdings. If no stable valid annualized rate can be solved, XIRR is shown as n/a.</p>
+<div class="stats-row show stats-row-3col">
+<div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
+<div class="stat"><div class="k">Winning sells</div><div class="v gain" id="realWins">—</div></div>
+<div class="stat"><div class="k">Losing sells</div><div class="v loss" id="realLosses">—</div></div>
+</div>
+<div class="tabs">
+<button class="tabbtn active" data-tab="byReco">By recommendation</button>
+<button class="tabbtn" data-tab="byTxn">By transaction</button>
+</div>
+<div class="tabpanel active" data-panel="byReco">
+<div class="mini-section-head"><b>Recommendation summary</b><span class="card-hint">Blended XIRR uses dated cash flows, not an average of stock percentages.</span></div>
+<div class="tscroll">
+<table class="compact-table">
+<thead><tr><th class="left">Recommended by</th><th>Realized P&amp;L</th><th>Unrealized P&amp;L</th><th>Total</th><th>XIRR</th><th></th></tr></thead>
+<tbody id="recoSummaryBody"></tbody>
+</table>
+</div>
+<div class="mini-section-head" style="margin-top:18px;"><b>Stock detail</b><span class="card-hint">Includes open and sold-out stocks under each recommendation.</span></div>
+<div class="inline-row" style="margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+<label class="broker-label" style="margin:0; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Show:</label>
+<select class="sel" id="recoStockFilter"><option value="__all__">All recommenders</option></select>
+<span class="sort-label">Sort by</span>
+<select aria-label="Sort recommendation report by" class="sel" id="recoSortSelect">
+<option value="reco">Recommended by</option>
+<option value="symbol">Stock</option>
+<option value="qty">Shares left</option>
+<option value="invested">Invested</option>
+<option value="curVal">Current value</option>
+<option value="unrealizedPnl">Unrealized P&amp;L</option>
+<option value="realizedPnl">Realized P&amp;L</option>
+<option value="totalPnl">Total P&amp;L</option>
+<option value="xirrVal">XIRR</option>
+</select>
+<button class="sort-dir" id="recoSortDir" title="Toggle sort direction" type="button">↑ Asc</button>
+</div>
+<div class="tscroll">
+<table class="resultstable" style="min-width:820px;">
+<thead><tr><th class="left reco-sort" data-reco-sort="reco">Recommended by<span class="sort-arrow"></span></th><th class="left reco-sort" data-reco-sort="symbol">Stock<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="qty">Shares left<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="invested">Invested<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="curVal">Current val<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="unrealizedPnl">Unrealized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="realizedPnl">Realized P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="totalPnl">Total P&amp;L<span class="sort-arrow"></span></th><th class="reco-sort" data-reco-sort="xirrVal">XIRR<span class="sort-arrow"></span></th></tr></thead>
+<tbody id="recoStockBody"></tbody>
+</table>
+</div>
+</div>
+<div class="tabpanel" data-panel="byTxn">
+<div class="mini-section-head"><b>Realized sales</b><span class="card-hint">FIFO-matched sells from your transaction history.</span></div>
+<div class="tscroll">
+<table class="txn-table">
+<thead><tr><th class="left">Instrument</th><th class="left">Sell date</th><th>Qty sold</th><th>Sell price</th><th>Avg. buy price</th><th>Realized P&amp;L</th><th>Return %</th></tr></thead>
+<tbody id="realizedBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section class="view-panel hidden" id="viewReports">
+<div class="section-title-row">
+<div><div class="section-eyebrow">Reports</div><h2>Portfolio reports</h2></div>
+<div class="live-dot"><span></span> From your current data</div>
+</div>
+<div class="stats-row show stats-row-3col">
+<div class="stat"><div class="k">Net P&amp;L</div><div class="v" id="reportNetPnl">—</div></div>
+<div class="stat"><div class="k">Portfolio XIRR</div><div class="v brand" id="reportXirr">—</div></div>
+<div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="reportRealized">—</div></div>
+</div>
+<div class="insights-grid">
+<div class="card insight-card">
+<div class="card-head"><div class="card-icon">◆</div><b>Realized profit &amp; loss</b></div>
+<p class="card-hint">Review booked gains and losses from your sell transactions. This uses the same FIFO calculation as the detailed report.</p>
+<button class="btn-small" id="openRealizedReportBtn">Open realized report →</button>
+</div>
+<div class="card insight-card">
+<div class="card-head"><div class="card-icon">▥</div><b>Portfolio allocation</b></div>
+<p class="card-hint">See where your current portfolio value sits across your holdings and portfolios.</p>
+<button class="btn-small" id="openAllocationReportBtn">Open portfolio view →</button>
+</div>
+<div class="card insight-card">
+<div class="card-head"><div class="card-icon">↗</div><b>Recommendation performance</b></div>
+<p class="card-hint">Compare realized and unrealized results by recommender using the existing XIRR analysis.</p>
+<button class="btn-small" id="openRecoReportBtn">Open recommendation report →</button>
+</div>
+</div>
+<div class="card" style="margin-top:14px;">
+<div class="card-head"><div class="card-icon">✓</div><b>What this tab is for</b></div>
+<p class="card-hint">Reports is the place for analysis rather than data entry: realized P&amp;L, XIRR, portfolio allocation and recommendation-level performance all use the same data you maintain in Holdings and Transactions.</p>
+</div>
+<div class="wl-tab-heading wl-analytics-heading"><div><div class="section-eyebrow">MARKET &amp; PORTFOLIO DETAIL</div><h2>Market insights</h2><p>Momentum, recent price trends, top performers, and allocation.</p></div></div>
+<div class="wl-analytics-stack"><div class="momentum-card" id="momentumCard" style="display:none;">
+<div class="momentum-head">
+<div><div class="section-eyebrow">Market signals</div><h3>Price movement alerts</h3><div class="momentum-sub" id="momentumSummary">—</div></div>
+<div class="momentum-badge" id="momentumBadge">0 alerts</div>
+</div>
+<div class="momentum-list" id="momentumList"></div>
+</div><div class="trend-card" id="trendCard" style="display:none;">
+<div class="momentum-head">
+<div><div class="section-eyebrow">Recent price trend</div><h3>1D · 3D · 5D · 7D</h3><div class="momentum-sub" id="trendSummary">Refresh the portfolio to load recent trading-day movements.</div></div>
+</div>
+<div class="trend-table-wrap">
+<table class="trend-table">
+<thead><tr><th class="left">Stock</th><th>1D</th><th>3D</th><th>5D</th><th>7D</th></tr></thead>
+<tbody id="trendBody"></tbody>
+</table>
+</div>
+</div><div class="insights-grid" id="insightsGrid" style="display:none;">
+<div class="insight-card">
+<div class="insight-head"><div><span class="insight-kicker">Momentum</span><b>Top performers</b></div><span class="insight-icon">↗</span></div>
+<div id="topPerformers"></div>
+</div>
+<div class="insight-card">
+<div class="insight-head"><div><span class="insight-kicker">Watchlist</span><b>Needs attention</b></div><span class="insight-icon danger">↘</span></div>
+<div id="topLosers"></div>
+</div>
+</div><div class="allocation-card" id="allocationCard" style="display:none;margin-top:14px;">
+<div class="allocation-head"><div><b>Top holdings</b><div class="allocation-sub">By current market value</div></div><span class="allocation-sub" id="allocationTotal">—</span></div>
+<div id="allocationList"></div>
+</div><div aria-label="Portfolio visuals" class="visual-strip">
+<div class="visual-copy">
+<div class="section-eyebrow">Portfolio pulse</div>
+<h3>See the story behind the numbers.</h3>
+<p>Daily movement, live quotes and your own historical context in one calm workspace.</p>
+<div class="visual-tags"><span>Angel One</span><span>Google Sheets fallback</span><span>Local data</span></div>
+</div>
+<div class="visual-media"><img alt="Animated portfolio growth illustration" onerror="this.closest('.visual-media').classList.add('media-failed')" src="wealthledger-growth.gif"/></div>
+<div class="visual-media visual-media-live"><img alt="Animated live market pulse" onerror="this.closest('.visual-media-live').classList.add('media-failed')" src="wealthledger-live.gif"/></div>
+</div></div>
+</section>
+<section class="view-panel hidden" id="viewHelp">
+<div class="section-anchor" id="helpTopAnchor"></div>
+<div class="section-title-row">
+<div><div class="section-eyebrow">Help</div><h2>How WealthLedger works</h2></div>
+<div class="live-dot"><span></span> Local-first</div>
+</div>
+<div class="insights-grid">
+<div class="card insight-card"><div class="card-head"><div class="card-icon">1</div><b>Enter your transactions</b></div><p class="card-hint">Add a Buy in Transactions. WealthLedger synchronizes it into Holdings and rebuilds FIFO automatically. Sells reduce holdings and feed the realized report.</p></div>
+<div class="card insight-card"><div class="card-head"><div class="card-icon">2</div><b>Refresh market data</b></div><p class="card-hint">Use Refresh prices &amp; calculate to fetch current prices from Angel One. When Angel One is unavailable, Google Sheets remains the fallback.</p><button class="btn-small" id="helpRefreshBtn">Go to portfolio refresh →</button></div>
+<div class="card insight-card"><div class="card-head"><div class="card-icon">3</div><b>Back up your data</b></div><p class="card-hint">Download a JSON backup before changing browsers or devices. Restore that file on the other copy.</p><button class="btn-small" id="helpBackupBtn">Open backup &amp; restore →</button></div>
+<div class="card insight-card"><div class="card-head"><div class="card-icon">?</div><b>Angel One connection</b></div><p class="card-hint">The public page never stores your Angel credentials. The Cloudflare Worker holds the secrets and exposes only the read-only market-data bridge.</p><button class="btn-small" id="helpAngelBtn">Open Angel One setup →</button></div>
+</div>
+<div class="card" style="margin-top:14px;">
+<div class="card-head"><div class="card-icon">⚙</div><b>Common troubleshooting</b></div>
+<div class="card-hint" style="line-height:1.8;">
+<b>Angel One says connection error:</b> test <code>/api/health</code> on your Worker first. If it reports an active session, use the production site rather than opening the HTML as a <code>file://</code> URL.
+        <br/><b>Prices are blank:</b> check the Worker URL in Settings, then run Refresh prices &amp; calculate.
+        <br/><b>A newly added Buy is missing:</b> check Transactions for the saved Buy, then return to Portfolio; the holding is rebuilt from the transaction history.
+      </div>
+</div>
+</section>
+<div aria-live="polite" class="toast" id="toast" role="status"></div>
+<div class="foot">Absolute return and each stock's Profit use the gross stock cost (shares × invested price) and current value. Recommendation commissions are kept separate and are included only in XIRR when a Recommended by filter/report is applied. XIRR treats each row's trade date and invested amount as a dated cash outflow, plus current value on the valuation date as the final inflow — rows without a trade date are excluded from XIRR but still count toward absolute return. Market data can be refreshed through the secure Angel One Worker bridge; Google Sheets remains supported as a browser-friendly fallback and needs the sheet link-shared as viewable. Reports uses the same local Holdings and Transactions data for realized P&amp;L, XIRR, allocation and recommendation analysis. Help explains the main workflows and troubleshooting steps.</div>
+</div>
 <script>
 (function(){
   "use strict";
@@ -1784,7 +1794,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         return saved;
       }catch(e){ return {JYOTI:'SHEET'}; }
     })(),
-    angelLastSource: ''
+    angelLastSource: '',
+    watchOnlySymbols: [] // [{symbol, exchangeMode, exchange, price, previousClose, updatedAt, companyName}]
   };
 
   // ---------- autosave (survives closing the tab / restarting the PC, when
@@ -1809,6 +1820,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       angelTokenMap: state.angelTokenMap,
       angelManualMap: state.angelManualMap,
       priceSourceMap: state.priceSourceMap,
+      watchOnlySymbols: (state.watchOnlySymbols||[]).map(x=>({...x})),
       recoCommissions: state.recoCommissions,
       activeFilters: {
         portfolios: state.activePortfolios === null ? null : Array.from(state.activePortfolios),
@@ -1875,6 +1887,9 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       if(data.angelTokenMap && typeof data.angelTokenMap==='object') state.angelTokenMap = {...state.angelTokenMap,...data.angelTokenMap};
       if(data.angelManualMap && typeof data.angelManualMap==='object') state.angelManualMap = {...state.angelManualMap,...data.angelManualMap};
       if(data.priceSourceMap && typeof data.priceSourceMap==='object') state.priceSourceMap = {...state.priceSourceMap,...data.priceSourceMap};
+      if(Array.isArray(data.watchOnlySymbols)) state.watchOnlySymbols = data.watchOnlySymbols
+        .filter(x=>x && String(x.symbol||'').trim())
+        .map(x=>({symbol:String(x.symbol).trim().toUpperCase(), exchangeMode:['AUTO','NSE','BSE'].includes(String(x.exchangeMode||'AUTO').toUpperCase())?String(x.exchangeMode||'AUTO').toUpperCase():'AUTO', exchange:String(x.exchange||'').toUpperCase(), price:x.price!=null && x.price!=='' && Number.isFinite(Number(x.price))?Number(x.price):null, previousClose:x.previousClose!=null && x.previousClose!=='' && Number.isFinite(Number(x.previousClose))?Number(x.previousClose):null, updatedAt:x.updatedAt||'', companyName:String(x.companyName||'')}));
       if(data.activeFilters && typeof data.activeFilters==='object'){
         const f=data.activeFilters;
         state.activePortfolios=Array.isArray(f.portfolios)?new Set(f.portfolios):null;
@@ -2995,10 +3010,218 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     track.classList.toggle('is-animated',movers.length>1);
   }
 
+
+  // Dashboard watchlist: portfolio holdings are read-only here; watch-only symbols
+  // are a separate persistent list and never enter holdings, valuation, or P&L.
+  let watchlistRows = [];
+  function watchOnlyKey(item){ return symKey(item?.symbol||''); }
+  function renderWatchlist(rows){
+    watchlistRows = Array.isArray(rows) ? rows.slice() : [];
+    const list=$('watchlistList'), count=$('watchlistCount'), search=$('watchlistSearch');
+    if(!list || !count) return;
+    const heldKeys=new Set(state.holdRows.map(r=>symKey(r.symbol)).filter(Boolean));
+    const held=watchlistRows.map(r=>({...r,watchType:'portfolio'}));
+    const watchOnly=(state.watchOnlySymbols||[])
+      .filter(item=>!heldKeys.has(watchOnlyKey(item)))
+      .map(item=>({
+        instrument:item.symbol, currentPrice:item.price!=null && item.price!=='' && Number.isFinite(Number(item.price))?Number(item.price):null,
+        previousClose:item.previousClose!=null && item.previousClose!=='' && Number.isFinite(Number(item.previousClose))?Number(item.previousClose):null,
+        todayPct:item.price!=null && item.previousClose!=null && Number.isFinite(Number(item.price)) && Number.isFinite(Number(item.previousClose)) && Number(item.previousClose)>0 ? ((Number(item.price)-Number(item.previousClose))/Number(item.previousClose))*100 : null,
+        todayGain:item.price!=null && item.previousClose!=null && Number.isFinite(Number(item.price)) && Number.isFinite(Number(item.previousClose)) ? Number(item.price)-Number(item.previousClose) : null,
+        qty:null, watchType:'watch', exchange:item.exchange||item.exchangeMode||'AUTO', companyName:item.companyName||'', updatedAt:item.updatedAt||''
+      }));
+    const all=[...held,...watchOnly];
+    const q=String(search?.value||'').trim().toUpperCase();
+    const filtered=all.filter(r=>!q || String(r.instrument||'').toUpperCase().includes(q) || String(r.companyName||'').toUpperCase().includes(q));
+    count.textContent = `${filtered.length} ${filtered.length===1?'stock':'stocks'}`;
+    if(!filtered.length){
+      list.innerHTML = `<div class="wl-watchlist-empty">${all.length ? 'No matching stocks.' : 'Add a symbol above, or refresh your portfolio to load holdings.'}</div>`;
+      return;
+    }
+    list.innerHTML=filtered.map(r=>{
+      const known=Number.isFinite(r.todayPct);
+      const moveClass=known?(r.todayPct>=0?'ticker-up':'ticker-down'):'wl-no-move';
+      const move=known?`${r.todayPct>=0?'▲':'▼'} ${Math.abs(r.todayPct).toFixed(2)}%`:'—';
+      const day=known?`${r.todayPct>=0?'+':''}${fmtINR2(r.todayGain)}/share`:(r.watchType==='watch'?'Quote pending':'Prev. close pending');
+      const label=r.watchType==='portfolio'?`${fmtQty(r.qty)} shares · PORTFOLIO`:`${escapeAttr(r.exchange||'AUTO')} · WATCH ONLY`;
+      const remove=r.watchType==='watch'?`<button type="button" class="wl-watch-remove" data-remove-watch="${escapeAttr(r.instrument)}" title="Remove ${escapeAttr(r.instrument)} from watchlist" aria-label="Remove ${escapeAttr(r.instrument)}">×</button>`:'';
+      return `<div class="wl-watch-row" data-symbol="${escapeAttr(r.instrument)}">
+        <button type="button" class="wl-watch-select" data-select-symbol="${escapeAttr(r.instrument)}">
+          <span class="wl-watch-main"><b>${escapeAttr(r.instrument)}</b><small class="wl-watch-type">${label}</small></span>
+          <span class="wl-watch-side"><b>${r.currentPrice!=null?fmtINR2(r.currentPrice):'—'}</b><small class="${moveClass}">${move} <i>${day}</i></small></span>
+        </button>${remove}
+      </div>`;
+    }).join('');
+  }
+  $('watchlistSearch')?.addEventListener('input',()=>renderWatchlist(watchlistRows));
+
+  // Retrieve quotes for watch-only symbols through the existing secure Worker.
+  // This uses the same /api/quotes endpoint as portfolio refresh and never touches holdRows.
+  async function fetchWatchOnlyQuotes(targetSymbols=null){
+    const wanted=Array.isArray(targetSymbols)?new Set(targetSymbols.map(symKey)):null;
+    const items=(state.watchOnlySymbols||[]).filter(x=>!wanted || wanted.has(watchOnlyKey(x)));
+    if(!items.length) return {updated:0,failed:0};
+    persistAngelSettings();
+    if(!angelUrl()) throw new Error('Configure the Angel One Worker URL in Settings → Angel One SmartAPI first.');
+    const pending=new Map(items.map(item=>[watchOnlyKey(item),item]));
+    const failures=[];
+
+    async function quoteBatch(batch, exchange){
+      if(!batch.length) return;
+      const tokenEntries=batch.map(item=>{
+        const k=watchOnlyKey(item);
+        return [k,state.angelTokenMap[`${exchange}:${k}`]||''];
+      }).filter(([,token])=>token);
+      const q=new URLSearchParams({exchange,symbols:batch.map(x=>x.symbol).join(','),tokens:JSON.stringify(Object.fromEntries(tokenEntries))});
+      const body=await angelGet('/api/quotes?'+q.toString());
+      const tokenToAlias={};
+      tokenEntries.forEach(([alias,token])=>{tokenToAlias[String(token)]=alias;});
+      (body.mappings||[]).forEach(m=>{
+        const alias=symKey(m.symbol||m.tradingSymbol||m.tradingsymbol);
+        const token=m.token||m.symbolToken;
+        if(alias && token) state.angelTokenMap[`${exchange}:${alias}`]=String(token);
+      });
+      const bySymbol={}, byToken={};
+      (body.data||[]).forEach(row=>{
+        const k=symKey(row.symbol||row.tradingSymbol||row.tradingsymbol);
+        if(k) bySymbol[k]=row;
+        const token=String(row.token||row.symbolToken||'');
+        if(token){byToken[token]=row;if(tokenToAlias[token])bySymbol[tokenToAlias[token]]=row;}
+      });
+      batch.forEach(item=>{
+        const k=watchOnlyKey(item);
+        const token=state.angelTokenMap[`${exchange}:${k}`]||'';
+        let quote=bySymbol[k]||(token?byToken[String(token)]:null);
+        // A one-symbol name lookup can resolve to a different exchange trading symbol.
+        if(!quote && batch.length===1 && (body.data||[]).length===1) quote=body.data[0];
+        const price=Number(quote?.price);
+        if(quote && Number.isFinite(price) && price>0){
+          const resolvedSymbol=String(quote.symbol||quote.tradingSymbol||quote.tradingsymbol||item.symbol).trim().toUpperCase();
+          const prev=extractPreviousClose(quote);
+          item.symbol=resolvedSymbol;
+          item.exchange=exchange;
+          item.price=price;
+          item.previousClose=prev;
+          item.companyName=String(quote.companyName||quote.companyname||quote.name||item.companyName||'');
+          item.updatedAt=new Date().toISOString();
+          pending.delete(k);
+          const resolvedKey=symKey(resolvedSymbol);
+          if(resolvedKey && resolvedKey!==k){
+            const existing=state.angelTokenMap[`${exchange}:${k}`];
+            if(existing) state.angelTokenMap[`${exchange}:${resolvedKey}`]=existing;
+          }
+        }
+      });
+      (body.resolveErrors||[]).forEach(e=>failures.push(`${e.symbol||''}: ${e.message||'not found'}`));
+    }
+
+    // Honor an exchange selected for an instrument. AUTO tries NSE first and BSE next.
+    for(const exchange of ['NSE','BSE']){
+      const batchItems=Array.from(pending.values()).filter(item=>{
+        const mode=String(item.exchangeMode||'AUTO').toUpperCase();
+        return mode==='AUTO' || mode===exchange;
+      });
+      for(let i=0;i<batchItems.length;i+=ANGEL_BATCH_SIZE){
+        const batch=batchItems.slice(i,i+ANGEL_BATCH_SIZE).filter(item=>pending.has(watchOnlyKey(item)));
+        if(!batch.length) continue;
+        try{await quoteBatch(batch,exchange);}
+        catch(err){failures.push(`${exchange}: ${err?.message||'quote request failed'}`);}
+      }
+    }
+    persistAngelSettings();
+    saveToLocalStorage();
+    renderWatchlist(watchlistRows);
+    return {updated:items.length-pending.size,failed:pending.size,failures};
+  }
+
+  async function addWatchOnlySymbol(){
+    const input=$('watchlistAddSymbol'), btn=$('watchlistAddBtn'), status=$('watchlistAddStatus');
+    const raw=String(input?.value||'').trim();
+    if(!raw){if(status)status.textContent='Enter a stock symbol or company name.';return;}
+    // Accept optional NSE:SYMBOL / BSE:SYMBOL prefixes as an exchange hint.
+    let query=raw, mode=String($('watchlistAddExchange')?.value||'AUTO').toUpperCase();
+    const prefixed=raw.match(/^(NSE|BSE)\s*:\s*(.+)$/i);
+    if(prefixed){mode=prefixed[1].toUpperCase();query=prefixed[2].trim();}
+    if(!/^[A-Za-z0-9.&_()\-\s]{1,40}$/.test(query)){if(status)status.textContent='Use an exchange trading symbol or company name.';return;}
+    const normalized=query.toUpperCase();
+    const held=state.holdRows.some(r=>symKey(r.symbol)===symKey(normalized));
+    if(held){if(status)status.textContent=`${normalized} is already in your portfolio and appears in the watchlist automatically.`;return;}
+    let item=state.watchOnlySymbols.find(x=>watchOnlyKey(x)===symKey(normalized));
+    if(!item){
+      item={symbol:normalized,exchangeMode:mode,exchange:'',price:null,previousClose:null,updatedAt:'',companyName:''};
+      state.watchOnlySymbols.push(item);
+    }else{
+      item.exchangeMode=mode;
+    }
+    input.value='';
+    if(btn)btn.disabled=true;
+    if(status)status.textContent=`Looking up ${normalized} on ${mode==='AUTO'?'NSE, then BSE':mode}…`;
+    renderWatchlist(watchlistRows);
+    saveToLocalStorage();
+    try{
+      const result=await fetchWatchOnlyQuotes([normalized]);
+      const resolved=state.watchOnlySymbols.find(x=>watchOnlyKey(x)===symKey(normalized)) || state.watchOnlySymbols.find(x=>x.updatedAt && x.updatedAt===new Date().toISOString());
+      // When a company name resolves to a different exchange symbol, refreshWatchOnlyQuotes
+      // stores the returned trading symbol in-place; find it by the freshly updated quote.
+      if(result.updated){
+        const latest=state.watchOnlySymbols.find(x=>x.updatedAt && Date.now()-new Date(x.updatedAt).getTime()<10000);
+        if(status)status.textContent=`Added ${latest?.symbol||resolved?.symbol||normalized} to watchlist. Quote updated from Angel One${latest?.exchange?` (${latest.exchange})`:''}.`;
+      }else{
+        if(status)status.textContent=`${normalized} was saved, but Angel One did not return a quote. Check the trading symbol or exchange; it will remain in your watchlist.`;
+      }
+    }catch(err){
+      if(status)status.textContent=`Saved ${normalized}, but quote lookup failed: ${err?.message||'unknown error'}`;
+    }finally{
+      if(btn)btn.disabled=false;
+      renderWatchlist(watchlistRows);
+    }
+  }
+  $('watchlistAddBtn')?.addEventListener('click',addWatchOnlySymbol);
+  $('watchlistAddSymbol')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addWatchOnlySymbol();}});
+  $('watchlistRefreshBtn')?.addEventListener('click',async()=>{
+    const btn=$('watchlistRefreshBtn'), status=$('watchlistAddStatus');
+    if(btn)btn.disabled=true;
+    if(status)status.textContent='Refreshing watchlist quotes…';
+    try{
+      const result=await fetchWatchOnlyQuotes();
+      if(status)status.textContent=`Updated ${result.updated} watch-only quote${result.updated===1?'':'s'}${result.failed?`; ${result.failed} unavailable`:''}.`;
+    }catch(err){if(status)status.textContent=err?.message||'Could not refresh watchlist quotes.';}
+    finally{if(btn)btn.disabled=false;}
+  });
+  $('watchlistList')?.addEventListener('click',ev=>{
+    const remove=ev.target.closest('[data-remove-watch]');
+    if(remove){
+      const symbol=String(remove.getAttribute('data-remove-watch')||'');
+      state.watchOnlySymbols=state.watchOnlySymbols.filter(x=>watchOnlyKey(x)!==symKey(symbol));
+      saveToLocalStorage();renderWatchlist(watchlistRows);
+      if($('watchlistAddStatus'))$('watchlistAddStatus').textContent=`Removed ${symbol} from watchlist. Your holdings are unchanged.`;
+      return;
+    }
+    const button=ev.target.closest('[data-select-symbol]');
+    if(!button) return;
+    const symbol=String(button.dataset.selectSymbol||'').toUpperCase();
+    $('watchlistList').querySelectorAll('.wl-watch-row').forEach(x=>x.classList.toggle('active',x.dataset.symbol===symbol));
+    const row=Array.from(document.querySelectorAll('#tbody tr[data-instrument]')).find(x=>String(x.dataset.instrument||'').toUpperCase()===symbol);
+    if(row){
+      row.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});
+      row.classList.add('wl-watch-highlight');
+      setTimeout(()=>row.classList.remove('wl-watch-highlight'),1500);
+    }
+  });
+  window.wlRefreshWatchlistQuotes=fetchWatchOnlyQuotes;
+  renderWatchlist([]);
+  $('togglePortfolioCols')?.addEventListener('click',()=>{
+    const pane=document.querySelector('.wl-portfolio-pane');
+    if(!pane) return;
+    const expanded=pane.classList.toggle('show-all-cols');
+    $('togglePortfolioCols').textContent=expanded?'Fewer columns':'More columns';
+  });
+
   function renderTable(visible){
     $('tableWrap').classList.add('show');
     const sorted=sortResults(visible);
     $('tableCount').textContent=`${sorted.length} holding${sorted.length===1?'':'s'}`;
+    renderWatchlist(sorted);
     $('tbody').innerHTML=sorted.map(r=>{
       const pnlClass=r.pnl>=0?'gain':'loss';
       const absR=r.invested>0?(r.pnl/r.invested)*100:NaN;
@@ -3006,7 +3229,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const xirrStr=r.xirr!==null?fmtPct(r.xirr*100):'<span class="muted">n/a</span>';
       const xirrClass=r.xirr!==null?(r.xirr>=0?'gain':'loss'):'';
       const flagHtml=r.txnCount===0?`<span class="flag bad">no trade date</span>`:'';
-      return `<tr>
+      return `<tr data-instrument="${escapeAttr(r.instrument)}">
         <td class="left">${r.instrument}${flagHtml}</td>
         <td>${dateStr}</td>
         <td>${fmtQty(r.qty)}</td>
@@ -3870,6 +4093,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       status.textContent='Refreshing configured price sources…';
       const result=await refreshConfiguredPriceSources();
       updated=result.updated; source=result.source;
+      if(state.watchOnlySymbols?.length){
+        try{const wl=await fetchWatchOnlyQuotes(); if(wl.updated) status.textContent+=` Watchlist: ${wl.updated} quote(s) refreshed.`;}
+        catch(wlErr){status.textContent+=` Watchlist quote refresh unavailable: ${wlErr?.message||'unknown error'}.`;}
+      }
       status.textContent='Loading recent history from Google Sheets…';
       try{ await fetchHistoryPrices(state.lastSheetAoa); }
       catch(err){ /* keep whatever history is already loaded */ }
@@ -4590,7 +4817,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       savedAt: new Date().toISOString(),
       portfolios: state.portfolios,
       holdRows: state.holdRows,
-      manualTxns: state.manualTxns.map(t=>({...t, date: t.date.toISOString()}))
+      manualTxns: state.manualTxns.map(t=>({...t, date: t.date.toISOString()})),
+      watchOnlySymbols: (state.watchOnlySymbols||[]).map(x=>({...x}))
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
@@ -4623,6 +4851,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
         if(Array.isArray(data.portfolios) && data.portfolios.length) state.portfolios = data.portfolios;
         state.recoCommissions = (data.recoCommissions && typeof data.recoCommissions==='object') ? Object.fromEntries(Object.entries(data.recoCommissions).map(([k,v])=>[k,Number(v)||0])) : {};
+        state.watchOnlySymbols = Array.isArray(data.watchOnlySymbols) ? data.watchOnlySymbols.filter(x=>x && String(x.symbol||'').trim()).map(x=>({...x, symbol:String(x.symbol).trim().toUpperCase()})) : [];
 
         state.holdRows = data.holdRows.map(r=>({
           id: r.id || ('h'+(state.holdIdSeq++)),
@@ -4681,6 +4910,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       const el=$(id); if(el){ el.classList.remove('show'); el.innerHTML=''; }
     });
     if($('tableWrap')){ $('tableWrap').classList.remove('show'); $('tbody').innerHTML=''; }
+    if(typeof renderWatchlist==='function') renderWatchlist([]);
     if($('allocationCard')){ $('allocationCard').style.display='none'; $('allocationList').innerHTML=''; $('allocationTotal').textContent='—'; }
     if($('insightsGrid')){ $('insightsGrid').style.display='none'; $('topPerformers').innerHTML=''; $('topLosers').innerHTML=''; }
     if($('warnBox')){ $('warnBox').style.display='none'; $('warnBox').innerHTML=''; }
@@ -4706,17 +4936,18 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   $('wipeBtn').addEventListener('click', ()=>{
-    if(state.holdRows.length===0 && state.manualTxns.length===0){
+    if(state.holdRows.length===0 && state.manualTxns.length===0 && state.watchOnlySymbols.length===0){
       resetCalculatedViews();
       switchView('dashboard');
       $('backupStatus').textContent = 'Nothing to wipe — the ledger is already empty.';
       showToast('Nothing to wipe — the ledger is already empty.', 'success');
       return;
     }
-    const ok = confirm('This permanently clears every holding and transaction currently entered. This cannot be undone unless you have a backup file. Continue?');
+    const ok = confirm('This permanently clears every holding, transaction and watchlist-only stock. This cannot be undone unless you have a backup file. Continue?');
     if(!ok) return;
     state.holdRows = [];
     state.manualTxns = [];
+    state.watchOnlySymbols = [];
     state.recoCommissions = {};
     state.hiddenRecos = new Set();
     state.lastResults = null;
@@ -4852,15 +5083,15 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
   // On every normal site visit, show the saved portfolio immediately, calculate from
   // persisted prices, then refresh live prices from Angel One in the background.
-  if(state.holdRows.length){
-    try{ runCalculation(); }catch(e){}
+  if(state.holdRows.length || state.watchOnlySymbols.length){
+    if(state.holdRows.length){ try{ runCalculation(); }catch(e){} }
     setTimeout(async()=>{
       try{
-        await refreshConfiguredPriceSources();
-        runCalculation();
+        if(state.holdRows.length){ await refreshConfiguredPriceSources(); runCalculation(); }
+        if(state.watchOnlySymbols?.length) await fetchWatchOnlyQuotes();
       }catch(err){
-        // Keep the persisted prices visible when a configured source is temporarily unavailable.
-        try{ runCalculation(); }catch(e){}
+        // Keep persisted prices visible when a configured source is temporarily unavailable.
+        if(state.holdRows.length){ try{ runCalculation(); }catch(e){} }
       }
     }, 180);
   }
@@ -4880,9 +5111,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   // localStorage, so a refresh performed on one device does not update another.
   // When this tab becomes visible again, refresh live prices in the background.
   document.addEventListener('visibilitychange', ()=>{
-    if(document.visibilityState==='visible' && state.holdRows.length){
+    if(document.visibilityState==='visible' && (state.holdRows.length || state.watchOnlySymbols.length)){
       setTimeout(async()=>{
-        try{ await refreshConfiguredPriceSources(); runCalculation(); }catch(e){}
+        try{
+          if(state.holdRows.length){ await refreshConfiguredPriceSources(); runCalculation(); }
+          if(state.watchOnlySymbols.length) await fetchWatchOnlyQuotes();
+        }catch(e){}
       },120);
     }
   });
@@ -4891,7 +5125,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') saveToLocalStorage(); });
 
   window.addEventListener('beforeunload', (e)=>{
-    const hasData = state.holdRows.length>0 || state.manualTxns.length>0;
+    const hasData = state.holdRows.length>0 || state.manualTxns.length>0 || state.watchOnlySymbols.length>0;
     if(hasData && !autosaveAvailable){
       e.preventDefault();
       e.returnValue = 'You have holdings or transactions entered and autosave is not available here — download a backup before leaving, or your data will be lost.';
@@ -4911,7 +5145,6 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     });
   }
 </script>
-
 <script>
 (function(){
   function goto(id){
@@ -4953,6 +5186,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     tr.disabled=true;
     var u=document.getElementById('tickerUpdated'); if(u) u.textContent='Refreshing market…';
     await refreshMarketTicker();
+    try{ if(window.wlRefreshWatchlistQuotes) await window.wlRefreshWatchlistQuotes(); }catch(e){}
     tr.disabled=false;
   });
   document.getElementById('openRealizedReportBtn')?.addEventListener('click',function(){
@@ -4960,8 +5194,8 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     setTimeout(function(){document.getElementById('realizedAnchor')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
   });
   document.getElementById('openAllocationReportBtn')?.addEventListener('click',function(){
-    var btn=document.querySelector('#appNav .nav-btn[data-view="dashboard"]'); if(btn) btn.click();
-    setTimeout(function(){document.getElementById('statsRow')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
+    var btn=document.querySelector('#appNav .nav-btn[data-view="reports"]'); if(btn) btn.click();
+    setTimeout(function(){document.getElementById('allocationCard')?.scrollIntoView({behavior:'smooth',block:'start'});},120);
   });
   document.getElementById('openRecoReportBtn')?.addEventListener('click',function(){
     var btn=document.querySelector('#appNav .nav-btn[data-view="activity"]'); if(btn) btn.click();
