@@ -1774,6 +1774,11 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       angelManualMap: state.angelManualMap,
       priceSourceMap: state.priceSourceMap,
       recoCommissions: state.recoCommissions,
+      activeFilters: {
+        portfolios: state.activePortfolios === null ? null : Array.from(state.activePortfolios),
+        brokers: state.activeBrokers === null ? null : Array.from(state.activeBrokers),
+        recommendations: state.activeRecos === null ? null : Array.from(state.activeRecos)
+      },
       commissionMigrationVersion: 1
     };
   }
@@ -1834,6 +1839,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       if(data.angelTokenMap && typeof data.angelTokenMap==='object') state.angelTokenMap = {...state.angelTokenMap,...data.angelTokenMap};
       if(data.angelManualMap && typeof data.angelManualMap==='object') state.angelManualMap = {...state.angelManualMap,...data.angelManualMap};
       if(data.priceSourceMap && typeof data.priceSourceMap==='object') state.priceSourceMap = {...state.priceSourceMap,...data.priceSourceMap};
+      if(data.activeFilters && typeof data.activeFilters==='object'){
+        const f=data.activeFilters;
+        state.activePortfolios=Array.isArray(f.portfolios)?new Set(f.portfolios):null;
+        state.activeBrokers=Array.isArray(f.brokers)?new Set(f.brokers):null;
+        state.activeRecos=Array.isArray(f.recommendations)?new Set(f.recommendations):null;
+      }
       // Backward compatibility: a pre-v29 rule set to Angel One only is an explicit
       // user choice, so trust its token as a manual mapping. Older Auto mappings are
       // deliberately NOT trusted; they will be re-resolved exactly by the Worker.
@@ -2629,9 +2640,16 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const recosAll = Array.from(new Set(state.holdRows.map(r=>r.recommendedBy).filter(Boolean))).sort();
 
     state.lastResults = {valDate};
-    state.activePortfolios = null;
-    state.activeBrokers = null;
-    state.activeRecos = null;
+    // Keep the user's selected filters across refreshes and recalculations.
+    // If a selected value no longer exists, remove only that stale selection.
+    const retain = (current, available) => {
+      if(current === null) return null;
+      const next = new Set(Array.from(current).filter(v=>available.includes(v)));
+      return next.size ? next : null;
+    };
+    state.activePortfolios = retain(state.activePortfolios, portfoliosAll);
+    state.activeBrokers = retain(state.activeBrokers, brokersAll);
+    state.activeRecos = retain(state.activeRecos, recosAll);
 
     renderFilterBar($('filterBarPortfolio'), portfoliosAll, 'portfolio');
     renderFilterBar($('filterBarBroker'), brokersAll, 'broker');
@@ -2658,6 +2676,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     html += '</div>';
     bar.innerHTML = html;
     bar.classList.add('show');
+    renderFilterChipStates(bar, items, stateKey);
     bar.querySelectorAll('.filter-chips .chip').forEach(chip=>{
       chip.addEventListener('click', ()=>{
         const v = chip.dataset.v;
@@ -2675,6 +2694,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         }
         renderFilterChipStates(bar, items, key);
         applyFilterAndRender();
+        scheduleAutosave();
       });
     });
   }
@@ -3667,7 +3687,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
   function syncBuyToHoldings(tx){
     const hold={
-      id:'h'+(state.holdIdSeq++),
+      id:tx.holdingLotId || (tx.holdingLotId='h'+(state.holdIdSeq++)),
       portfolio:tx.portfolio || state.portfolios[0],
       symbol:tx.instrument,
       broker:tx.broker || 'Z',
@@ -3687,6 +3707,26 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   function syncSellToHoldings(tx){
+    // A sale initiated from Holdings records the exact lots it consumed. Replay
+    // those same allocations after refresh/edit/delete instead of re-matching a
+    // different FIFO lot and accidentally restoring previously sold shares.
+    if(Array.isArray(tx.holdAllocations) && tx.holdAllocations.length){
+      let remaining=Number(tx.qty)||0;
+      const allocations=[];
+      for(const a of tx.holdAllocations){
+        if(remaining<=1e-9) break;
+        const lot=state.holdRows.find(r=>r.id===a.holdId && r.portfolio===tx.portfolio && symKey(r.symbol)===symKey(tx.instrument));
+        if(!lot) continue;
+        const requested=Math.min(Number(a.qty)||0,remaining);
+        const take=Math.min(Number(lot.qty)||0,requested);
+        if(take>1e-9){ lot.qty-=take; allocations.push({holdId:lot.id,qty:take}); remaining-=take; }
+      }
+      tx.linkedSellAllocations=allocations;
+      tx.unmatchedQty=remaining>1e-9?remaining:0;
+      tx.linkedToHolding=allocations.length>0;
+      return {matched:(Number(tx.qty)||0)-remaining,unmatched:remaining};
+    }
+
     const wanted= symKey(tx.instrument);
     let remaining=tx.qty;
     const lots=state.holdRows
@@ -3743,6 +3783,11 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   function rebuildTransactionSync(){
+    // Preserve the existing generated lot ID before undo/replay. This is
+    // essential because Holdings-originated sells reference exact lot IDs.
+    state.manualTxns.forEach(tx=>{
+      if(tx.type==='buy' && !tx.holdingLotId && tx.linkedHoldingId) tx.holdingLotId=tx.linkedHoldingId;
+    });
     // Undo every transaction in reverse order, then replay the complete
     // transaction ledger chronologically. This keeps FIFO allocations correct
     // when a transaction is edited/deleted, including date or symbol changes.
@@ -4513,9 +4558,9 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     if(isNaN(soldPrice) || soldPrice<=0){ $('sellModalStatus').textContent = 'Enter a valid sold price.'; return; }
     if(!sellDate){ $('sellModalStatus').textContent = 'Pick a sell date.'; return; }
 
-    // Consume the selected lots FIFO (earliest trade date first; undated lots last),
-    // logging a matching buy+sell pair per portion consumed — same approach as a
-    // single-lot sell, just looped across however many lots were selected together.
+    // Record exact lot allocations on the Sell transaction. Do not create
+    // synthetic Buy transactions: they duplicate cost lots and can make sold
+    // shares reappear when the transaction ledger is rebuilt on refresh/edit.
     const ordered = rows.slice().sort((a,b)=>{
       const da = a.tradeDate ? new Date(a.tradeDate+'T00:00:00').getTime() : Infinity;
       const db = b.tradeDate ? new Date(b.tradeDate+'T00:00:00').getTime() : Infinity;
@@ -4523,34 +4568,24 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     });
     let remainingToSell = qtySold;
     let totalCostBasis = 0, totalMatched = 0;
-    const emptiedIds = [];
+    const holdAllocations = [];
     for(const row of ordered){
       if(remainingToSell <= 1e-9) break;
-      const take = Math.min(row.qty, remainingToSell);
+      const take = Math.min(Number(row.qty)||0, remainingToSell);
       if(take <= 1e-9) continue;
-      if(row.investedPrice!=null){
-        state.manualTxns.push({id:'t'+(state.txnIdSeq++), portfolio:row.portfolio, instrument:row.symbol, broker:row.broker, recommendedBy:row.recommendedBy||'', type:'buy',
-          date: new Date((row.tradeDate || sellDate)+'T00:00:00'), qty:take, price:row.investedPrice});
-        totalCostBasis += take*row.investedPrice;
-        totalMatched += take;
-      }
-      const remainingInRow = row.qty - take;
-      if(remainingInRow <= 1e-9){
-        row.qty = 0;
-        emptiedIds.push(row.id);
-      } else {
-        row.qty = remainingInRow;
-      }
+      holdAllocations.push({holdId:row.id,qty:take});
+      if(row.investedPrice!=null){ totalCostBasis += take*row.investedPrice; totalMatched += take; }
       remainingToSell -= take;
     }
-    state.manualTxns.push({id:'t'+(state.txnIdSeq++), portfolio:ordered[0].portfolio, instrument:ordered[0].symbol, broker:ordered[0].broker, recommendedBy:ordered[0].recommendedBy||'', type:'sell',
-      date: new Date(sellDate+'T00:00:00'), qty:qtySold, price:soldPrice});
-
-    if(emptiedIds.length){
-      const emptiedSet = new Set(emptiedIds);
-      state.holdRows = state.holdRows.filter(r=>!emptiedSet.has(r.id));
-      emptiedIds.forEach(id=> state.selectedHoldIds.delete(id));
-    }
+    const sellTx={id:'t'+(state.txnIdSeq++), portfolio:ordered[0].portfolio, instrument:ordered[0].symbol,
+      broker:ordered[0].broker, recommendedBy:ordered[0].recommendedBy||'', type:'sell',
+      date:new Date(sellDate+'T00:00:00'), qty:qtySold, price:soldPrice, holdAllocations};
+    state.manualTxns.push(sellTx);
+    rebuildTransactionSync();
+    // Keep zero-quantity lots in the ledger as closed lots. Their stable IDs
+    // are needed if a user later edits/deletes this Sell transaction: replay
+    // must be able to restore the original lot before applying the sale again.
+    state.holdRows.forEach(r=>{ if(Number(r.qty)<=1e-9) state.selectedHoldIds.delete(r.id); });
     sellContext.forEach(id=> state.selectedHoldIds.delete(id));
 
     const profit = totalMatched>0 ? (soldPrice*totalMatched - totalCostBasis) : null;
