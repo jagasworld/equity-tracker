@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Equity - WealthLedger — Private Equity Dashboard</title>
+<title>Equity - WealthLedger — Kite Workspace v35.2.0</title>
 <link href="manifest.json" rel="manifest"/>
 <meta content="#5B5BF6" name="theme-color"/>
 <link href="icon-192.png" rel="icon" type="image/png"/>
@@ -1223,6 +1223,121 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   .wl-portfolio-pane .table-toolbar{align-items:flex-start}
 }
 </style>
+
+<style id="wealthledger-kite-responsive-v35-2">
+/* v35.2.0 — Kite-inspired responsive trading workspace */
+.wl-portfolio-head-actions{display:flex;align-items:center;gap:10px}
+.wl-mobile-manage-holdings{display:none;border:1px solid var(--border);background:var(--surface-2);color:var(--text-soft);border-radius:8px;padding:7px 10px;font:700 10px Inter,sans-serif;cursor:pointer}
+.wl-mobile-watch-tabs{display:none}
+.wl-mobile-bottomnav{display:none}
+@media(min-width:761px){
+  .wl-terminal-layout{grid-template-columns:276px minmax(0,1fr)!important;gap:18px!important;align-items:start!important}
+  .wl-watchlist-card{position:sticky!important;top:92px!important;border-radius:14px!important}
+  .wl-watchlist-list{max-height:calc(100vh - 320px)!important;min-height:240px!important}
+  .wl-portfolio-pane{min-width:0!important}
+  .wl-portfolio-pane .section-title-row{margin-top:8px!important}
+  .wl-watchlist-head{padding:18px 16px 14px!important}
+  .wl-watchlist-add{padding:11px 12px!important}
+  .wl-watch-row{padding:12px 13px!important}
+  .wl-watchlist-foot{font-size:9px!important}
+  .wl-theme{display:flex!important}
+  [data-theme="dark"] .wl-watchlist-card,[data-theme="dark"] .wl-market-ticker,[data-theme="dark"] .wl-portfolio-pane .card,[data-theme="dark"] .wl-portfolio-pane .stat{background:var(--surface)!important;border-color:var(--border)!important;color:var(--text)!important}
+  [data-theme="dark"] .wl-watch-main b,[data-theme="dark"] .wl-watch-side>b,[data-theme="dark"] .wl-market-ticker b,[data-theme="dark"] .wl-market-ticker span{color:var(--text)!important}
+}
+@media(max-width:760px){
+  :root{--mobile-gutter:0px}
+  html,body{min-height:100%;background:#17232f!important;color:#f1f4f8!important}
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important;overflow-x:hidden!important}
+  .wrap{width:100%!important;max-width:none!important;padding:0 0 calc(82px + env(safe-area-inset-bottom))!important;margin:0!important}
+  .wl-header{display:none!important}
+  .wl-market-ticker{position:sticky!important;top:0!important;z-index:650!important;display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:22px!important;overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;width:100%!important;margin:0!important;padding:15px 16px 13px!important;min-height:78px!important;border:0!important;border-bottom:1px solid #2b3c4d!important;border-radius:0!important;background:#1d2b3a!important;box-shadow:0 5px 18px rgba(0,0,0,.16)!important;color:#f3f6fa!important;scrollbar-width:none!important}
+  .wl-market-ticker::-webkit-scrollbar{display:none!important}
+  .wl-market-ticker>div{display:flex!important;flex:0 0 auto!important;flex-direction:column!important;align-items:flex-start!important;gap:4px!important;white-space:nowrap!important}
+  .wl-market-ticker>div:first-child{display:none!important}
+  .wl-market-ticker>div>b{font-size:10px!important;font-weight:500!important;letter-spacing:.02em!important;color:#dce4ee!important}
+  .wl-market-ticker>div>span{font:600 13px 'IBM Plex Mono',monospace!important;color:#f6f8fb!important}
+  .wl-market-ticker>div>em{font:500 10px Inter,sans-serif!important;color:#a0adbd!important}
+  .ticker-sep{height:37px!important;border-color:#394a5b!important}
+  .portfolio-ticker-group{display:flex!important;flex:0 0 86vw!important;max-width:86vw!important;gap:7px!important;overflow:hidden!important}
+  .portfolio-ticker-group>b{font-size:9px!important;color:#b3c1d1!important}
+  .portfolio-ticker-total{font-size:12px!important;color:#f4f7fa!important}
+  .portfolio-ticker-coverage{font-size:9px!important;color:#a1afbf!important}
+  .portfolio-movers-viewport{max-width:70vw!important;flex:1 1 auto!important}
+  .portfolio-mover b,.portfolio-mover strong{color:inherit!important}
+  .ticker-meta{display:none!important}
+  .wl-terminal-layout{display:block!important;margin:0!important;padding:0!important}
+  .wl-watchlist-card{display:block!important;position:static!important;top:auto!important;width:100%!important;min-width:0!important;overflow:hidden!important;border:0!important;border-radius:0!important;background:#17232f!important;box-shadow:none!important}
+  .wl-watchlist-head{padding:17px 16px 10px!important;border:0!important;background:#17232f!important}
+  .wl-watchlist-kicker{display:none!important}
+  .wl-watchlist-title-row h2{font-size:19px!important;color:#f1f4f8!important;letter-spacing:-.02em!important}
+  .wl-watchlist-count{background:#26394b!important;color:#cbd7e4!important;font-size:10px!important}
+  .wl-watchlist-head p{margin:3px 0 0!important;color:#93a2b3!important;font-size:10px!important}
+  .wl-watchlist-search{display:none!important}
+  .wl-mobile-watch-tabs{display:flex!important;align-items:center!important;gap:24px!important;overflow-x:auto!important;white-space:nowrap!important;padding:0 16px!important;height:48px!important;background:#17232f!important;border-bottom:1px solid #2a3b4b!important;scrollbar-width:none!important}
+  .wl-mobile-watch-tabs::-webkit-scrollbar{display:none!important}
+  .wl-mobile-watch-tabs button{position:relative;flex:0 0 auto!important;height:100%!important;padding:0 1px!important;border:0!important;background:transparent!important;color:#8997a8!important;font:700 12px Inter,sans-serif!important;letter-spacing:.04em!important;cursor:pointer!important}
+  .wl-mobile-watch-tabs button.active{color:#4a8fff!important}
+  .wl-mobile-watch-tabs button.active:after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px;background:#438cff}
+  .wl-watchlist-add{display:grid!important;grid-template-columns:minmax(0,1fr) 42px!important;gap:0!important;margin:14px 16px 11px!important;padding:0!important;border:0!important;border-radius:8px!important;overflow:hidden!important;background:#2b3e50!important}
+  .wl-watchlist-add input{height:48px!important;min-height:48px!important;padding:0 13px!important;border:0!important;border-radius:0!important;background:#2b3e50!important;color:#f4f7fb!important;font:500 14px Inter,sans-serif!important}
+  .wl-watchlist-add input::placeholder{color:#a5b2c2!important;opacity:1!important}
+  .wl-watchlist-add select{display:none!important}
+  .wl-watchlist-add button{height:48px!important;padding:0!important;border:0!important;border-radius:0!important;background:#2b3e50!important;color:#68a2ff!important;font:700 0 Inter,sans-serif!important}
+  .wl-watchlist-add button::after{content:"+";font:700 24px Inter,sans-serif!important}
+  .wl-watchlist-add-status{grid-column:1/-1!important;min-height:0!important;padding:0 12px 8px!important;background:#2b3e50!important;color:#a8b6c6!important;font-size:9px!important}
+  .wl-watchlist-list{display:block!important;max-height:none!important;min-height:0!important;overflow:visible!important;background:#17232f!important}
+  .wl-watch-row{display:flex!important;align-items:stretch!important;gap:0!important;min-height:76px!important;padding:0 16px!important;border:0!important;border-bottom:1px solid #2b3b4a!important;background:#17232f!important}
+  .wl-watch-row:hover,.wl-watch-row.active{background:#1c2b39!important}
+  .wl-watch-select{display:flex!important;flex:1 1 auto!important;min-width:0!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;padding:14px 0!important;border:0!important;background:transparent!important;color:#f1f4f8!important;text-align:left!important;cursor:pointer!important}
+  .wl-watch-main,.wl-watch-side{display:flex!important;flex-direction:column!important;gap:7px!important;min-width:0!important}
+  .wl-watch-main b{font-size:14px!important;font-weight:500!important;color:#f1f4f8!important;letter-spacing:.01em!important}
+  .wl-watch-main small,.wl-watch-side small{font-size:10px!important;color:#8e9bad!important;font-weight:500!important}
+  .wl-watch-side{align-items:flex-end!important;text-align:right!important}
+  .wl-watch-side>b{font:500 14px 'IBM Plex Mono',monospace!important;color:#f1f4f8!important}
+  .wl-watch-side small{font-size:11px!important;color:#98a7b7!important}
+  .wl-watch-side small.ticker-up{color:#25c58a!important}
+  .wl-watch-side small.ticker-down{color:#ff716a!important}
+  .wl-watch-side small i{display:none!important}
+  .wl-watch-remove{align-self:center!important;width:32px!important;height:32px!important;margin-left:8px!important;border:0!important;border-radius:50%!important;background:#26394a!important;color:#aab8c6!important;font-size:20px!important}
+  .wl-watchlist-foot{display:flex!important;flex-wrap:wrap!important;gap:7px!important;padding:12px 16px 15px!important;border-top:1px solid #2b3b4a!important;background:#17232f!important;color:#91a0b1!important;font-size:9px!important}
+  .wl-watchlist-foot button{font-size:10px!important}
+  .wl-portfolio-pane{display:none!important;padding:14px 12px 22px!important;min-width:0!important;background:#17232f!important}
+  body.mobile-show-portfolio .wl-watchlist-card{display:none!important}
+  body.mobile-show-portfolio .wl-portfolio-pane{display:block!important}
+  .wl-portfolio-pane .section-title-row{margin:5px 2px 13px!important;align-items:center!important}
+  .wl-portfolio-pane .section-title-row h2{color:#f3f6f9!important;font-size:19px!important}
+  .wl-portfolio-pane .section-eyebrow{color:#8ea0b1!important}
+  .wl-portfolio-head-actions{flex-wrap:wrap;justify-content:flex-end}
+  .wl-mobile-manage-holdings{display:inline-flex!important;background:#2b3e50!important;border-color:#405468!important;color:#dce7f2!important}
+  .wl-portfolio-pane .card,.wl-portfolio-pane .stat,.wl-portfolio-pane .allocation-card,.wl-portfolio-pane .insight-card{background:#1d2b3a!important;border-color:#2c3e4f!important;color:#eef3f8!important;box-shadow:none!important}
+  .wl-portfolio-pane .stat .k,.wl-portfolio-pane .card-hint,.wl-portfolio-pane .table-toolbar .hint{color:#9caaba!important}
+  .wl-portfolio-pane .stat .v,.wl-portfolio-pane .sort-label,.wl-portfolio-pane .sort-select{color:#f1f4f8!important}
+  .wl-portfolio-pane .sort-select,.wl-portfolio-pane .sort-dir{background:#26394b!important;border-color:#405368!important;color:#eef4f9!important}
+  .wl-portfolio-pane .tablewrap{background:#1d2b3a!important;border-color:#2c3e4f!important}
+  .wl-portfolio-pane .resultstable th{background:#1d2b3a!important;color:#9eacbc!important}
+  .wl-portfolio-pane .resultstable td{color:#edf3f8!important;border-color:#314253!important}
+  .wl-portfolio-pane .resultstable tbody tr:hover{background:#26394b!important}
+  .view-panel:not(#viewDashboard){padding:14px 13px 25px!important;color:#eef3f8!important}
+  .view-panel:not(#viewDashboard) .card,.view-panel:not(#viewDashboard) .provider-card,.view-panel:not(#viewDashboard) .allocation-card,.view-panel:not(#viewDashboard) .trend-card,.view-panel:not(#viewDashboard) .insight-card{background:#1d2b3a!important;border-color:#2c3e4f!important;color:#edf3f8!important;box-shadow:none!important}
+  .view-panel:not(#viewDashboard) h2,.view-panel:not(#viewDashboard) h3,.view-panel:not(#viewDashboard) .section-title-row h2{color:#f1f4f8!important}
+  .view-panel:not(#viewDashboard) p,.view-panel:not(#viewDashboard) .card-hint,.view-panel:not(#viewDashboard) label{color:#a7b4c2!important}
+  .view-panel:not(#viewDashboard) input,.view-panel:not(#viewDashboard) select,.view-panel:not(#viewDashboard) textarea{background:#26394b!important;border-color:#405368!important;color:#eff4f8!important}
+  .wl-mobile-bottomnav{position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:900!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:0!important;padding:7px 4px calc(8px + env(safe-area-inset-bottom))!important;background:rgba(23,35,47,.98)!important;border-top:1px solid #2a3a4a!important;box-shadow:0 -8px 26px rgba(0,0,0,.22)!important;backdrop-filter:blur(18px)!important}
+  .wl-mobile-bottomnav button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:0!important;min-height:54px!important;padding:2px!important;border:0!important;background:transparent!important;color:#d6dee7!important;font:500 10px Inter,sans-serif!important;cursor:pointer!important}
+  .wl-mobile-bottomnav button svg{width:25px!important;height:25px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.9!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+  .wl-mobile-bottomnav button.active{color:#438cff!important}
+  .wl-mobile-bottomnav button span{white-space:nowrap!important;font-size:10px!important}
+  .toast{bottom:calc(78px + env(safe-area-inset-bottom))!important}
+  .modal-overlay{padding:12px!important}
+}
+@media(max-width:380px){
+  .wl-mobile-watch-tabs{gap:18px!important}
+  .wl-mobile-watch-tabs button{font-size:11px!important}
+  .wl-mobile-bottomnav button span{font-size:9px!important}
+  .wl-watchlist-add{margin-left:12px!important;margin-right:12px!important}
+}
+</style>
+
 </head>
 <body class="wl-v7-light" data-theme="light">
 <div class="wrap">
@@ -1266,17 +1381,22 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 <p>Portfolio holdings and stocks you follow</p>
 <label class="wl-watchlist-search"><span aria-hidden="true">⌕</span><input aria-label="Filter watchlist" id="watchlistSearch" placeholder="Filter watchlist" type="search"/></label>
 </div>
-<div class="wl-watchlist-add" role="group" aria-label="Add a stock to watchlist">
-<input aria-label="Stock symbol or company name" id="watchlistAddSymbol" placeholder="Symbol / company name" maxlength="40" autocomplete="off"/>
+<div class="wl-mobile-watch-tabs" role="tablist" aria-label="Watchlist categories">
+  <button type="button" class="active" data-watch-filter="indices" role="tab" aria-selected="true">INDEX</button>
+  <button type="button" data-watch-filter="watch" role="tab" aria-selected="false">MY WATCH LIST</button>
+  <button type="button" data-watch-filter="portfolio" role="tab" aria-selected="false">PORTFOLIO</button>
+</div>
+<div class="wl-watchlist-add" role="group" aria-label="Search and add a stock to watchlist">
+<input aria-label="Stock symbol or company name" id="watchlistAddSymbol" placeholder="Search & add stock" maxlength="40" autocomplete="off"/>
 <select id="watchlistAddExchange" aria-label="Exchange for watchlist stock"><option value="AUTO">Auto</option><option value="NSE">NSE</option><option value="BSE">BSE</option></select>
 <button id="watchlistAddBtn" type="button">+ Add</button>
-<div aria-live="polite" class="wl-watchlist-add-status" id="watchlistAddStatus">Lookup uses your connected Angel One Worker. Exact NSE/BSE trading symbols are the most reliable.</div>
+<div aria-live="polite" class="wl-watchlist-add-status" id="watchlistAddStatus">Search a symbol and tap + to add it. Quotes use your connected Angel One Worker.</div>
 </div>
 <div aria-live="polite" class="wl-watchlist-list" id="watchlistList">
 <div class="wl-watchlist-empty">Your portfolio stocks will appear here after refresh.</div>
 </div>
 <div class="wl-watchlist-foot"><span class="wl-watchlist-dot"></span> Holdings affect portfolio totals; watch-only stocks do not. <button id="watchlistRefreshBtn" type="button" style="margin-left:auto;border:0;background:transparent;color:var(--brand);font:700 8px Inter,sans-serif;cursor:pointer;white-space:nowrap">↻ Refresh quotes</button></div>
-</aside><div class="wl-portfolio-pane"><div class="section-title-row portfolio-primary-title"><div><div class="section-eyebrow">Portfolio</div><h2>Portfolio overview</h2></div><div class="live-dot"><span></span> Live view</div></div><div class="card dashboard-update">
+</aside><div class="wl-portfolio-pane"><div class="section-title-row portfolio-primary-title"><div><div class="section-eyebrow">Portfolio</div><h2>Portfolio overview</h2></div><div class="wl-portfolio-head-actions"><div class="live-dot"><span></span> Live view</div><button type="button" class="wl-mobile-manage-holdings" id="mobileManageHoldingsBtn">Manage holdings</button></div></div><div class="card dashboard-update">
 <div class="update-date"><span class="k">Valuation date</span><input id="valDate" type="date"/></div>
 <div class="update-status"><span class="k">Portfolio update</span><div class="v" id="combinedStatus">Ready to refresh prices and calculate.</div></div>
 <button class="refresh-btn" id="refreshCalcBtn">↻ Refresh prices &amp; calculate</button>
@@ -3014,7 +3134,24 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   // Dashboard watchlist: portfolio holdings are read-only here; watch-only symbols
   // are a separate persistent list and never enter holdings, valuation, or P&L.
   let watchlistRows = [];
+  let mobileWatchTab = 'indices';
   function watchOnlyKey(item){ return symKey(item?.symbol||''); }
+  function renderMobileIndexRows(){
+    const list=$('watchlistList'), count=$('watchlistCount');
+    if(!list || !count) return;
+    const indexes=[
+      {name:'SENSEX',price:'tickerSensex',move:'tickerSensexMove'},
+      {name:'NIFTY 50',price:'tickerNifty',move:'tickerNiftyMove'},
+      {name:'BANK NIFTY',price:'tickerBankNifty',move:'tickerBankNiftyMove'}
+    ];
+    count.textContent='3 indices';
+    list.innerHTML=indexes.map(x=>{
+      const price=$(x.price)?.textContent?.trim()||'—';
+      const moveEl=$(x.move), move=moveEl?.textContent?.trim()||'—';
+      const moveClass=moveEl?.classList.contains('ticker-down')?'ticker-down':(moveEl?.classList.contains('ticker-up')?'ticker-up':'wl-no-move');
+      return `<div class="wl-watch-row wl-index-row"><div class="wl-watch-select"><span class="wl-watch-main"><b>${x.name}</b><small class="wl-watch-type">INDICES</small></span><span class="wl-watch-side"><b>${escapeAttr(price)}</b><small class="${moveClass}">${escapeAttr(move)}</small></span></div></div>`;
+    }).join('');
+  }
   function renderWatchlist(rows){
     watchlistRows = Array.isArray(rows) ? rows.slice() : [];
     const list=$('watchlistList'), count=$('watchlistCount'), search=$('watchlistSearch');
@@ -3031,8 +3168,17 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         qty:null, watchType:'watch', exchange:item.exchange||item.exchangeMode||'AUTO', companyName:item.companyName||'', updatedAt:item.updatedAt||''
       }));
     const all=[...held,...watchOnly];
-    const q=String(search?.value||'').trim().toUpperCase();
-    const filtered=all.filter(r=>!q || String(r.instrument||'').toUpperCase().includes(q) || String(r.companyName||'').toUpperCase().includes(q));
+    const isMobile=window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+    if(isMobile && mobileWatchTab==='indices'){
+      renderMobileIndexRows();
+      return;
+    }
+    let categoryRows=all;
+    if(isMobile && mobileWatchTab==='watch') categoryRows=watchOnly;
+    if(isMobile && mobileWatchTab==='portfolio') categoryRows=held;
+    const mobileQuery=isMobile ? String($('watchlistAddSymbol')?.value||'') : '';
+    const q=String((isMobile ? mobileQuery : search?.value)||'').trim().toUpperCase();
+    const filtered=categoryRows.filter(r=>!q || String(r.instrument||'').toUpperCase().includes(q) || String(r.companyName||'').toUpperCase().includes(q));
     count.textContent = `${filtered.length} ${filtered.length===1?'stock':'stocks'}`;
     if(!filtered.length){
       list.innerHTML = `<div class="wl-watchlist-empty">${all.length ? 'No matching stocks.' : 'Add a symbol above, or refresh your portfolio to load holdings.'}</div>`;
@@ -3053,7 +3199,28 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       </div>`;
     }).join('');
   }
+  window.wlRefreshMobileIndexList=()=>{
+    if(window.matchMedia && window.matchMedia('(max-width: 760px)').matches && mobileWatchTab==='indices') renderMobileIndexRows();
+  };
+  window.wlResponsiveRefreshWatchlist=()=>renderWatchlist(watchlistRows);
   $('watchlistSearch')?.addEventListener('input',()=>renderWatchlist(watchlistRows));
+  document.querySelectorAll('[data-watch-filter]').forEach(btn=>btn.addEventListener('click',()=>{
+    mobileWatchTab=btn.dataset.watchFilter||'indices';
+    document.querySelectorAll('[data-watch-filter]').forEach(x=>{
+      const active=x===btn; x.classList.toggle('active',active); x.setAttribute('aria-selected',active?'true':'false');
+    });
+    const searchAdd=$('watchlistAddSymbol'); if(searchAdd) searchAdd.value='';
+    renderWatchlist(watchlistRows);
+  }));
+  $('watchlistAddSymbol')?.addEventListener('focus',()=>{
+    if(window.matchMedia && window.matchMedia('(max-width: 760px)').matches){
+      mobileWatchTab='watch';
+      document.querySelectorAll('[data-watch-filter]').forEach(x=>{const active=x.dataset.watchFilter==='watch';x.classList.toggle('active',active);x.setAttribute('aria-selected',active?'true':'false');});
+    }
+  });
+  $('watchlistAddSymbol')?.addEventListener('input',()=>{
+    if(window.matchMedia && window.matchMedia('(max-width: 760px)').matches) renderWatchlist(watchlistRows);
+  });
 
   // Retrieve quotes for watch-only symbols through the existing secure Worker.
   // This uses the same /api/quotes endpoint as portfolio refresh and never touches holdRows.
@@ -3154,6 +3321,10 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       item.exchangeMode=mode;
     }
     input.value='';
+    if(window.matchMedia && window.matchMedia('(max-width: 760px)').matches){
+      mobileWatchTab='watch';
+      document.querySelectorAll('[data-watch-filter]').forEach(x=>{const active=x.dataset.watchFilter==='watch';x.classList.toggle('active',active);x.setAttribute('aria-selected',active?'true':'false');});
+    }
     if(btn)btn.disabled=true;
     if(status)status.textContent=`Looking up ${normalized} on ${mode==='AUTO'?'NSE, then BSE':mode}…`;
     renderWatchlist(watchlistRows);
@@ -5135,6 +5306,62 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 
 })();
 </script>
+
+<script>
+(function(){
+  function initMobileNavigation(){
+    const nav=document.getElementById('mobileBottomNav');
+    if(!nav) return;
+    const appButton=view=>document.querySelector('#appNav .nav-btn[data-view="'+view+'"]');
+    function markActive(key){
+      nav.querySelectorAll('button').forEach(b=>{
+        const isActive=b.dataset.mobileAction===key || b.dataset.view===key;
+        b.classList.toggle('active',isActive);
+      });
+    }
+    nav.addEventListener('click',function(ev){
+      const btn=ev.target.closest('button'); if(!btn) return;
+      const action=btn.dataset.mobileAction;
+      if(action==='watchlist' || action==='portfolio'){
+        appButton('dashboard')?.click();
+        document.body.classList.toggle('mobile-show-portfolio',action==='portfolio');
+        markActive(action);
+        window.scrollTo({top:0,behavior:'smooth'});
+        return;
+      }
+      const view=btn.dataset.view;
+      if(view){
+        document.body.classList.remove('mobile-show-portfolio');
+        appButton(view)?.click();
+        markActive(view);
+      }
+    });
+    document.getElementById('mobileManageHoldingsBtn')?.addEventListener('click',function(){
+      document.body.classList.remove('mobile-show-portfolio');
+      appButton('holdings')?.click();
+      markActive('portfolio');
+    });
+    document.querySelectorAll('#appNav .nav-btn').forEach(b=>b.addEventListener('click',function(){
+      if(b.dataset.view!=='dashboard') document.body.classList.remove('mobile-show-portfolio');
+      const view=b.dataset.view;
+      if(view==='dashboard') markActive(document.body.classList.contains('mobile-show-portfolio')?'portfolio':'watchlist');
+      else if(view==='holdings') markActive('portfolio');
+      else markActive(view);
+    }));
+    window.addEventListener('resize',function(){
+      if(window.innerWidth>760) document.body.classList.remove('mobile-show-portfolio');
+      window.wlResponsiveRefreshWatchlist?.();
+    });
+    const tickerNodes=['tickerSensex','tickerNifty','tickerBankNifty','tickerSensexMove','tickerNiftyMove','tickerBankNiftyMove'].map(id=>document.getElementById(id)).filter(Boolean);
+    if(tickerNodes.length && window.MutationObserver){
+      const observer=new MutationObserver(()=>window.wlRefreshMobileIndexList?.());
+      tickerNodes.forEach(node=>observer.observe(node,{childList:true,characterData:true,subtree:true}));
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initMobileNavigation,{once:true});
+  else initMobileNavigation();
+})();
+</script>
 <script>
   // Register the service worker for offline support and installability.
   // Wrapped defensively — this must never break the app if sw.js/manifest.json
@@ -5217,5 +5444,24 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   setTimeout(function(){ if(window.wlRefreshMarketTicker) window.wlRefreshMarketTicker(); },250);
 })();
 </script>
+
+<nav class="wl-mobile-bottomnav" id="mobileBottomNav" aria-label="Mobile navigation">
+  <button type="button" class="active" data-mobile-action="watchlist" aria-label="Watchlist">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.8h12a1 1 0 0 1 1 1v16l-7-4.4-7 4.4v-16a1 1 0 0 1 1-1Z"/></svg><span>Watchlist</span>
+  </button>
+  <button type="button" data-view="activity" aria-label="Transactions">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h14v15H5zM8 8h8M8 12h8M8 16h5"/></svg><span>Orders</span>
+  </button>
+  <button type="button" data-mobile-action="portfolio" aria-label="Portfolio">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="7" width="17" height="13" rx="2"/><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h5A1.5 1.5 0 0 1 16 5.5V7M3.5 12h17M10 11v2h4v-2"/></svg><span>Portfolio</span>
+  </button>
+  <button type="button" data-view="reports" aria-label="Reports">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5h16M6.5 17V11M12 17V5M17.5 17V8"/></svg><span>Reports</span>
+  </button>
+  <button type="button" data-view="manage" aria-label="Settings">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.5-3.3 2.8-5.2 6.5-5.2s6 1.9 6.5 5.2"/></svg><span>Profile</span>
+  </button>
+</nav>
+
 </body>
 </html>
