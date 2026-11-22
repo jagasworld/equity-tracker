@@ -1,6 +1,6 @@
 // Bump this whenever index.html (or any cached asset) changes, so old
 // caches get cleared and users receive the latest WealthLedger build.
-const CACHE_NAME = 'wealthledger-v50-kite-responsive';
+const CACHE_NAME = 'wealthledger-v52-equity-ledger-filename';
 
 const ASSETS = [
   './',
