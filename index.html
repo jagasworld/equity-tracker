@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Equity - WealthLedger — Kite Workspace v35.2.2</title>
+<title>Equity - WealthLedger — Kite Workspace v35.2.3</title>
 <link href="manifest.json" rel="manifest"/>
 <meta content="#5B5BF6" name="theme-color"/>
 <link href="icon-192.png" rel="icon" type="image/png"/>
@@ -720,7 +720,7 @@ html,body{background:var(--wl-bg)!important;color:var(--wl-ink)!important}body{f
 
 
 
-/* v35.2.2 — equity-ledger Drive filename and watchlist daily change display switch */
+/* v35.2.3 — allocation-aware realized P&L, gross stock XIRR and closed-position filter */
 .wl-watchlist-title-row{flex-wrap:wrap}
 .wl-change-toggle{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--border,#e8e7ef);border-radius:8px;background:var(--surface-2,#fafafd)}
 .wl-change-toggle button{min-width:30px;height:24px;padding:0 7px;border:0;border-radius:6px;background:transparent;color:var(--text-faint,#858595);font:700 10px Inter,sans-serif;cursor:pointer}
@@ -1743,7 +1743,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 <div class="section-anchor" id="realizedAnchor"></div>
 <div class="card" id="recoStockCard" style="display:none;">
 <div class="card-head"><div class="card-icon">◆</div><b>XIRR &amp; P&amp;L by recommendation</b></div>
-<p class="card-hint">One place to understand recommendation performance. This single report combines recommender totals with stock-level detail. XIRR uses dated Buy/Sell cash flows plus the value of shares still held. Manually-entered holdings remain included when sold from Holdings. If no stable valid annualized rate can be solved, XIRR is shown as n/a.</p>
+<p class="card-hint">XIRR uses dated purchase costs and actual sale proceeds; for shares still held, it assumes you sell the remaining quantity at the current price on the valuation date. Stock-detail XIRR is gross (no recommendation commission allocated per stock); recommendation commission is applied once in the recommendation summary. Dividends are included in P&amp;L, but not XIRR because this ledger does not store dividend receipt dates. This report calculates XIRR, not CAGR. If no valid annualized return can be solved, XIRR is shown as n/a.</p>
 <div class="stats-row show stats-row-3col">
 <div class="stat"><div class="k">Realized P&amp;L</div><div class="v" id="realTotal">—</div></div>
 <div class="stat"><div class="k">Winning sells</div><div class="v gain" id="realWins">—</div></div>
@@ -1761,10 +1761,11 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 <tbody id="recoSummaryBody"></tbody>
 </table>
 </div>
-<div class="mini-section-head" style="margin-top:18px;"><b>Stock detail</b><span class="card-hint">Includes open and sold-out stocks under each recommendation.</span></div>
+<div class="mini-section-head" style="margin-top:18px;"><b>Stock detail</b><span class="card-hint">Open positions are shown by default. Sold-out positions remain available for historical review.</span></div>
 <div class="inline-row" style="margin-bottom:10px; flex-wrap:wrap; gap:8px;">
 <label class="broker-label" style="margin:0; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; font-weight:600;">Show:</label>
 <select class="sel" id="recoStockFilter"><option value="__all__">All recommenders</option></select>
+<label style="display:inline-flex;align-items:center;gap:6px;color:var(--text-soft);font-size:12px;margin-left:6px;cursor:pointer;"><input id="recoShowSoldOut" type="checkbox" style="accent-color:var(--brand);"> Include sold-out positions</label>
 <span class="sort-label">Sort by</span>
 <select aria-label="Sort recommendation report by" class="sel" id="recoSortSelect">
 <option value="reco">Recommended by</option>
@@ -1787,7 +1788,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
 </div>
 </div>
 <div class="tabpanel" data-panel="byTxn">
-<div class="mini-section-head"><b>Realized sales</b><span class="card-hint">FIFO-matched sells from your transaction history.</span></div>
+<div class="mini-section-head"><b>Realized sales</b><span class="card-hint">Uses saved holding-lot allocations first, with FIFO as a fallback for older sales.</span></div>
 <div class="tscroll">
 <table class="txn-table">
 <thead><tr><th class="left">Instrument</th><th class="left">Sell date</th><th>Qty sold</th><th>Sell price</th><th>Avg. buy price</th><th>Realized P&amp;L</th><th>Return %</th></tr></thead>
@@ -4854,6 +4855,20 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
       return;
     }
 
+    // A brand-new sale cannot exceed the currently-held balance for the same
+    // portfolio and symbol. This prevents a second sale after a full exit from
+    // creating a confusing unmatched realized-profit row.
+    if(type==='sell' && !txEditingId){
+      const salePortfolio=$('txPortfolio').value || state.portfolios[0];
+      const available=state.holdRows
+        .filter(r=>(r.portfolio||'')===salePortfolio && symKey(r.symbol)===symKey(instrument))
+        .reduce((sum,r)=>sum+Math.max(0,Number(r.qty)||0),0);
+      if(qty>available+1e-9){
+        $('txStatus').textContent=`Cannot save this sale: you currently hold ${fmtQty(available)} ${instrument} share(s) in ${salePortfolio}. The sale quantity must not exceed the available balance.`;
+        return;
+      }
+    }
+
     if(txEditingId){
       const tx=state.manualTxns.find(x=>x.id===txEditingId);
       if(!tx) return clearTransactionForm();
@@ -4953,40 +4968,122 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const byGroup = {};
     state.manualTxns.forEach(t=>{
       if(state.recoPortfolioFilter!==null && t.portfolio!==state.recoPortfolioFilter) return;
-      // Group by portfolio + symbol, not just symbol — a sell in one portfolio
-      // must never match FIFO against buy lots sitting in a different portfolio,
-      // even if both happen to hold the same stock.
+      // Group by portfolio + symbol. A sale in one portfolio must never match
+      // lots held in another portfolio.
       const k = (t.portfolio||'') + '|||' + symKey(t.instrument);
       if(!byGroup[k]) byGroup[k]=[];
       byGroup[k].push(t);
     });
+
     const report = [];
     Object.keys(byGroup).forEach(k=>{
-      const list = byGroup[k].slice().sort((a,b)=>a.date-b.date);
-      const buyQueue = [];
+      const list = byGroup[k].slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+      const [portfolioKey, symbolKey] = k.split('|||');
+      const matchingHolds = state.holdRows.filter(r =>
+        (r.portfolio||'')===portfolioKey && symKey(r.symbol)===symbolKey
+      );
+
+      // Reconstruct each lot's original quantity from its current balance plus
+      // all durable sale allocations. This lets a Holdings-originated sale match
+      // a manually-entered lot even when there is no separate Buy transaction.
+      const soldByHoldId = new Map();
       list.forEach(t=>{
-        if(t.type==='buy'){
-          buyQueue.push({qty:t.qty, price:t.price, date:t.date});
-        } else {
-          let remaining = t.qty, costBasis=0, matchedQty=0;
-          while(remaining>1e-9 && buyQueue.length>0){
-            const lot = buyQueue[0];
-            const take = Math.min(lot.qty, remaining);
-            costBasis += take*lot.price;
-            matchedQty += take;
-            lot.qty -= take;
-            remaining -= take;
-            if(lot.qty <= 1e-9) buyQueue.shift();
-          }
-          const proceeds = matchedQty*t.price;
-          const realized = proceeds - costBasis;
-          const avgBuyPrice = matchedQty>0 ? costBasis/matchedQty : null;
-          const returnPct = costBasis>0 ? (realized/costBasis)*100 : null;
-          report.push({instrument:t.instrument, portfolio:t.portfolio||'', recommendedBy:t.recommendedBy||'', sellDate:t.date, qtySold:t.qty, matchedQty, unmatchedQty:remaining, sellPrice:t.price, avgBuyPrice, realized, returnPct});
+        if(t.type!=='sell') return;
+        const allocations = Array.isArray(t.holdAllocations) && t.holdAllocations.length
+          ? t.holdAllocations
+          : (Array.isArray(t.linkedSellAllocations) ? t.linkedSellAllocations : []);
+        allocations.forEach(a=>{
+          const id=String(a.holdId||'');
+          if(id) soldByHoldId.set(id,(soldByHoldId.get(id)||0)+(Number(a.qty)||0));
+        });
+      });
+
+      const lotMap = new Map();
+      matchingHolds.forEach(r=>{
+        const id=String(r.id||'');
+        if(!id) return;
+        const currentQty=Math.max(0,Number(r.qty)||0);
+        const originalQty=currentQty+(soldByHoldId.get(id)||0);
+        lotMap.set(id,{
+          id, qty:originalQty, price:Number(r.investedPrice)||0,
+          date:r.tradeDate ? new Date(r.tradeDate+'T00:00:00') : null
+        });
+      });
+
+      // Add any transaction-generated Buy lot that is not represented in
+      // holdRows (for example, an older backup created before lot linkage).
+      list.forEach(t=>{
+        if(t.type!=='buy') return;
+        const id=String(t.holdingLotId||t.linkedHoldingId||'');
+        if(id && !lotMap.has(id)){
+          lotMap.set(id,{
+            id, qty:Math.max(0,Number(t.qty)||0), price:Number(t.price)||0,
+            date:t.date ? new Date(t.date) : null
+          });
         }
       });
+
+      const fifoLots=Array.from(lotMap.values()).sort((a,b)=>{
+        const ad=a.date && Number.isFinite(a.date.getTime())?a.date.getTime():Infinity;
+        const bd=b.date && Number.isFinite(b.date.getTime())?b.date.getTime():Infinity;
+        return ad-bd || String(a.id).localeCompare(String(b.id));
+      });
+
+      list.forEach(t=>{
+        if(t.type!=='sell') return;
+        let remaining=Math.max(0,Number(t.qty)||0);
+        let costBasis=0, matchedQty=0;
+        const allocations=Array.isArray(t.holdAllocations)&&t.holdAllocations.length
+          ? t.holdAllocations
+          : (Array.isArray(t.linkedSellAllocations)?t.linkedSellAllocations:[]);
+
+        if(allocations.length){
+          // Prefer the exact lots persisted when the sale was entered. This is
+          // the source of truth for manual holdings as well as transaction buys.
+          allocations.forEach(a=>{
+            if(remaining<=1e-9) return;
+            const lot=lotMap.get(String(a.holdId||''));
+            if(!lot || !(lot.price>0)) return;
+            const saleDate=t.date ? new Date(t.date) : null;
+            if(lot.date && saleDate && Number.isFinite(saleDate.getTime()) && lot.date>saleDate) return;
+            const requested=Math.max(0,Number(a.qty)||0);
+            const take=Math.min(requested,lot.qty,remaining);
+            if(take>1e-9){
+              matchedQty+=take;
+              costBasis+=take*lot.price;
+              lot.qty-=take;
+              remaining-=take;
+            }
+          });
+        }else{
+          // Backward-compatible FIFO fallback for older sell rows that have no
+          // saved lot allocations at all.
+          for(const lot of fifoLots){
+            if(remaining<=1e-9) break;
+            if(!(lot.qty>1e-9) || !(lot.price>0)) continue;
+            const saleDate=t.date ? new Date(t.date) : null;
+            if(lot.date && saleDate && Number.isFinite(saleDate.getTime()) && lot.date>saleDate) continue;
+            const take=Math.min(lot.qty,remaining);
+            matchedQty+=take;
+            costBasis+=take*lot.price;
+            lot.qty-=take;
+            remaining-=take;
+          }
+        }
+
+        const proceeds=matchedQty*(Number(t.price)||0);
+        const realized=proceeds-costBasis;
+        const avgBuyPrice=matchedQty>0?costBasis/matchedQty:null;
+        const returnPct=costBasis>0?(realized/costBasis)*100:null;
+        report.push({
+          instrument:t.instrument, portfolio:t.portfolio||'',
+          recommendedBy:t.recommendedBy||'', sellDate:t.date,
+          qtySold:t.qty, matchedQty, unmatchedQty:remaining,
+          sellPrice:t.price, avgBuyPrice, realized, returnPct
+        });
+      });
     });
-    return report.sort((a,b)=> b.sellDate-a.sellDate);
+    return report.sort((a,b)=>new Date(b.sellDate)-new Date(a.sellDate));
   }
 
   function renderRecoPortfolioBar(){
@@ -5269,7 +5366,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
         hr => (hr.recommendedBy||'Unspecified')===reco && symKey(hr.symbol)===symKey(symbol),
         t => (t.recommendedBy||'Unspecified')===reco && symKey(t.instrument)===symKey(symbol),
         valDate,
-        new Set([reco])
+        null
       );
       return {reco, symbol, qty, invested, curVal, unrealizedPnl, realizedPnl, totalPnl, xirrVal};
     });
@@ -5294,6 +5391,7 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
   }
 
   $('recoStockFilter').addEventListener('change', renderRecoStockTable);
+  $('recoShowSoldOut')?.addEventListener('change', renderRecoStockTable);
   $('recoSortSelect')?.addEventListener('change',()=>{ state.recoSort.key=$('recoSortSelect').value||'reco'; state.recoSort.dir=1; renderRecoStockTable(); });
   $('recoSortDir')?.addEventListener('click',()=>{ state.recoSort.dir*=-1; renderRecoStockTable(); });
   function sortRecoRows(rows){
@@ -5329,9 +5427,17 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const card = $('recoStockCard');
     if(allRows.length===0){ card.style.display='none'; return; }
     card.style.display = 'block';
-    populateRecoStockFilter(allRows);
+    const showSoldOut = !!$('recoShowSoldOut')?.checked;
+    const positionRows = showSoldOut ? allRows : allRows.filter(r=>r.qty>1e-9);
+    populateRecoStockFilter(positionRows);
     const filterVal = $('recoStockFilter').value || '__all__';
-    const rows = sortRecoRows(filterVal==='__all__' ? allRows : allRows.filter(r=>r.reco===filterVal));
+    const filteredRows = filterVal==='__all__' ? positionRows : positionRows.filter(r=>r.reco===filterVal);
+    const rows = sortRecoRows(filteredRows);
+    if(rows.length===0){
+      $('recoStockBody').innerHTML = `<tr><td colspan="9" class="muted" style="text-align:center;padding:18px;">No open positions match this filter. Enable “Include sold-out positions” to review closed stocks.</td></tr>`;
+      renderRecoSortIndicators();
+      return;
+    }
 
     let lastReco = null;
     let html = rows.map(r=>{
@@ -5366,12 +5472,12 @@ button,.nav-btn,.chip,.tabbtn,.btn-small,.refresh-btn,.wl-feature{touch-action:m
     const totalRealized = rows.reduce((s,r)=>s+r.realizedPnl,0);
     const totalPnl = totalUnrealized + totalRealized;
     const valDate = new Date(($('valDate').value || new Date().toISOString().slice(0,10)) + 'T00:00:00');
-    const recosShown = new Set(rows.map(r=>r.reco));
+    const visibleStockKeys = new Set(rows.map(r=>`${r.reco}|||${symKey(r.symbol)}`));
     const blendedXirr = computeXirrForCashflows(
-      hr => recosShown.has(hr.recommendedBy||'Unspecified'),
-      t => recosShown.has(t.recommendedBy||'Unspecified'),
+      hr => visibleStockKeys.has(`${hr.recommendedBy||'Unspecified'}|||${symKey(hr.symbol)}`),
+      t => visibleStockKeys.has(`${t.recommendedBy||'Unspecified'}|||${symKey(t.instrument)}`),
       valDate,
-      recosShown
+      null
     );
     const blendedStr = blendedXirr!=null ? fmtPct(blendedXirr*100) : '<span class="muted">n/a</span>';
     const blendedClass = blendedXirr!=null ? (blendedXirr>=0?'gain':'loss') : '';
